@@ -1,0 +1,161 @@
+.menu-page {
+  min-height: 100vh;
+  background: #1a1a1a;
+  padding-bottom: 40px;
+}
+
+.menu-header {
+  position: relative;
+  padding: 60px 40px 40px;
+  background: linear-gradient(135deg, #6A0DAD 0%, #4B0082 100%);
+  overflow: hidden;
+}
+
+.header-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent,
+    transparent 10px,
+    rgba(57, 255, 20, 0.05) 10px,
+    rgba(57, 255, 20, 0.05) 20px
+  );
+}
+
+.header-content {
+  position: relative;
+  z-index: 1;
+}
+
+.header-title {
+  display: block;
+  font-size: 44px;
+  font-weight: bold;
+  color: #39FF14;
+  text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+  margin-bottom: 10px;
+  letter-spacing: 3px;
+}
+
+.header-subtitle {
+  display: block;
+  font-size: 26px;
+  color: #CCCCCC;
+}
+
+.menu-container {
+  padding: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 25px;
+}
+
+.menu-item {
+  position: relative;
+  background: #2d2d2d;
+  border: 2px solid #4B0082;
+  border-radius: 16px;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  overflow: hidden;
+  transition: all 0.3s;
+}
+
+.menu-item:active {
+  transform: scale(0.98);
+  border-color: #6A0DAD;
+}
+
+.menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex: 1;
+  z-index: 2;
+}
+
+.menu-icon {
+  width: 100px;
+  height: 100px;
+  border: 3px solid;
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.3);
+}
+
+.icon-text {
+  font-size: 48px;
+}
+
+.menu-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.menu-title {
+  font-size: 32px;
+  font-weight: bold;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+}
+
+.menu-desc {
+  font-size: 24px;
+  color: #CCCCCC;
+}
+
+.menu-arrow {
+  z-index: 2;
+}
+
+.arrow-icon {
+  width: 0;
+  height: 0;
+  border-left: 16px solid;
+  border-top: 10px solid transparent;
+  border-bottom: 10px solid transparent;
+}
+
+.menu-glow {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+
+.menu-item:active .menu-glow {
+  opacity: 1;
+}
+
+.menu-footer {
+  padding: 0 40px;
+  margin-top: 20px;
+}
+
+.footer-line {
+  height: 3px;
+  background: linear-gradient(90deg, #4B0082 0%, #39FF14 50%, #4B0082 100%);
+  margin-bottom: 20px;
+}
+
+.footer-text {
+  display: block;
+  text-align: center;
+  font-size: 24px;
+  color: #39FF14;
+  font-weight: bold;
+  letter-spacing: 2px;
+}

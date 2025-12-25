@@ -1,0 +1,166 @@
+.login-page {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #1a1a1a;
+  position: relative;
+  overflow: hidden;
+
+  // EVA-01 背景效果
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(135deg, #6A0DAD 0%, #4B0082 50%, #1a1a1a 100%);
+    opacity: 0.3;
+  }
+}
+
+.login-container {
+  text-align: center;
+  padding: 80px 40px;
+  position: relative;
+  z-index: 1;
+}
+
+.logo {
+  font-size: 56px;
+  font-weight: bold;
+  color: #39FF14;
+  margin-bottom: 20px;
+  text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+  letter-spacing: 4px;
+}
+
+.title {
+  font-size: 28px;
+  color: #6A0DAD;
+  margin-bottom: 10px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.desc {
+  font-size: 24px;
+  color: #CCCCCC;
+  margin-bottom: 60px;
+}
+
+// 登录方式切换标签
+.login-mode-tabs {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+  border-bottom: 2px solid #3a3a3a;
+
+  .tab-item {
+    flex: 1;
+    max-width: 250px;
+    padding: 20px 0;
+    font-size: 28px;
+    color: #CCCCCC;
+    cursor: pointer;
+    transition: all 0.3s;
+    position: relative;
+
+    &.active {
+      color: #39FF14;
+      font-weight: bold;
+
+      &::after {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 80%;
+        height: 4px;
+        background: #39FF14;
+        box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+      }
+    }
+  }
+}
+
+// 登录表单
+.login-form {
+  margin-bottom: 30px;
+
+  .form-item {
+    margin-bottom: 30px;
+    text-align: left;
+
+    .form-label {
+      font-size: 28px;
+      color: #CCCCCC;
+      margin-bottom: 15px;
+      padding-left: 10px;
+    }
+
+    .form-input {
+      width: 500px;
+      height: 88px;
+      padding: 0 30px;
+      background: #2d2d2d;
+      border: 2px solid #4B0082;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 28px;
+      transition: all 0.3s;
+
+      &:focus {
+        border-color: #39FF14;
+        box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+      }
+    }
+  }
+}
+
+// 登录按钮
+.login-btn {
+  width: 500px;
+  height: 88px;
+  border-radius: 10px;
+  font-size: 32px;
+  font-weight: bold;
+  border: none;
+  transition: all 0.3s;
+
+  &.password-btn {
+    background: linear-gradient(135deg, #6A0DAD, #4B0082);
+    color: #fff;
+
+    &:active {
+      background: linear-gradient(135deg, #4B0082, #6A0DAD);
+    }
+  }
+
+  &.wechat-btn {
+    background: linear-gradient(135deg, #39FF14, #00FF00);
+    color: #1a1a1a;
+
+    &:active {
+      background: linear-gradient(135deg, #00FF00, #39FF14);
+    }
+  }
+}
+
+.wechat-login {
+  margin-top: 40px;
+}
+
+// 登录提示
+.login-tip {
+  margin-top: 40px;
+  font-size: 24px;
+  color: #FF6600;
+  padding: 20px;
+  background: rgba(255, 102, 0, 0.1);
+  border-radius: 10px;
+  border: 1px solid rgba(255, 102, 0, 0.3);
+}

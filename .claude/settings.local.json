@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm cache clean:*)",
+      "Bash(npm config get:*)",
+      "Bash(npm config list:*)",
+      "Bash(if exist .npmrc del .npmrc)",
+      "Bash(npm config:*)",
+      "Bash(dir:*)",
+      "Bash(pnpm install:*)",
+      "Bash(pnpm dev:weapp:*)",
+      "Bash(timeout /t 10 /nobreak)",
+      "Bash(pnpm add:*)",
+      "Bash(timeout /t 15 /nobreak)",
+      "Bash(findstr:*)",
+      "Bash(xcopy:*)",
+      "Bash(git init:*)",
+      "Bash(git add:*)"
+    ]
+  }
+}

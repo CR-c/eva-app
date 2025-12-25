@@ -1,0 +1,32 @@
+import { useEffect } from 'react'
+import { useUserStore } from './store/user'
+import './styles/index.scss'
+
+function App({ children }: { children: React.ReactNode }) {
+  const restoreLoginState = useUserStore((state) => state.restoreLoginState)
+
+  useEffect(() => {
+    // App 启动时恢复登录态
+    restoreLoginState()
+
+    // 全局异常兜底处理
+    const handleError = (error: any) => {
+      console.error('Global error:', error)
+    }
+
+    // 监听未捕获的错误
+    if (typeof window !== 'undefined') {
+      window.addEventListener('error', handleError)
+      window.addEventListener('unhandledrejection', handleError)
+
+      return () => {
+        window.removeEventListener('error', handleError)
+        window.removeEventListener('unhandledrejection', handleError)
+      }
+    }
+  }, [restoreLoginState])
+
+  return children
+}
+
+export default App

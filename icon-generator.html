@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>EVA-01 TabBar Icon Generator</title>
+  <style>
+    body {
+      background: #1a1a1a;
+      color: #fff;
+      font-family: monospace;
+      padding: 40px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 30px;
+    }
+    .container {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .icon-box {
+      text-align: center;
+    }
+    canvas {
+      border: 2px solid #39FF14;
+      border-radius: 8px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    canvas:hover {
+      box-shadow: 0 0 20px #39FF14;
+    }
+    h1 {
+      color: #39FF14;
+      text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+    }
+    .label {
+      color: #CCCCCC;
+      margin-top: 10px;
+    }
+    .info {
+      background: #2d2d2d;
+      padding: 20px;
+      border: 2px solid #6A0DAD;
+      border-radius: 8px;
+      max-width: 600px;
+    }
+  </style>
+</head>
+<body>
+  <h1>EVA-01 TABBAR ICON GENERATOR</h1>
+
+  <div class="info">
+    <p>⚡ 点击图标可以下载 PNG 文件</p>
+    <p>📁 将图标保存到 <code>src/assets/icons/</code> 目录</p>
+    <p>🎨 已生成 EVA-01 主题配色</p>
+  </div>
+
+  <div class="container" id="icons"></div>
+
+  <script>
+    const icons = [
+      { name: 'home', label: '首页', normalColor: '#CCCCCC', activeColor: '#39FF14' },
+      { name: 'menu', label: '菜单', normalColor: '#CCCCCC', activeColor: '#39FF14' },
+      { name: 'profile', label: '我的', normalColor: '#CCCCCC', activeColor: '#39FF14' }
+    ];
+
+    const size = 128;
+
+    function drawHomeIcon(ctx, color, size) {
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      // 屋顶
+      ctx.beginPath();
+      ctx.moveTo(size * 0.2, size * 0.5);
+      ctx.lineTo(size * 0.5, size * 0.25);
+      ctx.lineTo(size * 0.8, size * 0.5);
+      ctx.stroke();
+
+      // 房子主体
+      ctx.beginPath();
+      ctx.rect(size * 0.3, size * 0.48, size * 0.4, size * 0.32);
+      ctx.stroke();
+
+      // 门
+      ctx.fillRect(size * 0.425, size * 0.6, size * 0.15, size * 0.2);
+    }
+
+    function drawMenuIcon(ctx, color, size) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+
+      const lines = [0.3, 0.5, 0.7];
+      lines.forEach(y => {
+        ctx.beginPath();
+        ctx.moveTo(size * 0.25, size * y);
+        ctx.lineTo(size * 0.75, size * y);
+        ctx.stroke();
+      });
+    }
+
+    function drawProfileIcon(ctx, color, size) {
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = 8;
+
+      // 头
+      ctx.beginPath();
+      ctx.arc(size * 0.5, size * 0.35, size * 0.12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 身体
+      ctx.beginPath();
+      ctx.arc(size * 0.5, size * 0.7, size * 0.22, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+
+    const drawFunctions = {
+      home: drawHomeIcon,
+      menu: drawMenuIcon,
+      profile: drawProfileIcon
+    };
+
+    icons.forEach(icon => {
+      const box = document.createElement('div');
+      box.className = 'icon-box';
+
+      // Normal state
+      const canvasNormal = document.createElement('canvas');
+      canvasNormal.width = size;
+      canvasNormal.height = size;
+      const ctxNormal = canvasNormal.getContext('2d');
+      drawFunctions[icon.name](ctxNormal, icon.normalColor, size);
+
+      canvasNormal.onclick = () => {
+        const link = document.createElement('a');
+        link.download = `${icon.name}.png`;
+        link.href = canvasNormal.toDataURL();
+        link.click();
+      };
+
+      // Active state
+      const canvasActive = document.createElement('canvas');
+      canvasActive.width = size;
+      canvasActive.height = size;
+      const ctxActive = canvasActive.getContext('2d');
+
+      // 添加发光效果
+      ctxActive.shadowColor = icon.activeColor;
+      ctxActive.shadowBlur = 20;
+
+      drawFunctions[icon.name](ctxActive, icon.activeColor, size);
+
+      canvasActive.onclick = () => {
+        const link = document.createElement('a');
+        link.download = `${icon.name}-active.png`;
+        link.href = canvasActive.toDataURL();
+        link.click();
+      };
+
+      const labelNormal = document.createElement('div');
+      labelNormal.className = 'label';
+      labelNormal.textContent = `${icon.label} (默认)`;
+
+      const labelActive = document.createElement('div');
+      labelActive.className = 'label';
+      labelActive.textContent = `${icon.label} (激活)`;
+
+      const normalBox = document.createElement('div');
+      normalBox.appendChild(canvasNormal);
+      normalBox.appendChild(labelNormal);
+
+      const activeBox = document.createElement('div');
+      activeBox.appendChild(canvasActive);
+      activeBox.appendChild(labelActive);
+
+      box.appendChild(normalBox);
+      box.appendChild(activeBox);
+
+      document.getElementById('icons').appendChild(box);
+    });
+  </script>
+</body>
+</html>
