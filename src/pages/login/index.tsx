@@ -1,10 +1,9 @@
 import { useState } from 'react'
 import { View, Button, Input } from '@tarojs/components'
 import Taro from '@tarojs/taro'
-import { wxLogin, passwordLogin, checkUserExist, register } from '@/services/auth'
+import { passwordLogin, wxMiniappLogin } from '@/services/auth'
 import { useUserStore } from '@/store/user'
 import { ROUTES } from '@/constants/routes'
-import RegisterModal from '@/components/RegisterModal'
 import './index.scss'
 
 function Login() {
@@ -12,8 +11,6 @@ function Login() {
   const [loginMode, setLoginMode] = useState<'password' | 'wechat'>('password')
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [showRegisterModal, setShowRegisterModal] = useState(false)
-  const [wxCode, setWxCode] = useState('')
   const login = useUserStore((state) => state.login)
 
   // 账号密码登录
@@ -36,8 +33,12 @@ function Login() {
 
     setLoading(true)
     try {
-      const { token, userInfo } = await passwordLogin(username, password)
-      login(token, userInfo)
+      const loginData = await passwordLogin({
+        username,
+        password,
+      })
+
+      login(loginData)
 
       Taro.showToast({
         title: '登录成功',
@@ -66,67 +67,12 @@ function Login() {
 
     setLoading(true)
     try {
-      // 1. 获取微信登录 code
-      const { code } = await Taro.login()
+      const loginData = await wxMiniappLogin()
 
-      if (!code) {
-        throw new Error('获取微信登录 code 失败')
-      }
-
-      // 2. 检查用户是否已存在
-      const { exist, openid } = await checkUserExist(code)
-
-      if (exist) {
-        // 用户已存在，直接登录
-        const { token, userInfo } = await wxLogin()
-        login(token, userInfo)
-
-        Taro.showToast({
-          title: '登录成功',
-          icon: 'success',
-        })
-
-        // 跳转到首页
-        setTimeout(() => {
-          Taro.switchTab({
-            url: ROUTES.HOME,
-          })
-        }, 1000)
-      } else {
-        // 用户不存在，显示注册弹窗
-        setWxCode(code)
-        setShowRegisterModal(true)
-      }
-    } catch (error) {
-      console.error('Login failed:', error)
-      Taro.showToast({
-        title: '登录失败',
-        icon: 'none',
-      })
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  // 处理用户注册
-  const handleRegisterConfirm = async (nickname: string, phone: string, avatar?: string) => {
-    setShowRegisterModal(false)
-    setLoading(true)
-
-    try {
-      // 调用注册接口
-      const { token, userInfo } = await register({
-        code: wxCode,
-        nickname,
-        phone,
-        avatar,
-      })
-
-      // 注册成功，保存登录状态
-      login(token, userInfo)
+      login(loginData)
 
       Taro.showToast({
-        title: '注册成功',
+        title: '登录成功',
         icon: 'success',
       })
 
@@ -137,20 +83,14 @@ function Login() {
         })
       }, 1000)
     } catch (error) {
-      console.error('Register failed:', error)
+      console.error('Login failed:', error)
       Taro.showToast({
-        title: '注册失败',
+        title: '登录失败',
         icon: 'none',
       })
     } finally {
       setLoading(false)
     }
-  }
-
-  // 关闭注册弹窗
-  const handleRegisterClose = () => {
-    setShowRegisterModal(false)
-    setWxCode('')
   }
 
   return (
@@ -219,6 +159,9 @@ function Login() {
             >
               {loading ? '登录中...' : '微信一键登录'}
             </Button>
+            <View className="wechat-tip">
+              首次登录将自动注册账号
+            </View>
           </View>
         )}
 
@@ -226,13 +169,6 @@ function Login() {
           测试账号: admin / admin123
         </View>
       </View>
-
-      {/* 注册弹窗 */}
-      <RegisterModal
-        visible={showRegisterModal}
-        onClose={handleRegisterClose}
-        onConfirm={handleRegisterConfirm}
-      />
     </View>
   )
 }

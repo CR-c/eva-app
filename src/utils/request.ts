@@ -3,9 +3,7 @@ import type { ApiResponse } from '@/constants/types'
 import { getCache } from './cache'
 import { CACHE_KEYS } from '@/constants/cache'
 import { ROUTES } from '@/constants/routes'
-
-// 基础 URL，实际项目中应从环境变量读取
-const BASE_URL = 'https://api.example.com'
+import { BASE_URL } from '@/constants/env'
 
 // 正在进行的请求 Map，用于防止重复请求
 const pendingRequests = new Map<string, Promise<any>>()

@@ -11,23 +11,40 @@ export interface ApiResponse<T = any> {
  * 用户信息
  */
 export interface UserInfo {
-  id: string
+  userId: number
+  username: string
   nickname: string
   avatar?: string
   phone?: string
   openid?: string
+  unionid?: string
   email?: string
-  gender?: 0 | 1 | 2 // 0: 未知, 1: 男, 2: 女
+  gender?: 0 | 1 | 2 // 0: 女, 1: 男, 2: 未知
   birthday?: string
   signature?: string
   location?: string
+  roles?: string[]
+  permissions?: string[]
 }
 
 /**
- * 登录请求参数
+ * 账号密码登录参数
  */
-export interface LoginParams {
+export interface PasswordLoginParams {
+  username: string
+  password: string
+  captcha?: string
+  uuid?: string
+}
+
+/**
+ * 微信登录参数
+ */
+export interface WxLoginParams {
   code: string
+  type: 'miniapp' | 'mp'
+  encryptedData?: string
+  iv?: string
 }
 
 /**
@@ -35,7 +52,12 @@ export interface LoginParams {
  */
 export interface LoginData {
   token: string
-  userInfo: UserInfo
+  userId: number
+  username: string
+  nickname: string
+  avatar?: string
+  roles?: string[]
+  permissions?: string[]
 }
 
 /**
