@@ -88,7 +88,17 @@ function Walking() {
       content: '确定要结束这次散步吗？',
       success: (res) => {
         if (res.confirm) {
-          Taro.navigateBack()
+          // 跳转到汇总页面，传递散步数据
+          const params = new URLSearchParams({
+            distance: distance.toFixed(1),
+            duration: Math.floor(duration / 60).toString(),
+            pace: '12',
+            calories: Math.floor(distance * 100).toString()
+          })
+          
+          Taro.navigateTo({
+            url: `/pages/walkSummary/index?${params.toString()}`
+          })
         }
       }
     })
