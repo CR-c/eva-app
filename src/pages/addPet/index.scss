@@ -1,0 +1,401 @@
+// 添加宠物页面样式
+.add-pet-page {
+  min-height: 100vh;
+  background: #f5f7f8;
+  display: flex;
+  flex-direction: column;
+}
+
+// 顶部导航栏
+.top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 48px 16px 8px;
+  background: rgba(245, 247, 248, 0.95);
+  backdrop-filter: blur(8px);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  
+  .nav-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    
+    &:active {
+      background: rgba(0, 0, 0, 0.1);
+      transform: scale(0.95);
+    }
+    
+    .nav-icon {
+      font-size: 20px;
+      font-weight: 600;
+      color: #0d171c;
+    }
+  }
+  
+  .nav-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #0d171c;
+    letter-spacing: -0.02em;
+  }
+  
+  .nav-placeholder {
+    width: 40px;
+  }
+}
+
+// 表单内容
+.form-content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 100px; // 为底部按钮留出空间
+}
+
+// 照片上传器
+.photo-uploader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 24px;
+  
+  .upload-area {
+    position: relative;
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    cursor: pointer;
+    
+    .uploaded-photo {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      border: 2px solid #25aff4;
+    }
+    
+    .upload-placeholder {
+      width: 100%;
+      height: 100%;
+      border: 2px dashed #25aff4;
+      border-radius: 50%;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      
+      &:active {
+        background: rgba(37, 175, 244, 0.05);
+      }
+      
+      .upload-icon {
+        font-size: 32px;
+        color: #25aff4;
+      }
+      
+      .upload-text {
+        font-size: 12px;
+        font-weight: 600;
+        color: #25aff4;
+      }
+    }
+    
+    .edit-badge {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      width: 24px;
+      height: 24px;
+      background: #25aff4;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #f5f7f8;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      
+      .edit-icon {
+        font-size: 12px;
+        color: white;
+      }
+    }
+  }
+  
+  .upload-hint {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #64748b;
+  }
+}
+
+// 表单字段
+.form-fields {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  
+  .form-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0d171c;
+    margin-bottom: 8px;
+    margin-left: 4px;
+    
+    .optional {
+      font-weight: 400;
+      color: #64748b;
+    }
+  }
+  
+  .form-input {
+    height: 56px;
+    background: #ffffff;
+    border: 1px solid #cee0e8;
+    border-radius: 12px;
+    padding: 0 16px;
+    font-size: 16px;
+    color: #0d171c;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    &:focus {
+      border-color: #25aff4;
+      box-shadow: 0 0 0 3px rgba(37, 175, 244, 0.1);
+    }
+  }
+  
+  .form-textarea {
+    min-height: 96px;
+    background: #ffffff;
+    border: 1px solid #cee0e8;
+    border-radius: 12px;
+    padding: 16px;
+    font-size: 16px;
+    color: #0d171c;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    &:focus {
+      border-color: #25aff4;
+      box-shadow: 0 0 0 3px rgba(37, 175, 244, 0.1);
+    }
+  }
+  
+  &.flex-1 {
+    flex: 1;
+  }
+}
+
+.form-row {
+  display: flex;
+  gap: 16px;
+}
+
+// 品种选择器
+.breed-selector {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  
+  .breed-option {
+    height: 48px;
+    background: #ffffff;
+    border: 1px solid #cee0e8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    padding: 0 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    &:active {
+      transform: scale(0.98);
+    }
+    
+    &.selected {
+      border-color: #25aff4;
+      background: rgba(37, 175, 244, 0.05);
+      
+      .breed-text {
+        color: #25aff4;
+        font-weight: 600;
+      }
+    }
+    
+    .breed-text {
+      font-size: 16px;
+      color: #0d171c;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+// 性别选择器
+.gender-selector {
+  display: flex;
+  background: rgba(206, 224, 232, 0.3);
+  border: 1px solid #cee0e8;
+  border-radius: 12px;
+  padding: 4px;
+  height: 56px;
+  
+  .gender-option {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    &.selected {
+      background: #ffffff;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      
+      .gender-text {
+        color: #25aff4;
+        font-weight: 600;
+      }
+    }
+    
+    .gender-icon {
+      font-size: 18px;
+    }
+    
+    .gender-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #64748b;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+// 体型选择器
+.size-selector {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  
+  .size-option {
+    height: 48px;
+    background: #ffffff;
+    border: 1px solid #cee0e8;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    &.selected {
+      border: 2px solid #25aff4;
+      background: rgba(37, 175, 244, 0.05);
+      
+      .size-text {
+        color: #25aff4;
+        font-weight: 700;
+      }
+    }
+    
+    .size-text {
+      font-size: 14px;
+      font-weight: 500;
+      color: #0d171c;
+      transition: all 0.2s ease;
+    }
+  }
+}
+
+// 底部保存按钮
+.bottom-button {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 20px;
+  background: linear-gradient(
+    to top,
+    #f5f7f8 0%,
+    #f5f7f8 70%,
+    transparent 100%
+  );
+  
+  .save-button {
+    width: 100%;
+    height: 56px;
+    background: #25aff4;
+    border-radius: 28px;
+    border: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 8px 20px rgba(37, 175, 244, 0.3);
+    transition: all 0.2s ease;
+    
+    &:active {
+      transform: scale(0.98);
+      background: #1a92d0;
+    }
+    
+    .save-icon {
+      font-size: 20px;
+      color: white;
+    }
+    
+    .save-text {
+      font-size: 16px;
+      font-weight: 700;
+      color: white;
+    }
+  }
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .form-fields {
+    padding: 0 16px;
+  }
+  
+  .photo-uploader {
+    padding: 20px 16px;
+    
+    .upload-area {
+      width: 112px;
+      height: 112px;
+    }
+  }
+  
+  .form-row {
+    gap: 12px;
+  }
+  
+  .bottom-button {
+    padding: 16px;
+  }
+}

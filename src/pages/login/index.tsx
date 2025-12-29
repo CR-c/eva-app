@@ -96,9 +96,9 @@ function Login() {
   return (
     <View className="login-page">
       <View className="login-container">
-        <View className="logo">EVA APP</View>
-        <View className="title">EVA-01 TEST TYPE</View>
-        <View className="desc">初号机基础框架</View>
+        <View className="logo">遛狗助手</View>
+        <View className="title">PET WALKING APP</View>
+        <View className="desc">和爱宠一起享受散步时光</View>
 
         {/* 登录方式切换 */}
         <View className="login-mode-tabs">

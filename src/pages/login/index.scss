@@ -4,11 +4,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #1a1a1a;
+  background: linear-gradient(to bottom, #f5f7f8, #ffffff);
   position: relative;
   overflow: hidden;
 
-  // EVA-01 背景效果
+  // 清新背景效果
   &::before {
     content: '';
     position: absolute;
@@ -16,8 +16,8 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(135deg, #6A0DAD 0%, #4B0082 50%, #1a1a1a 100%);
-    opacity: 0.3;
+    background: linear-gradient(135deg, rgba(37, 175, 244, 0.1) 0%, rgba(219, 234, 254, 0.3) 50%, transparent 100%);
+    opacity: 0.6;
   }
 }
 
@@ -31,15 +31,15 @@
 .logo {
   font-size: 56px;
   font-weight: bold;
-  color: #39FF14;
+  color: #25aff4;
   margin-bottom: 20px;
-  text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
+  text-shadow: 0 2px 8px rgba(37, 175, 244, 0.3);
   letter-spacing: 4px;
 }
 
 .title {
   font-size: 28px;
-  color: #6A0DAD;
+  color: #0d171c;
   margin-bottom: 10px;
   font-weight: bold;
   letter-spacing: 2px;
@@ -47,7 +47,7 @@
 
 .desc {
   font-size: 24px;
-  color: #CCCCCC;
+  color: #64748b;
   margin-bottom: 60px;
 }
 
@@ -56,20 +56,20 @@
   display: flex;
   justify-content: center;
   margin-bottom: 40px;
-  border-bottom: 2px solid #3a3a3a;
+  border-bottom: 2px solid #e2e8f0;
 
   .tab-item {
     flex: 1;
     max-width: 250px;
     padding: 20px 0;
     font-size: 28px;
-    color: #CCCCCC;
+    color: #64748b;
     cursor: pointer;
     transition: all 0.3s;
     position: relative;
 
     &.active {
-      color: #39FF14;
+      color: #25aff4;
       font-weight: bold;
 
       &::after {
@@ -80,8 +80,8 @@
         transform: translateX(-50%);
         width: 80%;
         height: 4px;
-        background: #39FF14;
-        box-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
+        background: #25aff4;
+        box-shadow: 0 2px 8px rgba(37, 175, 244, 0.3);
       }
     }
   }
@@ -97,25 +97,31 @@
 
     .form-label {
       font-size: 28px;
-      color: #CCCCCC;
+      color: #0d171c;
       margin-bottom: 15px;
       padding-left: 10px;
+      font-weight: 600;
     }
 
     .form-input {
       width: 500px;
       height: 88px;
       padding: 0 30px;
-      background: #2d2d2d;
-      border: 2px solid #4B0082;
-      border-radius: 10px;
-      color: #fff;
+      background: #ffffff;
+      border: 2px solid #cee0e8;
+      border-radius: 12px;
+      color: #0d171c;
       font-size: 28px;
       transition: all 0.3s;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
       &:focus {
-        border-color: #39FF14;
-        box-shadow: 0 0 10px rgba(57, 255, 20, 0.3);
+        border-color: #25aff4;
+        box-shadow: 0 0 0 3px rgba(37, 175, 244, 0.1);
+      }
+
+      &::placeholder {
+        color: #94a3b8;
       }
     }
   }
@@ -125,27 +131,30 @@
 .login-btn {
   width: 500px;
   height: 88px;
-  border-radius: 10px;
+  border-radius: 12px;
   font-size: 32px;
   font-weight: bold;
   border: none;
   transition: all 0.3s;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 
   &.password-btn {
-    background: linear-gradient(135deg, #6A0DAD, #4B0082);
-    color: #fff;
+    background: linear-gradient(135deg, #25aff4, #4bc4ff);
+    color: #ffffff;
 
     &:active {
-      background: linear-gradient(135deg, #4B0082, #6A0DAD);
+      background: linear-gradient(135deg, #1a92d0, #25aff4);
+      transform: scale(0.98);
     }
   }
 
   &.wechat-btn {
-    background: linear-gradient(135deg, #39FF14, #00FF00);
-    color: #1a1a1a;
+    background: linear-gradient(135deg, #25aff4, #4bc4ff);
+    color: #ffffff;
 
     &:active {
-      background: linear-gradient(135deg, #00FF00, #39FF14);
+      background: linear-gradient(135deg, #1a92d0, #25aff4);
+      transform: scale(0.98);
     }
   }
 }
@@ -156,7 +165,7 @@
   .wechat-tip {
     margin-top: 20px;
     font-size: 24px;
-    color: #CCCCCC;
+    color: #64748b;
   }
 }
 
@@ -164,9 +173,9 @@
 .login-tip {
   margin-top: 40px;
   font-size: 24px;
-  color: #FF6600;
+  color: #ea580c;
   padding: 20px;
-  background: rgba(255, 102, 0, 0.1);
-  border-radius: 10px;
-  border: 1px solid rgba(255, 102, 0, 0.3);
+  background: rgba(234, 88, 12, 0.1);
+  border-radius: 12px;
+  border: 1px solid rgba(234, 88, 12, 0.2);
 }

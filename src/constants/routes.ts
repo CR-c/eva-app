@@ -4,6 +4,8 @@ export const ROUTES = {
   HOME: '/pages/home/index',
   WALKING: '/pages/walking/index',
   WALK_SUMMARY: '/pages/walkSummary/index',
+  PETS: '/pages/pets/index',
+  ADD_PET: '/pages/addPet/index',
   MENU: '/pages/menu/index',
   PROFILE: '/pages/profile/index',
   EDIT_PROFILE: '/pages/profile/edit/index',
