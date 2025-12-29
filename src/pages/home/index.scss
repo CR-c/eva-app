@@ -1,214 +1,333 @@
-.home-page {
+// 遛狗应用首页样式
+.dog-walk-home {
   min-height: 100vh;
-  background: #1a1a1a;
-  padding-bottom: 20px;
+  background: linear-gradient(to bottom, #f5f7f8, #ffffff);
+  padding: 0 24px;
+  padding-bottom: 32px; // 调整底部间距
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
-.home-header {
+// 头部区域
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 48px 0 16px;
+  
+  .greeting-section {
+    flex: 1;
+    
+    .greeting-title {
+      font-size: 32px;
+      font-weight: 800;
+      color: #0d171c;
+      line-height: 1.2;
+      margin-bottom: 4px;
+      display: block;
+    }
+    
+    .greeting-subtitle {
+      font-size: 14px;
+      color: #64748b;
+      font-weight: 500;
+      display: block;
+    }
+  }
+  
+  .avatar-section {
+    position: relative;
+    
+    .avatar {
+      position: relative;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      overflow: hidden;
+      border: 2px solid rgba(37, 175, 244, 0.2);
+      
+      .avatar-image {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+      }
+      
+      .online-status {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 12px;
+        height: 12px;
+        background: #10b981;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+// 天气卡片
+.weather-card {
+  background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+  border-radius: 24px;
+  padding: 24px;
+  margin-bottom: 24px;
+  border: 1px solid #e0f2fe;
   position: relative;
-  padding: 60px 40px 40px;
-  background: linear-gradient(135deg, #4B0082 0%, #6A0DAD 100%);
   overflow: hidden;
+  
+  .weather-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    position: relative;
+    z-index: 2;
+    
+    .weather-info {
+      flex: 1;
+      max-width: 200px;
+      
+      .weather-label {
+        font-size: 12px;
+        font-weight: 700;
+        color: #25aff4;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        margin-bottom: 8px;
+        display: block;
+      }
+      
+      .temperature-section {
+        display: flex;
+        align-items: baseline;
+        gap: 12px;
+        margin-bottom: 16px;
+        
+        .temperature {
+          font-size: 48px;
+          font-weight: 900;
+          color: #0d171c;
+          line-height: 1;
+          display: block;
+        }
+        
+        .weather-desc {
+          font-size: 18px;
+          font-weight: 500;
+          color: #64748b;
+          display: block;
+        }
+      }
+      
+      .weather-suggestion {
+        font-size: 14px;
+        color: #475569;
+        font-weight: 500;
+        line-height: 1.5;
+        display: block;
+      }
+    }
+    
+    .weather-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      .sun-icon {
+        font-size: 64px;
+        filter: drop-shadow(0 4px 8px rgba(251, 191, 36, 0.3));
+        display: block;
+      }
+    }
+  }
+  
+  // 背景装饰
+  &::after {
+    content: '';
+    position: absolute;
+    right: -32px;
+    bottom: -48px;
+    width: 180px;
+    height: 180px;
+    background: rgba(37, 175, 244, 0.1);
+    border-radius: 50%;
+    z-index: 1;
+  }
 }
 
-.header-bg {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: repeating-linear-gradient(
-    0deg,
-    transparent,
-    transparent 2px,
-    rgba(57, 255, 20, 0.03) 2px,
-    rgba(57, 255, 20, 0.03) 4px
-  );
-}
-
-.welcome-section {
+// 狗狗插图区域
+.hero-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 260px;
+  margin-bottom: 24px;
   position: relative;
-  z-index: 1;
-}
-
-.welcome-title {
-  display: block;
-  font-size: 48px;
-  font-weight: bold;
-  color: #39FF14;
-  text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
-  margin-bottom: 10px;
-  letter-spacing: 4px;
-}
-
-.welcome-subtitle {
-  display: block;
-  font-size: 28px;
-  color: #FFFFFF;
-  margin-bottom: 30px;
-}
-
-.status-bar {
-  display: flex;
-  gap: 20px;
-}
-
-.status-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.status-dot {
-  width: 12px;
-  height: 12px;
-  background: #39FF14;
-  border-radius: 50%;
-  box-shadow: 0 0 10px #39FF14;
-  animation: pulse 2s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
+  
+  // 背景装饰
+  &::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.75);
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(219, 234, 254, 0.5) 0%, transparent 70%);
+    border-radius: 50%;
+    filter: blur(40px);
   }
-  50% {
-    opacity: 0.5;
+  
+  .dog-illustration {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 320px;
+    height: 320px;
+    
+    .dog-image {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.7s ease;
+      
+      &:hover {
+        transform: scale(1.05);
+      }
+    }
   }
 }
 
-.status-text {
-  font-size: 24px;
-  color: #39FF14;
-  font-weight: bold;
-  letter-spacing: 2px;
-}
-
-.quick-actions {
-  padding: 40px;
-}
-
-.section-title {
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  margin-bottom: 30px;
-}
-
-.title-line {
-  width: 6px;
-  height: 32px;
-  background: linear-gradient(180deg, #6A0DAD 0%, #39FF14 100%);
-}
-
-.title-text {
-  font-size: 32px;
-  font-weight: bold;
-  color: #FFFFFF;
-  letter-spacing: 2px;
-}
-
-.action-grid {
+// 统计卡片
+.stats-section {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-bottom: 32px;
+  
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    background: #ffffff;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    
+    .stat-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      
+      &.pets-icon {
+        background: #fed7aa;
+        color: #f97316;
+      }
+      
+      &.time-icon {
+        background: #e9d5ff;
+        color: #a855f7;
+      }
+    }
+    
+    .stat-info {
+      flex: 1;
+      
+      .stat-label {
+        font-size: 12px;
+        color: #94a3b8;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 2px;
+        display: block;
+      }
+      
+      .stat-value {
+        font-size: 16px;
+        font-weight: 700;
+        color: #0d171c;
+        display: block;
+      }
+    }
+  }
 }
 
-.action-item {
-  background: #2d2d2d;
-  border: 2px solid #4B0082;
-  border-radius: 16px;
-  padding: 30px 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 15px;
-  transition: all 0.3s;
+// 开始散步按钮
+.start-walk-section {
+  margin-top: 32px;
+  
+  .start-walk-btn {
+    width: 100%;
+    height: 64px;
+    background: linear-gradient(135deg, #fb923c 0%, #ec4899 100%);
+    border-radius: 32px;
+    border: none;
+    box-shadow: 0 8px 20px rgba(236, 72, 153, 0.3);
+    transition: all 0.2s ease;
+    
+    &:active {
+      transform: scale(0.95);
+    }
+    
+    .btn-content {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      height: 100%;
+      
+      .btn-icon {
+        background: rgba(255, 255, 255, 0.2);
+        padding: 6px;
+        border-radius: 50%;
+        font-size: 20px;
+      }
+      
+      .btn-text {
+        color: #ffffff;
+        font-size: 18px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+      }
+      
+      .btn-arrow {
+        color: #ffffff;
+        font-size: 20px;
+        font-weight: 700;
+        transition: transform 0.2s ease;
+      }
+    }
+    
+    &:hover .btn-arrow {
+      transform: translateX(4px);
+    }
+  }
 }
 
-.action-item:active {
-  background: #3a3a3a;
-  border-color: #6A0DAD;
-  transform: scale(0.95);
-}
-
-.action-icon {
-  font-size: 48px;
-}
-
-.action-text {
-  font-size: 24px;
-  color: #CCCCCC;
-  text-align: center;
-}
-
-.info-cards {
-  padding: 0 40px;
-  display: flex;
-  flex-direction: column;
-  gap: 30px;
-}
-
-.info-card {
-  background: #2d2d2d;
-  border: 2px solid #4B0082;
-  border-radius: 16px;
-  padding: 30px;
-}
-
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 25px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid #4B0082;
-}
-
-.card-title {
-  font-size: 32px;
-  font-weight: bold;
-  color: #FFFFFF;
-}
-
-.card-badge {
-  background: #39FF14;
-  color: #1a1a1a;
-  padding: 8px 20px;
-  border-radius: 20px;
-  font-size: 22px;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.card-badge.warning {
-  background: #FF6600;
-  color: #FFFFFF;
-}
-
-.card-content {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.info-label {
-  font-size: 28px;
-  color: #CCCCCC;
-}
-
-.info-value {
-  font-size: 28px;
-  color: #FFFFFF;
-  font-weight: bold;
-}
-
-.info-value.success {
-  color: #39FF14;
+// 响应式适配
+@media (max-width: 375px) {
+  .dog-walk-home {
+    padding: 0 16px;
+    padding-bottom: 32px;
+  }
+  
+  .header {
+    padding: 40px 0 12px;
+    
+    .greeting-section .greeting-title {
+      font-size: 28px;
+    }
+  }
+  
+  .weather-card {
+    padding: 20px;
+    
+    .weather-content .weather-info .temperature-section .temperature {
+      font-size: 40px;
+    }
+  }
 }
