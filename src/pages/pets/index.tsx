@@ -53,9 +53,28 @@ function Pets() {
   }
 
   const handlePetDetail = (pet: Pet) => {
-    Taro.showToast({
-      title: `查看${pet.name}的详情`,
-      icon: 'none'
+    Taro.showActionSheet({
+      itemList: ['查看成长轨迹', '编辑宠物信息', '添加成长照片'],
+      success: (res) => {
+        switch (res.tapIndex) {
+          case 0:
+            // 查看成长轨迹
+            Taro.navigateTo({
+              url: `/pages/growthTimeline/index?petId=${pet.id}`
+            })
+            break
+          case 1:
+            // 编辑宠物信息
+            handleEditPet(pet.id)
+            break
+          case 2:
+            // 添加成长照片
+            Taro.navigateTo({
+              url: `/pages/addGrowthPhoto/index?petId=${pet.id}`
+            })
+            break
+        }
+      }
     })
   }
 
