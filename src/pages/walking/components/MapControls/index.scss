@@ -1,0 +1,44 @@
+.map-controls {
+  position: absolute;
+  right: 16px;
+  top: 50%;
+  transform: translateY(-50%);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 10;
+  
+  .control-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    transition: all 0.2s ease;
+    cursor: pointer;
+    
+    &:active {
+      transform: scale(0.95);
+      background: #f8f9fa;
+    }
+    
+    .control-icon {
+      font-size: 18px;
+      font-weight: 700;
+      color: #64748b;
+    }
+    
+    &.locate-button {
+      margin-top: 8px;
+      
+      .control-icon {
+        color: #25aff4;
+        font-size: 16px;
+      }
+    }
+  }
+}

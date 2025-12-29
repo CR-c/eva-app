@@ -30,9 +30,8 @@ function Home() {
   }, [])
 
   const handleStartWalk = () => {
-    Taro.showToast({
-      title: '开始遛狗！',
-      icon: 'success'
+    Taro.navigateTo({
+      url: '/pages/walking/index'
     })
   }
 
