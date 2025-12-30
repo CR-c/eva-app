@@ -1,6 +1,15 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Input, Textarea, Button, Image } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import { 
+  Form, 
+  FormItem, 
+  TextArea, 
+  DatePicker,
+  Toast,
+  Loading
+} from '@nutui/nutui-react-taro'
+import FormPage from '@/components/FormPage'
 import './index.scss'
 
 interface GrowthPhoto {
@@ -15,13 +24,12 @@ interface GrowthPhoto {
 }
 
 function AddGrowthPhoto() {
+  const [form] = Form.useForm()
   const [petId, setPetId] = useState('')
   const [petName, setPetName] = useState('')
   const [photo, setPhoto] = useState('')
-  const [date, setDate] = useState('')
-  const [notes, setNotes] = useState('')
   const [ageInMonths, setAgeInMonths] = useState(0)
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // 获取路由参数
@@ -36,7 +44,14 @@ function AddGrowthPhoto() {
     // 设置默认日期为今天
     const today = new Date()
     const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-    setDate(formattedDate)
+    
+    // 设置表单默认值
+    form.setFieldsValue({
+      date: formattedDate,
+      notes: ''
+    })
+
+    setLoading(false)
   }, [])
 
   const loadPetInfo = async (id: string) => {
@@ -59,10 +74,6 @@ function AddGrowthPhoto() {
     }
   }
 
-  const handleBack = () => {
-    Taro.navigateBack()
-  }
-
   const handlePhotoUpload = () => {
     Taro.chooseImage({
       count: 1,
@@ -74,40 +85,19 @@ function AddGrowthPhoto() {
       },
       fail: (error) => {
         console.error('Failed to choose image:', error)
-        Taro.showToast({
-          title: '选择图片失败',
-          icon: 'none'
+        Toast.show({
+          content: '选择图片失败',
+          type: 'fail'
         })
       }
     })
   }
 
-  const handleDatePicker = () => {
-    Taro.showModal({
-      title: '提示',
-      content: '日期选择功能需要在真实环境中实现',
-      showCancel: false
-    })
-  }
-
-  const handleSave = async () => {
+  const handleSubmit = async (values: any) => {
     if (!photo) {
-      Taro.showToast({
-        title: '请选择照片',
-        icon: 'none'
-      })
-      return
+      throw new Error('请选择照片')
     }
 
-    if (!date) {
-      Taro.showToast({
-        title: '请选择日期',
-        icon: 'none'
-      })
-      return
-    }
-
-    setLoading(true)
     try {
       // 获取现有成长记录
       let growthPhotos: GrowthPhoto[] = []
@@ -124,8 +114,8 @@ function AddGrowthPhoto() {
         id: Date.now().toString(),
         petId,
         photo,
-        date,
-        notes: notes.trim(),
+        date: values.date,
+        notes: values.notes?.trim() || '',
         ageInMonths,
         tags: [], // 可以后续扩展标签功能
         createdAt: new Date().toISOString()
@@ -139,125 +129,102 @@ function AddGrowthPhoto() {
         data: growthPhotos
       })
 
-      Taro.showToast({
-        title: '保存成功',
-        icon: 'success'
-      })
-
-      // 延迟返回
+      // 延迟返回，让用户看到成功提示
       setTimeout(() => {
         Taro.navigateBack()
       }, 1500)
 
     } catch (error) {
       console.error('Failed to save growth photo:', error)
-      Taro.showToast({
-        title: '保存失败',
-        icon: 'error'
-      })
-    } finally {
-      setLoading(false)
+      throw new Error('保存失败，请重试')
     }
   }
 
-  const formatDate = (dateStr: string) => {
-    if (!dateStr) return ''
-    const date = new Date(dateStr)
-    return date.toLocaleDateString('zh-CN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+  if (loading) {
+    return (
+      <FormPage title="新增成长记录" showSubmitButton={false}>
+        <View className="flex justify-center items-center h-64">
+          <Loading type="spinner" />
+          <Text className="ml-2 text-gray-500">加载中...</Text>
+        </View>
+      </FormPage>
+    )
   }
 
   return (
-    <View className="add-growth-photo">
-      {/* 顶部导航栏 */}
-      <View className="top-bar">
-        <View className="nav-button" onClick={handleBack}>
-          <Text className="nav-icon">✕</Text>
-        </View>
-        <Text className="nav-title">新增成长记录</Text>
-        <View className="nav-save" onClick={handleSave}>
-          <Text className="save-text">保存</Text>
-        </View>
-      </View>
-
-      <View className="content">
-        {/* 宠物信息提示 */}
-        {petName && (
-          <View className="pet-info-banner">
-            <Text className="pet-icon">🐕</Text>
-            <Text className="pet-info-text">{petName} 现在 {Math.floor(ageInMonths / 12)} 岁 {ageInMonths % 12} 个月了！</Text>
-          </View>
-        )}
-
-        {/* 照片上传区域 */}
-        <View className="photo-upload-section">
-          <View className="upload-area" onClick={handlePhotoUpload}>
-            {photo ? (
-              <Image 
-                className="uploaded-image"
-                src={photo}
-                mode="aspectFill"
-              />
-            ) : (
-              <View className="upload-placeholder">
-                <View className="upload-icon-circle">
-                  <Text className="upload-icon">📷</Text>
-                </View>
-                <View className="upload-text-section">
-                  <Text className="upload-title">添加照片</Text>
-                  <Text className="upload-subtitle">点击这里上传你的宠物照片</Text>
-                </View>
-                <View className="upload-button">
-                  <Text className="button-text">选择照片</Text>
-                </View>
-              </View>
-            )}
+    <FormPage
+      title="新增成长记录"
+      onSubmit={handleSubmit}
+      submitText="保存到时间线"
+      className="bg-gray-50"
+    >
+      {/* 宠物信息提示 */}
+      {petName && (
+        <View className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+          <View className="flex items-center">
+            <Text className="text-2xl mr-2">🐕</Text>
+            <Text className="text-blue-800 font-medium">
+              {petName} 现在 {Math.floor(ageInMonths / 12)} 岁 {ageInMonths % 12} 个月了！
+            </Text>
           </View>
         </View>
+      )}
 
-        {/* 表单字段 */}
-        <View className="form-fields">
-          {/* 拍摄日期 */}
-          <View className="form-group">
-            <Text className="form-label">拍摄日期</Text>
-            <View className="date-input" onClick={handleDatePicker}>
-              <Input
-                className="date-field"
-                value={formatDate(date)}
-                disabled
-                placeholder="选择日期"
-              />
-              <Text className="date-icon">📅</Text>
-            </View>
-          </View>
-
-          {/* 备注 */}
-          <View className="form-group">
-            <Text className="form-label">备注</Text>
-            <Textarea
-              className="notes-textarea"
-              placeholder="记录体重、身高或者可爱的瞬间..."
-              value={notes}
-              onInput={(e) => setNotes(e.detail.value)}
-            />
-          </View>
-        </View>
-      </View>
-
-      {/* 底部保存按钮 */}
-      <View className="bottom-save-section">
-        <Button 
-          className="save-timeline-button" 
-          loading={loading}
-          onClick={handleSave}
+      {/* 照片上传区域 */}
+      <View className="mb-6">
+        <Text className="text-lg font-medium mb-3 text-gray-800">成长照片</Text>
+        <View 
+          className="relative w-full h-64 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
+          onClick={handlePhotoUpload}
         >
-          <Text className="save-button-text">保存到时间线</Text>
-        </Button>
+          {photo ? (
+            <Image 
+              className="w-full h-full rounded-lg object-cover"
+              src={photo}
+              mode="aspectFill"
+            />
+          ) : (
+            <View className="flex flex-col items-center p-8">
+              <View className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
+                <Text className="text-3xl">📷</Text>
+              </View>
+              <Text className="text-lg font-medium text-gray-700 mb-2">添加照片</Text>
+              <Text className="text-sm text-gray-500 text-center mb-4">
+                点击这里上传你的宠物照片
+              </Text>
+              <View className="px-6 py-2 bg-blue-500 rounded-lg">
+                <Text className="text-white font-medium">选择照片</Text>
+              </View>
+            </View>
+          )}
+        </View>
       </View>
-    </View>
+
+      {/* 拍摄日期 */}
+      <FormItem
+        label="拍摄日期"
+        name="date"
+        rules={[{ required: true, message: '请选择拍摄日期' }]}
+      >
+        <DatePicker
+          type="date"
+          className="bg-white border border-gray-200 rounded-lg"
+        />
+      </FormItem>
+
+      {/* 备注 */}
+      <FormItem
+        label="备注"
+        name="notes"
+      >
+        <TextArea
+          placeholder="记录体重、身高或者可爱的瞬间..."
+          rows={4}
+          maxLength={300}
+          className="bg-white border border-gray-200 rounded-lg p-3"
+        />
+      </FormItem>
+    </FormPage>
   )
 }
 

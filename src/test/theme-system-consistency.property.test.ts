@@ -280,7 +280,7 @@ describe('Theme System Consistency Property Tests', () => {
 
   describe('Integration Tests', () => {
     test('Tailwind CSS should be properly configured for mini-program compatibility', () => {
-      const tailwindConfigPath = path.join(process.cwd(), 'tailwind.config.js')
+      const tailwindConfigPath = path.join(process.cwd(), 'tailwind.config.ts')
       expect(fs.existsSync(tailwindConfigPath)).toBe(true)
       
       // Read Tailwind config content
