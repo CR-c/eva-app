@@ -4,7 +4,7 @@ import devConfig from './dev'
 import prodConfig from './prod'
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
+export default defineConfig<'webpack5'>(async (merge) => {
   const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'eva-app-new',
     date: '2025-12-25',
@@ -39,14 +39,25 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
     framework: 'react',
     compiler: 'webpack5',
     cache: {
-      enable: false // Webpack 持久化缓存配置，建议开启。默认配置请参考：https://docs.taro.zone/docs/config-detail#cache
+      enable: true // 启用 Webpack 持久化缓存配置，提升二次编译速度
+    },
+    logger: {
+      quiet: false,
+      stats: true
     },
     mini: {
       postcss: {
         pxtransform: {
           enable: true,
           config: {
-
+            // 设计稿尺寸
+            designWidth: 750,
+            // 设计稿尺寸换算规则
+            deviceRatio: {
+              640: 2.34 / 2,
+              750: 1,
+              828: 1.81 / 2
+            }
           }
         },
         cssModules: {
@@ -57,8 +68,36 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
           }
         }
       },
+      // 小程序端专用配置
+      optimizeMainPackage: {
+        enable: true
+      },
+      // 添加小程序分包配置支持
+      addChunkPages(_pages, _pagesNames) {
+        // 可以在这里配置分包逻辑
+      },
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
+        
+        // 优化构建性能
+        chain.optimization.splitChunks({
+          chunks: 'all',
+          maxInitialRequests: Infinity,
+          minSize: 0,
+          cacheGroups: {
+            default: {
+              minChunks: 2,
+              priority: -20,
+              reuseExistingChunk: true
+            },
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              priority: -10,
+              chunks: 'all'
+            }
+          }
+        })
       }
     },
     h5: {
