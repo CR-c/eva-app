@@ -44,7 +44,7 @@ describe('Theme System Consistency Property Tests', () => {
       const formPageContent = fs.readFileSync(formPagePath, 'utf-8')
       
       // Should import NutUI Form components
-      expect(formPageContent).toContain("import { Form, Button, Toast } from '@nutui/nutui-react-taro'")
+      expect(formPageContent).toContain("import { Form, Button, Toast, Loading } from '@nutui/nutui-react-taro'")
       
       // Should import BasePage
       expect(formPageContent).toContain("import BasePage from '../BasePage'")
@@ -73,7 +73,7 @@ describe('Theme System Consistency Property Tests', () => {
       expect(appContent).toContain('nutuiBrandColorEnd: \'#1d4ed8\'')
       
       // Should set locale
-      expect(appContent).toContain('locale="zh-CN"')
+      expect(appContent).toContain('locale={zhCN}')
     })
   })
 

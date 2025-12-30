@@ -59,7 +59,7 @@ describe('Plugin Configuration Property Tests', () => {
       expect(appContent).toContain('<ConfigProvider')
       expect(appContent).toContain('theme={{')
       expect(appContent).toContain('nutuiBrandColor:')
-      expect(appContent).toContain('locale="zh-CN"')
+      expect(appContent).toContain('locale={zhCN}')
     })
   })
 

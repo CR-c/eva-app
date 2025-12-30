@@ -1,5 +1,6 @@
 import { useEffect } from 'react'
 import { ConfigProvider } from '@nutui/nutui-react-taro'
+import zhCN from '@nutui/nutui-react-taro/dist/es/locales/zh-CN'
 import { useUserStore } from './store/user'
 import './styles/index.scss'
 import './styles/tailwind.css'
@@ -30,12 +31,14 @@ function App({ children }: { children: React.ReactNode }) {
 
   return (
     <ConfigProvider
+      locale={zhCN}
       theme={{
-        nutuiBrandColor: '#3b82f6', // Eva app 主色
+        primaryColor: '#3b82f6', // Eva app 主色
+        primaryColorHover: '#1d4ed8',
+        nutuiBrandColor: '#3b82f6',
         nutuiBrandColorStart: '#3b82f6',
         nutuiBrandColorEnd: '#1d4ed8',
       }}
-      locale="zh-CN"
     >
       {children}
     </ConfigProvider>
