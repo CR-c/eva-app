@@ -79,6 +79,7 @@
     "@types/node": "^18",
     "@types/react": "^18.0.0",
     "@types/webpack-env": "^1.13.6",
+    "autoprefixer": "^10.4.23",
     "babel-preset-taro": "4.1.8",
     "cross-env": "^10.1.0",
     "eslint": "^8.57.0",
@@ -95,9 +96,11 @@
     "sass": "^1.75.0",
     "stylelint": "^16.4.0",
     "stylelint-config-standard": "^38.0.0",
+    "tailwindcss": "^4.1.18",
     "ts-jest": "^29.4.6",
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "^5.4.5",
+    "weapp-tailwindcss": "^4.9.2",
     "webpack": "5.91.0"
   }
 }
