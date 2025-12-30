@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
+import { Card, Button, Tag, Loading, Empty } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import './index.scss'
+import BasePage from '@/components/BasePage'
 
 interface Pet {
   id: string
@@ -31,6 +32,7 @@ function GrowthTimeline() {
   const [growthPhotos, setGrowthPhotos] = useState<GrowthPhoto[]>([])
   const [activeFilter, setActiveFilter] = useState('all')
   const [petId, setPetId] = useState('')
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     // 获取路由参数
@@ -42,6 +44,13 @@ function GrowthTimeline() {
       loadPetData(params.petId)
       loadGrowthPhotos(params.petId)
     }
+    
+    // 模拟加载时间
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 800)
+
+    return () => clearTimeout(timer)
   }, [])
 
   const loadPetData = async (id: string) => {
@@ -72,10 +81,6 @@ function GrowthTimeline() {
     }
   }
 
-  const handleBack = () => {
-    Taro.navigateBack()
-  }
-
   const handleAddPhoto = () => {
     Taro.navigateTo({
       url: `/pages/addGrowthPhoto/index?petId=${petId}`
@@ -91,13 +96,6 @@ function GrowthTimeline() {
   const handlePhotoDetail = (photoId: string) => {
     Taro.showToast({
       title: '查看照片详情',
-      icon: 'none'
-    })
-  }
-
-  const handleEditMemory = (photoId: string) => {
-    Taro.showToast({
-      title: '编辑记忆功能',
       icon: 'none'
     })
   }
@@ -139,171 +137,196 @@ function GrowthTimeline() {
 
   const { then, now } = getThenAndNowPhotos()
 
-  return (
-    <View className="growth-timeline">
-      {/* 顶部导航 */}
-      <View className="header">
-        <View className="nav-button" onClick={handleBack}>
-          <Text className="nav-icon">←</Text>
-        </View>
-        <View className="header-info">
-          <Text className="pet-name">{pet?.name || '宠物'}的成长</Text>
-          <Text className="pet-age">{pet ? getAgeText(pet.age * 12) : ''}</Text>
-        </View>
-        <View className="add-button" onClick={handleAddPhoto}>
-          <Text className="add-icon">📷</Text>
-        </View>
-      </View>
+  const filterOptions = [
+    { key: 'all', label: '所有照片' },
+    { key: 'milestones', label: '里程碑' },
+    { key: 'vet', label: '看医生' },
+    { key: 'training', label: '训练' }
+  ]
 
-      <ScrollView className="content" scrollY>
+  if (loading) {
+    return (
+      <BasePage 
+        title={`${pet?.name || '宠物'}的成长`} 
+        safeArea={true} 
+        className="bg-gradient-to-b from-gray-50 to-white"
+        rightContent={
+          <Button size="small" type="primary" onClick={handleAddPhoto}>
+            📷
+          </Button>
+        }
+      >
+        <View className="flex justify-center items-center h-64">
+          <Loading type="spinner" />
+          <Text className="ml-2 text-gray-500">加载中...</Text>
+        </View>
+      </BasePage>
+    )
+  }
+
+  return (
+    <BasePage 
+      title={`${pet?.name || '宠物'}的成长`} 
+      safeArea={true} 
+      className="bg-gradient-to-b from-gray-50 to-white"
+      rightContent={
+        <Button size="small" type="primary" onClick={handleAddPhoto}>
+          📷
+        </Button>
+      }
+    >
+      <ScrollView className="h-screen pb-8" scrollY>
         {/* Then vs Now 对比区域 */}
         {(then || now) && (
-          <View className="then-now-section">
-            <View className="section-header">
-              <Text className="section-title">那时 vs. 现在</Text>
-              <View className="view-gallery-button" onClick={handleViewGallery}>
-                <Text className="gallery-text">查看相册</Text>
-              </View>
+          <View className="px-4 py-6">
+            <View className="flex justify-between items-center mb-4">
+              <Text className="text-lg font-bold text-gray-900">那时 vs. 现在</Text>
+              <Button size="small" fill="outline" onClick={handleViewGallery}>
+                查看相册
+              </Button>
             </View>
             
-            <View className="comparison-grid">
+            <View className="grid grid-cols-2 gap-4">
               {/* Then */}
-              <View className="comparison-card">
+              <Card className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                 {then ? (
                   <>
                     <Image 
-                      className="comparison-image"
+                      className="w-full h-32 rounded-xl mb-3"
                       src={then.photo}
                       mode="aspectFill"
                     />
-                    <View className="comparison-info">
-                      <Text className="comparison-title">那时 ({getAgeText(then.ageInMonths)})</Text>
-                      <Text className="comparison-date">{formatDate(then.date)}</Text>
-                    </View>
+                    <Text className="text-sm font-semibold text-gray-900 mb-1 block">
+                      那时 ({getAgeText(then.ageInMonths)})
+                    </Text>
+                    <Text className="text-xs text-gray-500 block">
+                      {formatDate(then.date)}
+                    </Text>
                   </>
                 ) : (
-                  <View className="empty-comparison">
-                    <Text className="empty-text">暂无早期照片</Text>
+                  <View className="h-32 flex items-center justify-center bg-gray-50 rounded-xl mb-3">
+                    <Text className="text-sm text-gray-400">暂无早期照片</Text>
                   </View>
                 )}
-              </View>
+              </Card>
 
               {/* Now */}
-              <View className="comparison-card">
+              <Card className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
                 {now ? (
                   <>
                     <Image 
-                      className="comparison-image"
+                      className="w-full h-32 rounded-xl mb-3"
                       src={now.photo}
                       mode="aspectFill"
                     />
-                    <View className="comparison-info">
-                      <Text className="comparison-title">现在 ({getAgeText(now.ageInMonths)})</Text>
-                      <Text className="comparison-date">{formatDate(now.date)}</Text>
-                    </View>
+                    <Text className="text-sm font-semibold text-gray-900 mb-1 block">
+                      现在 ({getAgeText(now.ageInMonths)})
+                    </Text>
+                    <Text className="text-xs text-gray-500 block">
+                      {formatDate(now.date)}
+                    </Text>
                   </>
                 ) : (
-                  <View className="empty-comparison">
-                    <Text className="empty-text">暂无近期照片</Text>
+                  <View className="h-32 flex items-center justify-center bg-gray-50 rounded-xl mb-3">
+                    <Text className="text-sm text-gray-400">暂无近期照片</Text>
                   </View>
                 )}
-              </View>
+              </Card>
             </View>
           </View>
         )}
 
         {/* 筛选器 */}
-        <View className="filters-section">
-          <ScrollView className="filters-scroll" scrollX>
-            <View className="filters-container">
-              <View 
-                className={`filter-button ${activeFilter === 'all' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('all')}
-              >
-                <Text className="filter-text">所有照片</Text>
-              </View>
-              <View 
-                className={`filter-button ${activeFilter === 'milestones' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('milestones')}
-              >
-                <Text className="filter-text">里程碑</Text>
-              </View>
-              <View 
-                className={`filter-button ${activeFilter === 'vet' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('vet')}
-              >
-                <Text className="filter-text">看医生</Text>
-              </View>
-              <View 
-                className={`filter-button ${activeFilter === 'training' ? 'active' : ''}`}
-                onClick={() => setActiveFilter('training')}
-              >
-                <Text className="filter-text">训练</Text>
-              </View>
+        <View className="px-4 py-4">
+          <ScrollView className="w-full" scrollX>
+            <View className="flex gap-3 pb-2">
+              {filterOptions.map((option) => (
+                <Tag
+                  key={option.key}
+                  type={activeFilter === option.key ? 'primary' : 'default'}
+                  onClick={() => setActiveFilter(option.key)}
+                  className="px-4 py-2 rounded-full cursor-pointer"
+                >
+                  {option.label}
+                </Tag>
+              ))}
             </View>
           </ScrollView>
         </View>
 
         {/* 时间线 */}
-        <View className="timeline-section">
-          {/* 时间线轴 */}
-          <View className="timeline-axis" />
-          
+        <View className="px-4 pb-8">
           {growthPhotos.length === 0 ? (
-            <View className="empty-timeline">
-              <Text className="empty-icon">📸</Text>
-              <Text className="empty-title">还没有成长记录</Text>
-              <Text className="empty-subtitle">点击右上角按钮添加第一张成长照片吧</Text>
-            </View>
+            <Empty
+              image="https://img12.360buyimg.com/imagetools/jfs/t1/33761/13/9873/4611/5c9b8c2fE676a2df8/de7dc02b1b76c3d8.png"
+              description="还没有成长记录"
+            >
+              <Button type="primary" onClick={handleAddPhoto}>
+                添加第一张成长照片
+              </Button>
+            </Empty>
           ) : (
-            <View className="timeline-items">
-              {growthPhotos.map((photo, index) => (
-                <View key={photo.id} className="timeline-item">
-                  {/* 时间线节点 */}
-                  <View className="timeline-dot" />
-                  
-                  {/* 照片卡片 */}
-                  <View className="photo-card" onClick={() => handlePhotoDetail(photo.id)}>
-                    <Image 
-                      className="photo-image"
-                      src={photo.photo}
-                      mode="aspectFill"
-                    />
-                    <View className="photo-info">
-                      <View className="photo-header">
-                        <View className="photo-details">
-                          <Text className="photo-title">成长记录 #{growthPhotos.length - index}</Text>
-                          <Text className="photo-date">{formatDate(photo.date)} • {getAgeText(photo.ageInMonths)}</Text>
-                        </View>
-                        <View className="photo-actions">
-                          <Text className="action-icon">⋯</Text>
-                        </View>
-                      </View>
-                      
-                      {photo.notes && (
-                        <Text className="photo-notes">{photo.notes}</Text>
-                      )}
-                      
-                      <View className="photo-tags">
-                        <View className="tag milestone">
-                          <Text className="tag-text">成长</Text>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                </View>
-              ))}
+            <View className="relative">
+              {/* 时间线轴 */}
+              <View className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 to-primary-300" />
               
-              {/* 时间线起点 */}
-              <View className="timeline-start">
-                <View className="start-dot" />
-                <Text className="start-text">{pet?.name}的诞生 • {pet ? formatDate(pet.createdAt) : ''}</Text>
+              <View className="space-y-6">
+                {growthPhotos.map((photo, index) => (
+                  <View key={photo.id} className="relative flex items-start gap-4">
+                    {/* 时间线节点 */}
+                    <View className="relative z-10 w-3 h-3 bg-primary-500 rounded-full border-2 border-white shadow-lg mt-4" />
+                    
+                    {/* 照片卡片 */}
+                    <Card 
+                      className="flex-1 bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-98 transition-all cursor-pointer"
+                      onClick={() => handlePhotoDetail(photo.id)}
+                    >
+                      <View className="flex gap-4">
+                        <Image 
+                          className="w-20 h-20 rounded-xl flex-shrink-0"
+                          src={photo.photo}
+                          mode="aspectFill"
+                        />
+                        <View className="flex-1">
+                          <View className="flex justify-between items-start mb-2">
+                            <Text className="text-sm font-semibold text-gray-900 block">
+                              成长记录 #{growthPhotos.length - index}
+                            </Text>
+                            <Text className="text-xs text-gray-400">⋯</Text>
+                          </View>
+                          
+                          <Text className="text-xs text-gray-500 mb-2 block">
+                            {formatDate(photo.date)} • {getAgeText(photo.ageInMonths)}
+                          </Text>
+                          
+                          {photo.notes && (
+                            <Text className="text-sm text-gray-700 mb-3 leading-relaxed block">
+                              {photo.notes}
+                            </Text>
+                          )}
+                          
+                          <Tag type="success" size="small">
+                            成长
+                          </Tag>
+                        </View>
+                      </View>
+                    </Card>
+                  </View>
+                ))}
+                
+                {/* 时间线起点 */}
+                <View className="relative flex items-center gap-4">
+                  <View className="w-4 h-4 bg-accent-500 rounded-full border-2 border-white shadow-lg" />
+                  <Text className="text-sm text-gray-600">
+                    {pet?.name}的诞生 • {pet ? formatDate(pet.createdAt) : ''}
+                  </Text>
+                </View>
               </View>
             </View>
           )}
         </View>
       </ScrollView>
-    </View>
+    </BasePage>
   )
 }
 

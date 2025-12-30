@@ -1,11 +1,11 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image } from '@tarojs/components'
+import { Cell, CellGroup, Avatar, Loading } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserStore } from '@/store/user'
 import { ROUTES } from '@/constants/routes'
-import Skeleton from '@/components/Skeleton'
-import './index.scss'
+import BasePage from '@/components/BasePage'
 
 interface MenuItem {
   icon: string
@@ -83,66 +83,92 @@ function Profile() {
     }
   }
 
+  if (loading) {
+    return (
+      <BasePage title="个人中心" safeArea={true} className="bg-gradient-to-b from-gray-50 to-white">
+        <View className="flex justify-center items-center h-64">
+          <Loading type="spinner" />
+          <Text className="ml-2 text-gray-500">加载中...</Text>
+        </View>
+      </BasePage>
+    )
+  }
+
   return (
-    <View className="profile-page">
-      {/* 头部用户卡片 */}
-      <View className="profile-header">
-        <View className="header-bg"></View>
-        <Skeleton loading={loading} avatar>
-          <View className="user-card">
-            <View className="avatar-section">
-              <Image
-                className="avatar"
-                src={
-                  userInfo?.avatar ||
-                  'https://via.placeholder.com/200?text=Avatar'
-                }
-                mode="aspectFill"
+    <BasePage title="个人中心" safeArea={true} className="bg-gradient-to-b from-gray-50 to-white">
+      <View className="min-h-screen pb-10">
+        {/* 头部用户卡片 */}
+        <View className="relative px-10 pt-15 pb-10 bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
+          {/* 背景装饰 */}
+          <View className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-blue-50/50 to-transparent opacity-60" />
+          
+          <View className="relative z-10 flex items-center gap-8">
+            <View className="relative">
+              <Avatar
+                size="80"
+                src={userInfo?.avatar || 'https://via.placeholder.com/200?text=Avatar'}
+                className="border-4 border-primary-500 shadow-lg shadow-primary-500/30"
               />
-              <View className="avatar-border"></View>
-              <View className="status-dot"></View>
+              {/* 状态指示器 */}
+              <View className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-3 border-white rounded-full shadow-lg animate-pulse" />
             </View>
-            <View className="user-info">
-              <Text className="user-name">{userInfo?.nickname || '用户'}</Text>
-              <Text className="user-id">ID: {userInfo?.id || '---'}</Text>
+            
+            <View className="flex-1">
+              <Text className="text-xl font-bold text-gray-900 mb-2 block">
+                {userInfo?.nickname || '用户'}
+              </Text>
+              <Text className="text-sm text-gray-600 font-mono block">
+                ID: {userInfo?.id || '---'}
+              </Text>
             </View>
           </View>
-        </Skeleton>
-      </View>
+        </View>
 
-      {/* 菜单列表 */}
-      <View className="menu-section">
-        {loading ? (
-          <>
-            <Skeleton card rows={1} />
-            <Skeleton card rows={1} />
-            <Skeleton card rows={1} />
-          </>
-        ) : (
-          menuItems.map((item, index) => (
-            <View
-              key={item.key}
-              className={`menu-item ${item.key === 'logout' ? 'logout-item' : ''}`}
-              onClick={() => handleMenuClick(item.key)}
-            >
-              <View className="menu-left">
-                <Text className="menu-icon">{item.icon}</Text>
-                <Text className="menu-label">{item.label}</Text>
-              </View>
-              {item.arrow && (
-                <Text className="menu-arrow">›</Text>
-              )}
-            </View>
-          ))
-        )}
-      </View>
+        {/* 菜单列表 */}
+        <View className="px-6 py-8">
+          <CellGroup className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+            {menuItems.slice(0, -1).map((item) => (
+              <Cell
+                key={item.key}
+                title={
+                  <View className="flex items-center gap-4">
+                    <Text className="text-lg text-primary-500">{item.icon}</Text>
+                    <Text className="font-semibold text-gray-900">{item.label}</Text>
+                  </View>
+                }
+                isLink={item.arrow}
+                onClick={() => handleMenuClick(item.key)}
+                className="py-4 px-6 border-b border-gray-50 last:border-b-0 active:bg-gray-50 transition-colors"
+              />
+            ))}
+          </CellGroup>
 
-      {/* 底部版本信息 */}
-      <View className="footer-info">
-        <View className="footer-line"></View>
-        <Text className="version-text">EVA-APP v0.1.0</Text>
+          {/* 退出登录单独处理 */}
+          <View className="mt-6">
+            <CellGroup className="bg-white rounded-2xl shadow-sm border border-orange-200 overflow-hidden">
+              <Cell
+                title={
+                  <View className="flex items-center gap-4">
+                    <Text className="text-lg text-orange-500">🚪</Text>
+                    <Text className="font-semibold text-orange-500">退出登录</Text>
+                  </View>
+                }
+                onClick={() => handleMenuClick('logout')}
+                className="py-4 px-6 active:bg-orange-50 transition-colors"
+              />
+            </CellGroup>
+          </View>
+        </View>
+
+        {/* 底部版本信息 */}
+        <View className="flex flex-col items-center gap-5 px-10 mt-8">
+          <View className="w-50 h-0.5 bg-gradient-to-r from-transparent via-primary-500 to-transparent" />
+          <Text className="text-sm text-gray-400 font-mono tracking-wider">
+            EVA-APP v0.1.0
+          </Text>
+        </View>
       </View>
-    </View>
+    </BasePage>
   )
 }
 
