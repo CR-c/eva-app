@@ -95,16 +95,12 @@
   gap: 10px;
 }
 
-.user-name {
-  font-size: 40px;
-  font-weight: bold;
+.user-name {font-weight: bold;
   color: #FFFFFF;
   text-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
 }
 
-.user-id {
-  font-size: 24px;
-  color: #CCCCCC;
+.user-id {color: #CCCCCC;
   font-family: monospace;
 }
 
@@ -139,19 +135,13 @@
   gap: 20px;
 }
 
-.menu-icon {
-  font-size: 36px;
-}
+.menu-icon {}
 
-.menu-label {
-  font-size: 30px;
-  font-weight: bold;
+.menu-label {font-weight: bold;
   color: #FFFFFF;
 }
 
-.menu-arrow {
-  font-size: 48px;
-  color: #39FF14;
+.menu-arrow {color: #39FF14;
   font-weight: bold;
 }
 
@@ -184,9 +174,7 @@
   background: linear-gradient(90deg, transparent 0%, #6A0DAD 50%, transparent 100%);
 }
 
-.version-text {
-  font-size: 24px;
-  color: #666666;
+.version-text {color: #666666;
   font-family: monospace;
   letter-spacing: 1px;
 }

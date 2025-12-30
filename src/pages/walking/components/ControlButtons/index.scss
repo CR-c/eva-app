@@ -41,13 +41,10 @@
       position: relative;
       z-index: 2;
       
-      .button-icon {
-        font-size: 24px;
-        color: #ffffff;
+      .button-icon {color: #ffffff;
       }
       
       .button-text {
-        font-size: 18px;
         font-weight: 700;
         color: #ffffff;
         letter-spacing: 0.5px;
@@ -67,7 +64,6 @@
     }
     
     .secondary-button-text {
-      font-size: 14px;
       font-weight: 700;
       color: #64748b;
       transition: color 0.2s ease;

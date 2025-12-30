@@ -28,26 +28,20 @@
   z-index: 1;
 }
 
-.logo {
-  font-size: 56px;
-  font-weight: bold;
+.logo {font-weight: bold;
   color: #25aff4;
   margin-bottom: 20px;
   text-shadow: 0 2px 8px rgba(37, 175, 244, 0.3);
   letter-spacing: 4px;
 }
 
-.title {
-  font-size: 28px;
-  color: #0d171c;
+.title {color: #0d171c;
   margin-bottom: 10px;
   font-weight: bold;
   letter-spacing: 2px;
 }
 
-.desc {
-  font-size: 24px;
-  color: #64748b;
+.desc {color: #64748b;
   margin-bottom: 60px;
 }
 
@@ -61,9 +55,7 @@
   .tab-item {
     flex: 1;
     max-width: 250px;
-    padding: 20px 0;
-    font-size: 28px;
-    color: #64748b;
+    padding: 20px 0;color: #64748b;
     cursor: pointer;
     transition: all 0.3s;
     position: relative;
@@ -95,9 +87,7 @@
     margin-bottom: 30px;
     text-align: left;
 
-    .form-label {
-      font-size: 28px;
-      color: #0d171c;
+    .form-label {color: #0d171c;
       margin-bottom: 15px;
       padding-left: 10px;
       font-weight: 600;
@@ -110,9 +100,7 @@
       background: #ffffff;
       border: 2px solid #cee0e8;
       border-radius: 12px;
-      color: #0d171c;
-      font-size: 28px;
-      transition: all 0.3s;
+      color: #0d171c;transition: all 0.3s;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
 
       &:focus {
@@ -131,9 +119,7 @@
 .login-btn {
   width: 500px;
   height: 88px;
-  border-radius: 12px;
-  font-size: 32px;
-  font-weight: bold;
+  border-radius: 12px;font-weight: bold;
   border: none;
   transition: all 0.3s;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
@@ -163,17 +149,13 @@
   margin-top: 40px;
 
   .wechat-tip {
-    margin-top: 20px;
-    font-size: 24px;
-    color: #64748b;
+    margin-top: 20px;color: #64748b;
   }
 }
 
 // 登录提示
 .login-tip {
-  margin-top: 40px;
-  font-size: 24px;
-  color: #ea580c;
+  margin-top: 40px;color: #ea580c;
   padding: 20px;
   background: rgba(234, 88, 12, 0.1);
   border-radius: 12px;

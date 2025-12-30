@@ -34,16 +34,12 @@
       transform: scale(0.95);
     }
     
-    .nav-icon {
-      font-size: 20px;
-      font-weight: 600;
+    .nav-icon {font-weight: 600;
       color: #0d171c;
     }
   }
   
-  .nav-title {
-    font-size: 18px;
-    font-weight: 700;
+  .nav-title {font-weight: 700;
     color: #0d171c;
     letter-spacing: -0.02em;
   }
@@ -71,21 +67,16 @@
   min-height: 400px;
   text-align: center;
   
-  .empty-icon {
-    font-size: 80px;
-    margin-bottom: 24px;
+  .empty-icon {margin-bottom: 24px;
     opacity: 0.6;
   }
   
-  .empty-title {
-    font-size: 20px;
-    font-weight: 700;
+  .empty-title {font-weight: 700;
     color: #0d171c;
     margin-bottom: 8px;
   }
   
   .empty-subtitle {
-    font-size: 14px;
     color: #64748b;
     line-height: 1.5;
     max-width: 280px;
@@ -104,9 +95,7 @@
       background: #1a92d0;
     }
     
-    .add-button-text {
-      font-size: 16px;
-      font-weight: 700;
+    .add-button-text {font-weight: 700;
       color: #ffffff;
     }
   }
@@ -161,12 +150,10 @@
         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
         
         .date-icon {
-          font-size: 14px;
           color: #25aff4;
         }
         
         .date-text {
-          font-size: 12px;
           font-weight: 700;
           color: #0d171c;
         }
@@ -178,9 +165,7 @@
         left: 24px;
         color: #ffffff;
         
-        .age-text {
-          font-size: 32px;
-          font-weight: 800;
+        .age-text {font-weight: 800;
           line-height: 1.1;
           letter-spacing: -0.02em;
           text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -188,7 +173,6 @@
         }
         
         .phase-text {
-          font-size: 14px;
           font-weight: 500;
           color: rgba(255, 255, 255, 0.8);
         }
@@ -209,7 +193,6 @@
     margin-bottom: 8px;
     
     .scrubber-label {
-      font-size: 12px;
       font-weight: 600;
       color: #64748b;
       text-transform: uppercase;
@@ -217,7 +200,6 @@
     }
     
     .photo-counter {
-      font-size: 14px;
       font-weight: 700;
       color: #25aff4;
     }
@@ -315,9 +297,7 @@
       background: #e2e8f0;
     }
     
-    .control-icon {
-      font-size: 24px;
-      color: #64748b;
+    .control-icon {color: #64748b;
     }
   }
   
@@ -342,9 +322,7 @@
       box-shadow: 0 12px 24px rgba(37, 175, 244, 0.3);
     }
     
-    .play-icon {
-      font-size: 32px;
-      color: #ffffff;
+    .play-icon {color: #ffffff;
     }
   }
 }
@@ -381,17 +359,13 @@
       border-radius: 50%;
       background: #25aff4;
       
-      .add-icon {
-        font-size: 20px;
-        font-weight: 300;
+      .add-icon {font-weight: 300;
         color: #ffffff;
         line-height: 1;
       }
     }
     
-    .add-photo-text {
-      font-size: 16px;
-      font-weight: 700;
+    .add-photo-text {font-weight: 700;
       color: #25aff4;
     }
   }
@@ -409,9 +383,7 @@
       bottom: 16px;
       left: 16px;
       
-      .age-text {
-        font-size: 28px;
-      }
+      .age-text {}
     }
     
     .date-badge {

@@ -36,18 +36,14 @@
 }
 
 .modal-title {
-  display: block;
-  font-size: 36px;
-  font-weight: bold;
+  display: block;font-weight: bold;
   color: #39FF14;
   text-shadow: 0 0 15px rgba(57, 255, 20, 0.5);
   margin-bottom: 10px;
 }
 
 .modal-subtitle {
-  display: block;
-  font-size: 24px;
-  color: #CCCCCC;
+  display: block;color: #CCCCCC;
   letter-spacing: 2px;
 }
 
@@ -78,9 +74,7 @@
   box-shadow: 0 0 8px rgba(57, 255, 20, 0.5);
 }
 
-.label-text {
-  font-size: 28px;
-  color: #CCCCCC;
+.label-text {color: #CCCCCC;
 }
 
 .item-input-wrapper {
@@ -96,9 +90,7 @@
   background: #1a1a1a;
   border: 2px solid #4B0082;
   border-radius: 10px;
-  color: #fff;
-  font-size: 28px;
-  transition: all 0.3s;
+  color: #fff;transition: all 0.3s;
 
   &:focus {
     border-color: #39FF14;
@@ -115,9 +107,7 @@
   padding: 0 20px;
   background: linear-gradient(135deg, #6A0DAD, #4B0082) !important;
   border: 1px solid #39FF14 !important;
-  border-radius: 10px;
-  font-size: 22px;
-  color: #39FF14 !important;
+  border-radius: 10px;color: #39FF14 !important;
   white-space: nowrap;
 
   &::after {
@@ -135,9 +125,7 @@
 .confirm-btn {
   flex: 1;
   height: 88px;
-  border-radius: 10px;
-  font-size: 30px;
-  font-weight: bold;
+  border-radius: 10px;font-weight: bold;
 
   &::after {
     border: none;

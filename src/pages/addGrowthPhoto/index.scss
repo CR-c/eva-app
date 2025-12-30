@@ -35,16 +35,12 @@
       transform: scale(0.95);
     }
     
-    .nav-icon {
-      font-size: 20px;
-      font-weight: 600;
+    .nav-icon {font-weight: 600;
       color: #0d171c;
     }
   }
   
-  .nav-title {
-    font-size: 18px;
-    font-weight: 700;
+  .nav-title {font-weight: 700;
     color: #0d171c;
     letter-spacing: -0.02em;
   }
@@ -54,9 +50,7 @@
     display: flex;
     justify-content: flex-end;
     
-    .save-text {
-      font-size: 16px;
-      font-weight: 700;
+    .save-text {font-weight: 700;
       color: #25aff4;
       cursor: pointer;
       transition: color 0.2s ease;
@@ -86,12 +80,9 @@
   background: rgba(37, 175, 244, 0.1);
   border-radius: 24px;
   
-  .pet-icon {
-    font-size: 16px;
-  }
+  .pet-icon {}
   
   .pet-info-text {
-    font-size: 12px;
     font-weight: 700;
     color: #25aff4;
   }
@@ -140,9 +131,7 @@
         box-shadow: 0 2px 8px rgba(37, 175, 244, 0.2);
         transition: transform 0.3s ease;
         
-        .upload-icon {
-          font-size: 32px;
-        }
+        .upload-icon {}
       }
       
       .upload-text-section {
@@ -153,14 +142,11 @@
         max-width: 280px;
         text-align: center;
         
-        .upload-title {
-          font-size: 18px;
-          font-weight: 700;
+        .upload-title {font-weight: 700;
           color: #0d171c;
         }
         
         .upload-subtitle {
-          font-size: 14px;
           color: #64748b;
           line-height: 1.4;
         }
@@ -175,7 +161,6 @@
         transition: all 0.2s ease;
         
         .button-text {
-          font-size: 14px;
           font-weight: 600;
           color: #0d171c;
         }
@@ -201,9 +186,7 @@
   flex-direction: column;
   gap: 8px;
   
-  .form-label {
-    font-size: 16px;
-    font-weight: 700;
+  .form-label {font-weight: 700;
     color: #0d171c;
     margin-left: 4px;
   }
@@ -217,9 +200,7 @@
       background: #ffffff;
       border: 1px solid #cee0e8;
       border-radius: 12px;
-      padding: 0 48px 0 16px;
-      font-size: 16px;
-      color: #0d171c;
+      padding: 0 48px 0 16px;color: #0d171c;
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
       cursor: pointer;
       transition: all 0.2s ease;
@@ -234,9 +215,7 @@
       position: absolute;
       right: 16px;
       top: 50%;
-      transform: translateY(-50%);
-      font-size: 20px;
-      color: #25aff4;
+      transform: translateY(-50%);color: #25aff4;
       pointer-events: none;
     }
   }
@@ -246,9 +225,7 @@
     background: #ffffff;
     border: 1px solid #cee0e8;
     border-radius: 12px;
-    padding: 16px;
-    font-size: 16px;
-    color: #0d171c;
+    padding: 16px;color: #0d171c;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
     transition: all 0.2s ease;
     
@@ -288,9 +265,7 @@
       background: #1a92d0;
     }
     
-    .save-button-text {
-      font-size: 16px;
-      font-weight: 700;
+    .save-button-text {font-weight: 700;
       color: #ffffff;
     }
   }

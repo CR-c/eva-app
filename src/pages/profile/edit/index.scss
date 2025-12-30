@@ -32,9 +32,7 @@
 }
 
 .header-title {
-  display: block;
-  font-size: 44px;
-  font-weight: bold;
+  display: block;font-weight: bold;
   color: #39FF14;
   text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
   margin-bottom: 10px;
@@ -42,9 +40,7 @@
 }
 
 .header-subtitle {
-  display: block;
-  font-size: 26px;
-  color: #CCCCCC;
+  display: block;color: #CCCCCC;
 }
 
 .avatar-section {
@@ -86,9 +82,7 @@
   opacity: 1;
 }
 
-.mask-text {
-  font-size: 26px;
-  color: #FFFFFF;
+.mask-text {color: #FFFFFF;
   font-weight: bold;
 }
 
@@ -134,22 +128,16 @@
   border-radius: 50%;
 }
 
-.label-text {
-  font-size: 28px;
-  color: #CCCCCC;
+.label-text {color: #CCCCCC;
 }
 
 .item-input {
-  flex: 1;
-  font-size: 28px;
-  color: #FFFFFF;
+  flex: 1;color: #FFFFFF;
   text-align: right;
 }
 
 .item-textarea {
-  flex: 1;
-  font-size: 28px;
-  color: #FFFFFF;
+  flex: 1;color: #FFFFFF;
   min-height: 120px;
   text-align: left;
 }
@@ -170,18 +158,14 @@
   gap: 15px;
 }
 
-.value-text {
-  font-size: 28px;
-  color: #FFFFFF;
+.value-text {color: #FFFFFF;
 
   &.placeholder {
     color: #666666;
   }
 }
 
-.arrow {
-  font-size: 20px;
-  color: #39FF14;
+.arrow {color: #39FF14;
 }
 
 .save-section {
@@ -193,9 +177,7 @@
   height: 100px;
   background: linear-gradient(135deg, #6A0DAD 0%, #4B0082 100%) !important;
   border: 2px solid #39FF14 !important;
-  border-radius: 16px;
-  font-size: 32px;
-  font-weight: bold;
+  border-radius: 16px;font-weight: bold;
   color: #39FF14 !important;
   text-shadow: 0 0 10px rgba(57, 255, 20, 0.5);
   box-shadow: 0 0 20px rgba(57, 255, 20, 0.3);

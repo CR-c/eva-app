@@ -18,13 +18,10 @@
       gap: 8px;
       margin-bottom: 8px;
       
-      .stat-icon {
-        font-size: 20px;
-        color: #25aff4;
+      .stat-icon {color: #25aff4;
       }
       
       .stat-label {
-        font-size: 14px;
         color: #64748b;
         font-weight: 500;
       }
@@ -35,16 +32,13 @@
       align-items: baseline;
       gap: 4px;
       
-      .stat-value {
-        font-size: 32px;
-        font-weight: 800;
+      .stat-value {font-weight: 800;
         color: #0d171c;
         line-height: 1;
         letter-spacing: -0.02em;
       }
       
       .stat-unit {
-        font-size: 14px;
         font-weight: 700;
         color: #94a3b8;
         text-transform: uppercase;

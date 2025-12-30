@@ -32,9 +32,7 @@
 }
 
 .header-title {
-  display: block;
-  font-size: 44px;
-  font-weight: bold;
+  display: block;font-weight: bold;
   color: #39FF14;
   text-shadow: 0 0 20px rgba(57, 255, 20, 0.5);
   margin-bottom: 10px;
@@ -42,9 +40,7 @@
 }
 
 .header-subtitle {
-  display: block;
-  font-size: 26px;
-  color: #CCCCCC;
+  display: block;color: #CCCCCC;
 }
 
 .menu-container {
@@ -91,9 +87,7 @@
   background: rgba(0, 0, 0, 0.3);
 }
 
-.icon-text {
-  font-size: 48px;
-}
+.icon-text {}
 
 .menu-info {
   display: flex;
@@ -101,16 +95,12 @@
   gap: 8px;
 }
 
-.menu-title {
-  font-size: 32px;
-  font-weight: bold;
+.menu-title {font-weight: bold;
   color: #FFFFFF;
   letter-spacing: 2px;
 }
 
-.menu-desc {
-  font-size: 24px;
-  color: #CCCCCC;
+.menu-desc {color: #CCCCCC;
 }
 
 .menu-arrow {
@@ -153,9 +143,7 @@
 
 .footer-text {
   display: block;
-  text-align: center;
-  font-size: 24px;
-  color: #39FF14;
+  text-align: center;color: #39FF14;
   font-weight: bold;
   letter-spacing: 2px;
 }

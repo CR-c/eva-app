@@ -79,9 +79,7 @@
       }
     }
     
-    &.confetti-star {
-      font-size: 32px;
-      color: rgba(255, 235, 59, 0.3);
+    &.confetti-star {color: rgba(255, 235, 59, 0.3);
       
       &:nth-child(7) {
         top: 25%;
@@ -150,15 +148,12 @@
       transform: scale(0.95);
     }
     
-    .nav-icon {
-      font-size: 20px;
-      font-weight: 600;
+    .nav-icon {font-weight: 600;
       color: white;
     }
   }
   
   .nav-title {
-    font-size: 18px;
     font-weight: 700;
     letter-spacing: -0.02em;
   }
@@ -186,16 +181,12 @@
       gap: 8px;
       margin-bottom: 8px;
       
-      .star {
-        font-size: 20px;
-        color: #fbbf24;
+      .star {color: #fbbf24;
         filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
       }
     }
     
-    .celebration-title {
-      font-size: 48px;
-      font-weight: 800;
+    .celebration-title {font-weight: 800;
       line-height: 1.1;
       letter-spacing: -0.02em;
       margin-bottom: 4px;
@@ -203,7 +194,6 @@
     }
     
     .celebration-subtitle {
-      font-size: 18px;
       color: rgba(219, 234, 254, 0.9);
       font-weight: 500;
     }
@@ -253,7 +243,6 @@
     
     .metric-label {
       display: block;
-      font-size: 14px;
       font-weight: 600;
       color: #9ca3af;
       text-transform: uppercase;
@@ -267,17 +256,13 @@
       justify-content: center;
       gap: 4px;
       
-      .metric-value {
-        font-size: 56px;
-        font-weight: 800;
+      .metric-value {font-weight: 800;
         color: #1e293b;
         line-height: 1;
         letter-spacing: -0.02em;
       }
       
-      .metric-unit {
-        font-size: 20px;
-        font-weight: 700;
+      .metric-unit {font-weight: 700;
         color: #6b7280;
       }
     }
@@ -319,9 +304,7 @@
         border-radius: 50%;
         margin-bottom: 4px;
         
-        .icon-text {
-          font-size: 18px;
-        }
+        .icon-text {}
         
         &.duration-icon {
           background: #dbeafe;
@@ -340,13 +323,11 @@
       }
       
       .stat-value {
-        font-size: 18px;
         font-weight: 700;
         color: #1e293b;
       }
       
       .stat-unit {
-        font-size: 12px;
         font-weight: 500;
         color: #9ca3af;
       }
@@ -393,12 +374,9 @@
             transform: scale(1.05);
           }
           
-          .route-icon {
-            font-size: 14px;
-          }
+          .route-icon {}
           
           .route-text {
-            font-size: 12px;
             font-weight: 700;
             color: #374151;
           }
@@ -437,13 +415,10 @@
       transform: scale(0.98);
     }
     
-    .share-icon {
-      font-size: 20px;
-      color: white;
+    .share-icon {color: white;
     }
     
     .share-text {
-      font-size: 18px;
       font-weight: 700;
       color: white;
     }
@@ -455,7 +430,6 @@
     padding: 8px 16px;
     
     .home-text {
-      font-size: 14px;
       font-weight: 600;
       color: rgba(255, 255, 255, 0.8);
       transition: color 0.2s ease;
@@ -489,12 +463,30 @@
     padding: 24px;
     padding-top: 40px;
     
-    .main-metric .metric-value-section .metric-value {
-      font-size: 48px;
+    .main-metric {
+      .metric-label {
+      }
+      
+      .metric-value-section .metric-value {
+      }
+    }
+    
+    .stats-grid .stat-item {
+      .stat-value {
+      }
+      
+      .stat-unit {
+      }
     }
   }
   
   .bottom-actions {
     padding: 0 16px 32px;
+    
+    .share-button .share-text {
+    }
+    
+    .home-button .home-text {
+    }
   }
 }

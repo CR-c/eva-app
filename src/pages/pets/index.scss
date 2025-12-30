@@ -20,21 +20,17 @@
   min-height: 60vh;
   text-align: center;
   
-  .empty-icon {
-    font-size: 80px;
-    margin-bottom: 24px;
+  .empty-icon {margin-bottom: 24px;
     opacity: 0.6;
   }
   
   .empty-title {
-    font-size: 20px;
     font-weight: 700;
     color: #0d171c;
     margin-bottom: 8px;
   }
   
   .empty-subtitle {
-    font-size: 14px;
     color: #64748b;
     line-height: 1.5;
     max-width: 240px;
@@ -85,9 +81,7 @@
       align-items: center;
       justify-content: center;
       
-      .placeholder-icon {
-        font-size: 32px;
-        opacity: 0.6;
+      .placeholder-icon {opacity: 0.6;
       }
     }
   }
@@ -104,7 +98,6 @@
       align-items: flex-start;
       
       .pet-name {
-        font-size: 18px;
         font-weight: 700;
         color: #0d171c;
         line-height: 1.2;
@@ -124,9 +117,7 @@
           transition: all 0.2s ease;
           cursor: pointer;
           
-          .action-icon {
-            font-size: 14px;
-          }
+          .action-icon {}
           
           &.edit-button {
             background: #dbeafe;
@@ -159,14 +150,12 @@
         align-items: center;
         
         .detail-label {
-          font-size: 14px;
           color: #64748b;
           font-weight: 500;
           min-width: 40px;
         }
         
         .detail-value {
-          font-size: 14px;
           color: #0d171c;
           font-weight: 600;
         }
@@ -186,7 +175,6 @@
       margin-top: 4px;
       
       .bio-text {
-        font-size: 13px;
         color: #64748b;
         line-height: 1.4;
         background: #f8fafc;
@@ -220,9 +208,7 @@
     box-shadow: 0 4px 12px rgba(37, 175, 244, 0.4);
   }
   
-  .add-icon {
-    font-size: 28px;
-    font-weight: 300;
+  .add-icon {font-weight: 300;
     color: white;
     line-height: 1;
   }
@@ -244,7 +230,14 @@
     }
     
     .pet-info .pet-header .pet-name {
-      font-size: 16px;
+    }
+    
+    .pet-info .pet-details .detail-item {
+      .detail-label {
+      }
+      
+      .detail-value {
+      }
     }
   }
   
@@ -254,8 +247,6 @@
     width: 48px;
     height: 48px;
     
-    .add-icon {
-      font-size: 24px;
-    }
+    .add-icon {}
   }
 }

@@ -1,1 +1,10 @@
-// Global styles (placeholder)
+// 全局样式 - 微信小程序优化
+// 使用默认字体大小，不进行额外设置
+
+// 微信小程序全局样式重置
+page {
+  font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  line-height: 1.5;
+  color: #0d171c;
+  background: #f5f7f8;
+}
