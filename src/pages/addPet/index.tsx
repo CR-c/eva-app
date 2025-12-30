@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Input, Textarea, Button, Image } from '@tarojs/components'
+import { View, Text, Input, Textarea, Button, Image, Picker } from '@tarojs/components'
 import Taro from '@tarojs/taro'
+import Skeleton from '@/components/Skeleton'
 import './index.scss'
 
 interface Pet {
@@ -26,6 +27,8 @@ interface PetForm {
 }
 
 function AddPet() {
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
   const [form, setForm] = useState<PetForm>({
     name: '',
     breed: '',
@@ -39,7 +42,34 @@ function AddPet() {
   const [isEditing, setIsEditing] = useState(false)
   const [editingId, setEditingId] = useState('')
 
+  // 品种选项
+  const breeds = [
+    '金毛寻回犬',
+    '拉布拉多',
+    '贵宾犬',
+    '法国斗牛犬',
+    '比格犬',
+    '边境牧羊犬',
+    '哈士奇',
+    '萨摩耶',
+    '柯基',
+    '泰迪',
+    '混血犬',
+    '其他'
+  ]
+
+  // 性别选项
+  const genders = ['公', '母']
+  
+  // 体型选项
+  const sizes = ['小型', '中型', '大型']
+
   useEffect(() => {
+    // 模拟加载时间
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 800)
+
     // 检查是否是编辑模式
     const instance = Taro.getCurrentInstance()
     const params = instance.router?.params
@@ -49,6 +79,8 @@ function AddPet() {
       setEditingId(params.id)
       loadPetData(params.id)
     }
+
+    return () => clearTimeout(timer)
   }, [])
 
   const loadPetData = async (petId: string) => {
@@ -101,12 +133,24 @@ function AddPet() {
     setForm(prev => ({ ...prev, [field]: value }))
   }
 
-  const handleGenderSelect = (gender: 'male' | 'female') => {
+  // 品种选择
+  const handleBreedChange = (e: any) => {
+    const index = e.detail.value
+    setForm(prev => ({ ...prev, breed: breeds[index] }))
+  }
+
+  // 性别选择
+  const handleGenderChange = (e: any) => {
+    const index = e.detail.value
+    const gender = index === 0 ? 'male' : 'female'
     setForm(prev => ({ ...prev, gender }))
   }
 
-  const handleSizeSelect = (size: 'small' | 'medium' | 'large') => {
-    setForm(prev => ({ ...prev, size }))
+  // 体型选择
+  const handleSizeChange = (e: any) => {
+    const index = e.detail.value
+    const sizeMap = ['small', 'medium', 'large'] as const
+    setForm(prev => ({ ...prev, size: sizeMap[index] }))
   }
 
   const validateForm = () => {
@@ -140,6 +184,7 @@ function AddPet() {
   const handleSave = async () => {
     if (!validateForm()) return
 
+    setSaving(true)
     try {
       // 获取现有宠物数据
       let pets: Pet[] = []
@@ -197,17 +242,10 @@ function AddPet() {
         title: '保存失败',
         icon: 'error'
       })
+    } finally {
+      setSaving(false)
     }
   }
-
-  const breeds = [
-    { value: 'golden', label: '金毛寻回犬' },
-    { value: 'lab', label: '拉布拉多' },
-    { value: 'poodle', label: '贵宾犬' },
-    { value: 'bulldog', label: '法国斗牛犬' },
-    { value: 'beagle', label: '比格犬' },
-    { value: 'mixed', label: '混血犬' }
-  ]
 
   return (
     <View className="add-pet-page">
@@ -221,134 +259,160 @@ function AddPet() {
       </View>
 
       <View className="form-content">
-        {/* 照片上传器 */}
-        <View className="photo-uploader">
-          <View className="upload-area" onClick={handlePhotoUpload}>
-            {form.photo ? (
-              <Image 
-                className="uploaded-photo"
-                src={form.photo}
-                mode="aspectFill"
-              />
-            ) : (
-              <View className="upload-placeholder">
-                <Text className="upload-icon">📷</Text>
-                <Text className="upload-text">上传照片</Text>
-              </View>
-            )}
-            <View className="edit-badge">
-              <Text className="edit-icon">✏️</Text>
+        {loading ? (
+          <View className="loading-container">
+            {/* 照片上传骨架屏 */}
+            <View className="photo-skeleton">
+              <View className="skeleton-avatar"></View>
+              <View className="skeleton-text"></View>
+            </View>
+            
+            {/* 表单字段骨架屏 */}
+            <View className="form-skeleton">
+              <Skeleton card rows={2} />
+              <Skeleton card rows={1} />
+              <Skeleton card rows={2} />
+              <Skeleton card rows={1} />
+              <Skeleton card rows={3} />
             </View>
           </View>
-          <Text className="upload-hint">点击添加宠物照片</Text>
-        </View>
-
-        {/* 表单字段 */}
-        <View className="form-fields">
-          {/* 宠物名称 */}
-          <View className="form-group">
-            <Text className="form-label">宠物名称</Text>
-            <Input
-              className="form-input"
-              placeholder="例如：小白"
-              value={form.name}
-              onInput={(e) => handleInputChange('name', e.detail.value)}
-            />
-          </View>
-
-          {/* 品种选择 */}
-          <View className="form-group">
-            <Text className="form-label">品种</Text>
-            <View className="breed-selector">
-              {breeds.map((breed) => (
-                <View
-                  key={breed.value}
-                  className={`breed-option ${form.breed === breed.value ? 'selected' : ''}`}
-                  onClick={() => handleInputChange('breed', breed.value)}
-                >
-                  <Text className="breed-text">{breed.label}</Text>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {/* 年龄和性别 */}
-          <View className="form-row">
-            <View className="form-group flex-1">
-              <Text className="form-label">年龄（岁）</Text>
-              <Input
-                className="form-input"
-                placeholder="0"
-                type="number"
-                value={form.age}
-                onInput={(e) => handleInputChange('age', e.detail.value)}
-              />
-            </View>
-
-            <View className="form-group flex-1">
-              <Text className="form-label">性别</Text>
-              <View className="gender-selector">
-                <View
-                  className={`gender-option ${form.gender === 'male' ? 'selected' : ''}`}
-                  onClick={() => handleGenderSelect('male')}
-                >
-                  <Text className="gender-icon">♂️</Text>
-                  <Text className="gender-text">公</Text>
-                </View>
-                <View
-                  className={`gender-option ${form.gender === 'female' ? 'selected' : ''}`}
-                  onClick={() => handleGenderSelect('female')}
-                >
-                  <Text className="gender-icon">♀️</Text>
-                  <Text className="gender-text">母</Text>
+        ) : (
+          <>
+            {/* 照片上传器 */}
+            <View className="photo-uploader">
+              <View className="upload-area" onClick={handlePhotoUpload}>
+                {form.photo ? (
+                  <Image 
+                    className="uploaded-photo"
+                    src={form.photo}
+                    mode="aspectFill"
+                  />
+                ) : (
+                  <View className="upload-placeholder">
+                    <Text className="upload-icon">📷</Text>
+                    <Text className="upload-text">上传照片</Text>
+                  </View>
+                )}
+                <View className="edit-badge">
+                  <Text className="edit-icon">✏️</Text>
                 </View>
               </View>
+              <Text className="upload-hint">点击添加宠物照片</Text>
             </View>
-          </View>
 
-          {/* 体型选择 */}
-          <View className="form-group">
-            <Text className="form-label">体型</Text>
-            <View className="size-selector">
-              <View
-                className={`size-option ${form.size === 'small' ? 'selected' : ''}`}
-                onClick={() => handleSizeSelect('small')}
-              >
-                <Text className="size-text">小型</Text>
+            {/* 表单字段 */}
+            <View className="form-fields">
+              {/* 宠物名称 */}
+              <View className="form-group">
+                <Text className="form-label">宠物名称</Text>
+                <Input
+                  className="form-input"
+                  placeholder="例如：小白"
+                  value={form.name}
+                  onInput={(e) => handleInputChange('name', e.detail.value)}
+                />
               </View>
-              <View
-                className={`size-option ${form.size === 'medium' ? 'selected' : ''}`}
-                onClick={() => handleSizeSelect('medium')}
-              >
-                <Text className="size-text">中型</Text>
+
+              {/* 品种选择 */}
+              <View className="form-group">
+                <Text className="form-label">品种</Text>
+                <View className="picker-container">
+                  <Picker
+                    mode="selector"
+                    range={breeds}
+                    value={breeds.indexOf(form.breed)}
+                    onChange={handleBreedChange}
+                  >
+                    <View className="picker-input">
+                      <Text className={`picker-text ${!form.breed ? 'placeholder' : ''}`}>
+                        {form.breed || '请选择品种'}
+                      </Text>
+                      <Text className="picker-arrow">▼</Text>
+                    </View>
+                  </Picker>
+                </View>
               </View>
-              <View
-                className={`size-option ${form.size === 'large' ? 'selected' : ''}`}
-                onClick={() => handleSizeSelect('large')}
-              >
-                <Text className="size-text">大型</Text>
+
+              {/* 年龄和性别 */}
+              <View className="form-row">
+                <View className="form-group flex-1">
+                  <Text className="form-label">年龄（岁）</Text>
+                  <Input
+                    className="form-input"
+                    placeholder="0"
+                    type="number"
+                    value={form.age}
+                    onInput={(e) => handleInputChange('age', e.detail.value)}
+                  />
+                </View>
+
+                <View className="form-group flex-1">
+                  <Text className="form-label">性别</Text>
+                  <View className="picker-container">
+                    <Picker
+                      mode="selector"
+                      range={genders}
+                      value={form.gender === 'male' ? 0 : 1}
+                      onChange={handleGenderChange}
+                    >
+                      <View className="picker-input">
+                        <Text className="picker-text">
+                          {form.gender === 'male' ? '♂️ 公' : '♀️ 母'}
+                        </Text>
+                        <Text className="picker-arrow">▼</Text>
+                      </View>
+                    </Picker>
+                  </View>
+                </View>
+              </View>
+
+              {/* 体型选择 */}
+              <View className="form-group">
+                <Text className="form-label">体型</Text>
+                <View className="picker-container">
+                  <Picker
+                    mode="selector"
+                    range={sizes}
+                    value={sizes.indexOf(form.size === 'small' ? '小型' : form.size === 'medium' ? '中型' : '大型')}
+                    onChange={handleSizeChange}
+                  >
+                    <View className="picker-input">
+                      <Text className="picker-text">
+                        {form.size === 'small' ? '小型' : form.size === 'medium' ? '中型' : '大型'}
+                      </Text>
+                      <Text className="picker-arrow">▼</Text>
+                    </View>
+                  </Picker>
+                </View>
+              </View>
+
+              {/* 宠物简介 */}
+              <View className="form-group">
+                <Text className="form-label">关于宠物 <Text className="optional">（可选）</Text></Text>
+                <Textarea
+                  className="form-textarea"
+                  placeholder="任何特殊习惯、喜欢的玩具或医疗需求？"
+                  value={form.bio}
+                  onInput={(e) => handleInputChange('bio', e.detail.value)}
+                />
               </View>
             </View>
-          </View>
-
-          {/* 宠物简介 */}
-          <View className="form-group">
-            <Text className="form-label">关于宠物 <Text className="optional">（可选）</Text></Text>
-            <Textarea
-              className="form-textarea"
-              placeholder="任何特殊习惯、喜欢的玩具或医疗需求？"
-              value={form.bio}
-              onInput={(e) => handleInputChange('bio', e.detail.value)}
-            />
-          </View>
-        </View>
+          </>
+        )}
       </View>
 
       {/* 底部保存按钮 */}
       <View className="bottom-button">
-        <Button className="save-button" onClick={handleSave}>
+        <Button 
+          className={`save-button ${saving ? 'saving' : ''}`} 
+          onClick={handleSave}
+          loading={saving}
+          disabled={loading || saving}
+        >
           <Text className="save-icon">💾</Text>
-          <Text className="save-text">{isEditing ? '更新宠物资料' : '保存宠物资料'}</Text>
+          <Text className="save-text">
+            {saving ? '保存中...' : isEditing ? '更新宠物资料' : '保存宠物资料'}
+          </Text>
         </Button>
       </View>
     </View>

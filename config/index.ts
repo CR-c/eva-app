@@ -21,6 +21,14 @@ export default defineConfig<'webpack5'>(async (merge, { command, mode }) => {
       "@tarojs/plugin-generator"
     ],
     defineConstants: {
+      NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
+      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
+      ENABLE_INNER_HTML: JSON.stringify(true),
+      ENABLE_ADJACENT_HTML: JSON.stringify(true),
+      ENABLE_SIZE_APIS: JSON.stringify(true),
+      ENABLE_TEMPLATE_CONTENT: JSON.stringify(true),
+      ENABLE_CLONE_NODE: JSON.stringify(true),
+      ENABLE_CONTAINS: JSON.stringify(true)
     },
     copy: {
       patterns: [
