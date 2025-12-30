@@ -8,7 +8,7 @@
 // 状态栏占位
 .status-bar {
   width: 100%;
-  background: transparent;
+  background: #25aff4;
 }
 
 // 自定义导航栏
@@ -17,10 +17,10 @@
   align-items: center;
   justify-content: space-between;
   padding: 0 16px;
-  background: rgba(245, 247, 248, 0.95);
-  backdrop-filter: blur(8px);
+  background: #25aff4;
   position: relative;
   z-index: 100;
+  box-shadow: 0 2px 8px rgba(37, 175, 244, 0.15);
 }
 
 // 返回按钮
@@ -31,19 +31,19 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: rgba(0, 0, 0, 0.05);
+  background: rgba(255, 255, 255, 0.2);
   transition: all 0.2s ease;
   cursor: pointer;
   flex-shrink: 0;
   
   &:active {
-    background: rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.3);
     transform: scale(0.95);
   }
   
   .back-icon {
     font-weight: 600;
-    color: #0d171c;
+    color: #ffffff;
     font-size: 18px;
     line-height: 1;
   }
@@ -63,7 +63,7 @@
   
   .title-text {
     font-weight: 700;
-    color: #0d171c;
+    color: #ffffff;
     letter-spacing: -0.02em;
     max-width: 200px;
     text-align: center;
@@ -113,15 +113,20 @@
 
 // 深色模式适配（如果需要）
 @media (prefers-color-scheme: dark) {
+  .status-bar {
+    background: #1e40af;
+  }
+  
   .nav-bar {
-    background: rgba(28, 28, 30, 0.95);
+    background: #1e40af;
+    box-shadow: 0 2px 8px rgba(30, 64, 175, 0.15);
   }
   
   .nav-back-button {
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.15);
     
     &:active {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.25);
     }
     
     .back-icon {

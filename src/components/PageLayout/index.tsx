@@ -8,15 +8,13 @@ interface PageLayoutProps {
   children: React.ReactNode
   showBackButton?: boolean
   onBack?: () => void
-  backgroundColor?: string
 }
 
 function PageLayout({
   title,
   children,
   showBackButton = true,
-  onBack,
-  backgroundColor = '#f5f7f8'
+  onBack
 }: PageLayoutProps) {
   const [statusBarHeight, setStatusBarHeight] = useState(0)
   const [capsuleInfo, setCapsuleInfo] = useState({
@@ -55,7 +53,7 @@ function PageLayout({
   const navBarHeight = capsuleInfo.top + capsuleInfo.height + 8 - statusBarHeight
 
   return (
-    <View className="page-layout" style={{ backgroundColor }}>
+    <View className="page-layout" style={{ backgroundColor: '#f5f7f8' }}>
       {/* 状态栏占位 */}
       <View 
         className="status-bar" 
