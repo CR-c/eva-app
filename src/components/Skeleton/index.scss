@@ -5,10 +5,11 @@
 }
 
 .skeleton-card {
-  background: #2d2d2d;
+  background: #ffffff;
   border-radius: 16px;
   padding: 30px;
-  border: 2px solid #4B0082;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .skeleton-content {
@@ -21,9 +22,9 @@
 .skeleton-item {
   background: linear-gradient(
     90deg,
-    #3a3a3a 25%,
-    #4B0082 37%,
-    #3a3a3a 63%
+    #f1f5f9 25%,
+    #e2e8f0 37%,
+    #f1f5f9 63%
   );
   background-size: 400% 100%;
   border-radius: 8px;
@@ -34,7 +35,7 @@
   height: 120px;
   border-radius: 60px;
   flex-shrink: 0;
-  border: 2px solid #6A0DAD;
+  border: 2px solid #25aff4;
 }
 
 .skeleton-row {
