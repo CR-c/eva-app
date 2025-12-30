@@ -1,4 +1,5 @@
 import { View, Text } from '@tarojs/components'
+import { IoChevronBack } from 'react-icons/io5'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import './index.scss'
@@ -70,7 +71,7 @@ function PageLayout({
       >
         {showBackButton && (
           <View className="nav-back-button" onClick={handleBack}>
-            <View className="back-icon">◀</View>
+            <IoChevronBack size={24} color="#ffffff" />
           </View>
         )}
         
