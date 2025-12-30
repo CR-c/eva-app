@@ -55,7 +55,7 @@
     "@tarojs/taro": "4.1.8",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
-    "react-icons": "^5.5.0",
+    "taro-ui": "^3.3.0",
     "zustand": "^5.0.9"
   },
   "devDependencies": {

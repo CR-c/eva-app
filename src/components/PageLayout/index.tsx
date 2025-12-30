@@ -1,6 +1,8 @@
 import { View, Text } from '@tarojs/components'
+import { AtIcon } from 'taro-ui'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
+import 'taro-ui/dist/style/components/icon.scss'
 import './index.scss'
 
 interface PageLayoutProps {
@@ -70,7 +72,7 @@ function PageLayout({
       >
         {showBackButton && (
           <View className="nav-back-button" onClick={handleBack}>
-            <Text className="back-icon">‹</Text>
+            <AtIcon value="chevron-left" size="24" color="#ffffff" />
           </View>
         )}
         
