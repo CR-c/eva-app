@@ -34,7 +34,6 @@ const getCurrentEnv = () => {
     return 'development'
   } catch (error) {
     // 如果出现任何错误，默认返回开发环境
-    console.warn('Failed to get environment, defaulting to development:', error)
     return 'development'
   }
 }

@@ -6,6 +6,7 @@ import { useUserStore } from '@/store/user'
 import { updateUserProfile } from '@/services/user'
 import type { UserInfo } from '@/constants/types'
 import { regionData } from '@/constants/region'
+import PageLayout from '@/components/PageLayout'
 import './index.scss'
 
 function EditProfile() {

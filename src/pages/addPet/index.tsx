@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { View, Text, Input, Textarea, Button, Image, Picker } from '@tarojs/components'
 import Taro from '@tarojs/taro'
 import Skeleton from '@/components/Skeleton'
+import PageLayout from '@/components/PageLayout'
 import './index.scss'
 
 interface Pet {
@@ -104,10 +105,6 @@ function AddPet() {
     } catch (error) {
       console.error('Failed to load pet data:', error)
     }
-  }
-
-  const handleBack = () => {
-    Taro.navigateBack()
   }
 
   const handlePhotoUpload = () => {
@@ -248,17 +245,8 @@ function AddPet() {
   }
 
   return (
-    <View className="add-pet-page">
-      {/* 顶部导航栏 */}
-      <View className="top-bar">
-        <View className="nav-button" onClick={handleBack}>
-          <Text className="nav-icon">←</Text>
-        </View>
-        <Text className="nav-title">{isEditing ? '编辑宠物' : '添加新宠物'}</Text>
-        <View className="nav-placeholder" />
-      </View>
-
-      <View className="form-content">
+    <PageLayout title={isEditing ? '编辑宠物' : '添加新宠物'}>
+      <View className="add-pet-content">
         {loading ? (
           <View className="loading-container">
             {/* 照片上传骨架屏 */}
@@ -399,23 +387,23 @@ function AddPet() {
             </View>
           </>
         )}
-      </View>
 
-      {/* 底部保存按钮 */}
-      <View className="bottom-button">
-        <Button 
-          className={`save-button ${saving ? 'saving' : ''}`} 
-          onClick={handleSave}
-          loading={saving}
-          disabled={loading || saving}
-        >
-          <Text className="save-icon">💾</Text>
-          <Text className="save-text">
-            {saving ? '保存中...' : isEditing ? '更新宠物资料' : '保存宠物资料'}
-          </Text>
-        </Button>
+        {/* 底部保存按钮 */}
+        <View className="bottom-button">
+          <Button 
+            className={`save-button ${saving ? 'saving' : ''}`} 
+            onClick={handleSave}
+            loading={saving}
+            disabled={loading || saving}
+          >
+            <Text className="save-icon">💾</Text>
+            <Text className="save-text">
+              {saving ? '保存中...' : isEditing ? '更新宠物资料' : '保存宠物资料'}
+            </Text>
+          </Button>
+        </View>
       </View>
-    </View>
+    </PageLayout>
   )
 }
 

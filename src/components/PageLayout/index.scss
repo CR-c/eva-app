@@ -1,0 +1,135 @@
+// 页面布局组件样式
+.page-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+// 状态栏占位
+.status-bar {
+  width: 100%;
+  background: transparent;
+}
+
+// 自定义导航栏
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: rgba(245, 247, 248, 0.95);
+  backdrop-filter: blur(8px);
+  position: relative;
+  z-index: 100;
+}
+
+// 返回按钮
+.nav-back-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+  cursor: pointer;
+  flex-shrink: 0;
+  
+  &:active {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(0.95);
+  }
+  
+  .back-icon {
+    font-weight: 600;
+    color: #0d171c;
+    font-size: 18px;
+    line-height: 1;
+  }
+}
+
+// 导航标题
+.nav-title {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+  
+  .title-text {
+    font-weight: 700;
+    color: #0d171c;
+    letter-spacing: -0.02em;
+    max-width: 200px;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+// 占位元素，保持布局平衡
+.nav-placeholder {
+  width: 40px;
+  flex-shrink: 0;
+}
+
+// 页面内容区域
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// 响应式适配
+@media (max-width: 375px) {
+  .nav-bar {
+    padding: 0 12px;
+  }
+  
+  .nav-back-button {
+    width: 36px;
+    height: 36px;
+    
+    .back-icon {
+      font-size: 16px;
+    }
+  }
+  
+  .nav-placeholder {
+    width: 36px;
+  }
+  
+  .nav-title .title-text {
+    max-width: 160px;
+  }
+}
+
+// 深色模式适配（如果需要）
+@media (prefers-color-scheme: dark) {
+  .nav-bar {
+    background: rgba(28, 28, 30, 0.95);
+  }
+  
+  .nav-back-button {
+    background: rgba(255, 255, 255, 0.1);
+    
+    &:active {
+      background: rgba(255, 255, 255, 0.2);
+    }
+    
+    .back-icon {
+      color: #ffffff;
+    }
+  }
+  
+  .nav-title .title-text {
+    color: #ffffff;
+  }
+}
