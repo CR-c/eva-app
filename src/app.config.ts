@@ -14,10 +14,10 @@ export default {
     'pages/profile/edit/index',
   ],
   window: {
-    backgroundTextStyle: 'dark',
-    navigationBarBackgroundColor: '#f5f7f8',
+    backgroundTextStyle: 'light',
+    navigationBarBackgroundColor: '#25aff4',
     navigationBarTitleText: '遛狗助手',
-    navigationBarTextStyle: 'black',
+    navigationBarTextStyle: 'white',
   },
   tabBar: {
     color: '#64748b',
