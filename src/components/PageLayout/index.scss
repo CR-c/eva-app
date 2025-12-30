@@ -28,24 +28,25 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.2);
+  min-width: 48px;
+  height: 48px;
+  padding: 0 8px;
   transition: all 0.2s ease;
   cursor: pointer;
   flex-shrink: 0;
   
   &:active {
-    background: rgba(255, 255, 255, 0.3);
-    transform: scale(0.95);
+    transform: scale(0.9);
+    opacity: 0.7;
   }
   
   .back-icon {
-    font-weight: 600;
+    font-weight: 300;
     color: #ffffff;
-    font-size: 18px;
+    font-size: 32px;
     line-height: 1;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   }
 }
 
@@ -75,7 +76,7 @@
 
 // 占位元素，保持布局平衡
 .nav-placeholder {
-  width: 40px;
+  min-width: 48px;
   flex-shrink: 0;
 }
 

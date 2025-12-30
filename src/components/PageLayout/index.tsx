@@ -70,7 +70,7 @@ function PageLayout({
       >
         {showBackButton && (
           <View className="nav-back-button" onClick={handleBack}>
-            <View className="back-icon">←</View>
+            <View className="back-icon">‹</View>
           </View>
         )}
         
