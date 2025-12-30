@@ -162,7 +162,7 @@ describe('CSS Variable Preservation Property Tests', () => {
 
   describe('Tailwind Configuration Tests', () => {
     test('Tailwind config should be properly structured for mini-programs', () => {
-      const configPath = path.join(process.cwd(), 'tailwind.config.js')
+      const configPath = path.join(process.cwd(), 'tailwind.config.ts')
       expect(fs.existsSync(configPath)).toBe(true)
       
       // Read config file content
