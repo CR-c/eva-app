@@ -1,4 +1,5 @@
 import { useEffect } from 'react'
+import { ConfigProvider } from '@nutui/nutui-react-taro'
 import { useUserStore } from './store/user'
 import './styles/index.scss'
 import './styles/tailwind.css'
@@ -27,7 +28,18 @@ function App({ children }: { children: React.ReactNode }) {
     }
   }, [restoreLoginState])
 
-  return children
+  return (
+    <ConfigProvider
+      theme={{
+        nutuiBrandColor: '#3b82f6', // Eva app 主色
+        nutuiBrandColorStart: '#3b82f6',
+        nutuiBrandColorEnd: '#1d4ed8',
+      }}
+      locale="zh-CN"
+    >
+      {children}
+    </ConfigProvider>
+  )
 }
 
 export default App

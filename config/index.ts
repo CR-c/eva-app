@@ -21,7 +21,10 @@ export default defineConfig<'webpack5'>(async (merge) => {
     sourceRoot: 'src',
     outputRoot: 'dist',
     plugins: [
-      "@tarojs/plugin-generator"
+      "@tarojs/plugin-generator",
+      ["@tarojs/plugin-html", {
+        injectAdditionalCssVarScope: true // 为 NutUI 兼容性注入额外的 CSS 变量作用域
+      }]
     ],
     defineConstants: {
       NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
