@@ -3,6 +3,9 @@ import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
 import devConfig from './dev'
 import prodConfig from './prod'
 
+// 导入 weapp-tailwindcss
+const WeappTailwindcssDisabled = ['h5', 'rn'].includes(process.env.TARO_ENV)
+
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
 export default defineConfig<'webpack5'>(async (merge) => {
   const baseConfig: UserConfigExport<'webpack5'> = {
@@ -57,9 +60,18 @@ export default defineConfig<'webpack5'>(async (merge) => {
               640: 2.34 / 2,
               750: 1,
               828: 1.81 / 2
-            }
+            },
+            // 配置 Tailwind CSS 类名不进行 px 转换
+            selectorBlackList: [/^\.tw-/]
           }
         },
+        // 集成 Tailwind CSS
+        // tailwindcss: {
+        //   enable: true,
+        //   config: {
+        //     content: ['./src/**/*.{js,ts,jsx,tsx}']
+        //   }
+        // },
         cssModules: {
           enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
           config: {
@@ -79,6 +91,20 @@ export default defineConfig<'webpack5'>(async (merge) => {
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
         
+        // 集成 weapp-tailwindcss (暂时禁用，等待 NutUI 集成时启用)
+        // if (!WeappTailwindcssDisabled) {
+        //   const WeappTailwindcssPlugin = require('weapp-tailwindcss/webpack')
+        //   chain
+        //     .plugin('weapp-tailwindcss')
+        //     .use(WeappTailwindcssPlugin, [{
+        //       // 配置选项
+        //       rem2rpx: true, // 将 rem 转换为 rpx
+        //       injectAdditionalCssVarScope: true, // 为 NutUI 兼容性注入额外的 CSS 变量作用域
+        //       // 禁用 preflight，避免样式冲突
+        //       disabled: false
+        //     }])
+        // }
+        
         // 优化构建性能
         chain.optimization.splitChunks({
           chunks: 'all',
@@ -94,6 +120,13 @@ export default defineConfig<'webpack5'>(async (merge) => {
               test: /[\\/]node_modules[\\/]/,
               name: 'vendors',
               priority: -10,
+              chunks: 'all'
+            },
+            // Tailwind CSS 单独打包
+            tailwind: {
+              test: /[\\/]node_modules[\\/]tailwindcss[\\/]/,
+              name: 'tailwind',
+              priority: 10,
               chunks: 'all'
             }
           }

@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+/* Eva App 自定义样式 */
+@layer base {
+  /* 小程序基础样式重置 */
+  page {
+    background-color: #f8fafc;
+    color: #1f2937;
+    font-size: 32rpx;
+    line-height: 1.5;
+  }
+}
+
+@layer components {
+  /* Eva App 通用组件样式 */
+  .eva-card {
+    @apply bg-white rounded-lg shadow-sm border border-gray-100 p-4;
+  }
+  
+  .eva-button-primary {
+    @apply bg-blue-500 text-white px-6 py-3 rounded-md font-medium;
+  }
+  
+  .eva-button-secondary {
+    @apply bg-green-500 text-white px-6 py-3 rounded-md font-medium;
+  }
+  
+  .eva-input {
+    @apply border border-gray-300 rounded-md px-4 py-3 bg-white;
+  }
+  
+  .eva-text-primary {
+    @apply text-gray-900;
+  }
+  
+  .eva-text-secondary {
+    @apply text-gray-600;
+  }
+  
+  .eva-text-muted {
+    @apply text-gray-400;
+  }
+}
+
+@layer utilities {
+  /* Eva App 工具类 */
+  .safe-area-top {
+    padding-top: var(--safe-area-inset-top, 0px);
+  }
+  
+  .safe-area-bottom {
+    padding-bottom: var(--safe-area-inset-bottom, 0px);
+  }
+  
+  .safe-area-left {
+    padding-left: var(--safe-area-inset-left, 0px);
+  }
+  
+  .safe-area-right {
+    padding-right: var(--safe-area-inset-right, 0px);
+  }
+  
+  /* 小程序特定工具类 */
+  .miniprogram-scroll {
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .miniprogram-text-ellipsis {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

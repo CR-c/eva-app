@@ -1,5 +1,6 @@
-/** @type {import('tailwindcss').Config} */
-module.exports = {
+import type { Config } from 'tailwindcss'
+
+export default {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   corePlugins: {
     // 禁用小程序不支持的功能
@@ -75,4 +76,4 @@ module.exports = {
     }
   },
   plugins: []
-}
+} satisfies Config

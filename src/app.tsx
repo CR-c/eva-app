@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { useUserStore } from './store/user'
 import './styles/index.scss'
+import './styles/tailwind.css'
 
 function App({ children }: { children: React.ReactNode }) {
   const restoreLoginState = useUserStore((state) => state.restoreLoginState)
