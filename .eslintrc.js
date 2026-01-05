@@ -11,7 +11,6 @@ module.exports = {
     '@typescript-eslint/recommended',
     'plugin:react/recommended',
     'plugin:react-hooks/recommended',
-    'plugin:@typescript-eslint/recommended',
     'taro/react'
   ],
   parser: '@typescript-eslint/parser',

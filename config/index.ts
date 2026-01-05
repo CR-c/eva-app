@@ -97,19 +97,23 @@ export default defineConfig<'webpack5'>(async (merge) => {
       webpackChain(chain) {
         chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
         
-        // 集成 weapp-tailwindcss (暂时禁用，等待 NutUI 集成时启用)
-        // if (!WeappTailwindcssDisabled) {
-        //   const WeappTailwindcssPlugin = require('weapp-tailwindcss/webpack')
-        //   chain
-        //     .plugin('weapp-tailwindcss')
-        //     .use(WeappTailwindcssPlugin, [{
-        //       // 配置选项
-        //       rem2rpx: true, // 将 rem 转换为 rpx
-        //       injectAdditionalCssVarScope: true, // 为 NutUI 兼容性注入额外的 CSS 变量作用域
-        //       // 禁用 preflight，避免样式冲突
-        //       disabled: false
-        //     }])
-        // }
+        // 集成 weapp-tailwindcss
+        if (!WeappTailwindcssDisabled) {
+          const WeappTailwindcssPlugin = require('weapp-tailwindcss/webpack')
+          chain
+            .plugin('weapp-tailwindcss')
+            .use(WeappTailwindcssPlugin, [{
+              // 配置选项
+              rem2rpx: true, // 将 rem 转换为 rpx
+              injectAdditionalCssVarScope: true, // 为 NutUI 兼容性注入额外的 CSS 变量作用域
+              // 启用 CSS 优化
+              disabled: false,
+              // CSS 压缩和优化
+              cssPreflightRange: 'view',
+              // 移除未使用的 CSS
+              purge: process.env.NODE_ENV === 'production'
+            }])
+        }
         
         // 优化构建性能
         chain.optimization.splitChunks({

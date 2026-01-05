@@ -20,11 +20,17 @@
     "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
     "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
     "type-check": "tsc --noEmit",
+    "analyze": "node scripts/analyze-bundle.js",
+    "optimize-imports": "node scripts/optimize-imports.js",
+    "optimize-imports:apply": "node scripts/optimize-imports.js --apply",
     "build:weapp": "taro build --type weapp",
+    "build:weapp:analyze": "cross-env ANALYZE=true taro build --type weapp",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",
+    "build:tt:analyze": "cross-env ANALYZE=true taro build --type tt",
     "build:h5": "taro build --type h5",
+    "build:h5:analyze": "cross-env ANALYZE=true taro build --type h5",
     "build:rn": "taro build --type rn",
     "build:qq": "taro build --type qq",
     "build:jd": "taro build --type jd",
@@ -112,7 +118,8 @@
     "tsconfig-paths-webpack-plugin": "^4.1.0",
     "typescript": "^5.4.5",
     "weapp-tailwindcss": "^4.9.2",
-    "webpack": "5.91.0"
+    "webpack": "5.91.0",
+    "webpack-bundle-analyzer": "^4.10.2"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
@@ -128,6 +135,8 @@
     ]
   },
   "commitlint": {
-    "extends": ["@commitlint/config-conventional"]
+    "extends": [
+      "@commitlint/config-conventional"
+    ]
   }
 }
