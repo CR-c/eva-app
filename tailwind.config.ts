@@ -5,7 +5,11 @@ export default {
   corePlugins: {
     // 禁用小程序不支持的功能
     preflight: false,
-    container: false
+    container: false,
+    // 禁用可能导致语法错误的功能
+    backdropFilter: false,
+    filter: false,
+    gradientColorStops: false
   },
   theme: {
     extend: {

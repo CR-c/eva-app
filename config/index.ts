@@ -47,6 +47,9 @@ export default defineConfig<'webpack5'>(async (merge) => {
     cache: {
       enable: true // 启用 Webpack 持久化缓存配置，提升二次编译速度
     },
+    prebundle: {
+      enable: false // 关闭依赖预编译功能，避免模块联邦相关的编译问题
+    },
     logger: {
       quiet: false,
       stats: true
