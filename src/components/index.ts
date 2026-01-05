@@ -9,8 +9,3 @@ export { default as CustomSkeleton } from './CustomSkeleton'
 export { default as StatusCard } from './StatusCard'
 export { default as ImageUploader } from './ImageUploader'
 export { default as SafeAreaView } from './SafeAreaView'
-
-// Legacy Components (to be gradually replaced)
-export { default as Empty } from './Empty'
-export { default as Loading } from './Loading'
-export { default as Skeleton } from './Skeleton'

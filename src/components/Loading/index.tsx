@@ -1,5 +1,4 @@
 import { View } from '@tarojs/components'
-import './index.scss'
 
 interface LoadingProps {
   text?: string

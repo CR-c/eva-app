@@ -1,8 +1,7 @@
 import { View, Text } from '@tarojs/components'
-import { AtIcon } from 'taro-ui'
+import { Icon } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
-import 'taro-ui/dist/style/components/icon.scss'
 import './index.scss'
 
 interface PageLayoutProps {
@@ -72,7 +71,7 @@ function PageLayout({
       >
         {showBackButton && (
           <View className="nav-back-button" onClick={handleBack}>
-            <AtIcon value="chevron-left" size="24" color="#ffffff" />
+            <Icon name="left" size="24" color="#ffffff" />
           </View>
         )}
         

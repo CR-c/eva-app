@@ -1,5 +1,4 @@
 import { View, Image } from '@tarojs/components'
-import './index.scss'
 
 interface EmptyProps {
   text?: string
