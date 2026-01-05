@@ -6,7 +6,11 @@
       "@testing-library/jest-dom",
       "@tarojs/taro",
       "node"
-    ]
+    ],
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "skipLibCheck": true
   },
   "include": [
     "./src/**/*.test.ts",
@@ -15,5 +19,8 @@
     "./src/**/*.spec.tsx",
     "./src/test/**/*"
   ],
-  "exclude": []
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
 }
