@@ -1,0 +1,53 @@
+# Dependencies
+node_modules/
+pnpm-lock.yaml
+package-lock.json
+yarn.lock
+
+# Build outputs
+dist/
+build/
+lib/
+*.tsbuildinfo
+
+# Generated files
+.taro/
+.temp/
+.rn_temp/
+
+# Config files
+*.config.js
+*.config.ts
+babel.config.js
+postcss.config.js
+tailwind.config.ts
+
+# Documentation
+*.md
+CHANGELOG.md
+README.md
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+
+# Test coverage
+coverage/
+
+# Environment files
+.env
+.env.local
+.env.production
+
+# Temporary files
+*.tmp
+*.temp
+nul
