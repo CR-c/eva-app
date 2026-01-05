@@ -15,6 +15,11 @@
     "test": "jest",
     "test:watch": "jest --watch",
     "test:coverage": "jest --coverage",
+    "lint": "eslint src --ext .js,.jsx,.ts,.tsx",
+    "lint:fix": "eslint src --ext .js,.jsx,.ts,.tsx --fix",
+    "prettier": "prettier --write \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
+    "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,css,scss,json,md}\"",
+    "type-check": "tsc --noEmit",
     "build:weapp": "taro build --type weapp",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
@@ -82,6 +87,8 @@
     "@types/node": "^18",
     "@types/react": "^18.0.0",
     "@types/webpack-env": "^1.13.6",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
     "autoprefixer": "^10.4.23",
     "babel-preset-taro": "4.1.8",
     "cross-env": "^10.1.0",
@@ -95,6 +102,7 @@
     "jest-environment-jsdom": "^30.2.0",
     "lint-staged": "^16.1.2",
     "postcss": "^8.4.38",
+    "prettier": "^3.2.5",
     "react-refresh": "^0.14.0",
     "sass": "^1.75.0",
     "stylelint": "^16.4.0",
@@ -105,5 +113,21 @@
     "typescript": "^5.4.5",
     "weapp-tailwindcss": "^4.9.2",
     "webpack": "5.91.0"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{css,scss,sass,less}": [
+      "stylelint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md,yml,yaml}": [
+      "prettier --write"
+    ]
+  },
+  "commitlint": {
+    "extends": ["@commitlint/config-conventional"]
   }
 }
