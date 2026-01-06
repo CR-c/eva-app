@@ -1,0 +1,167 @@
+// NutUI 样式覆盖 - 适配微信小程序
+// 修复字体大小过小的问题
+// 使用 px 单位 (375设计稿)，不会被 pxtransform 转换
+
+// 全局字体大小设置
+page {
+  font-size: 14px; // 微信小程序推荐的基础字体大小
+}
+
+// NutUI 组件字体大小覆盖
+.nut-button {
+  font-size: 14px !important;
+  min-height: 40px !important;
+  line-height: 1.4 !important;
+  
+  &--large {
+    font-size: 16px !important;
+    min-height: 48px !important;
+  }
+  
+  &--small {
+    font-size: 12px !important;
+    min-height: 32px !important;
+  }
+}
+
+.nut-input {
+  font-size: 14px !important;
+  min-height: 40px !important;
+  
+  &__input {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+.nut-form-item {
+  &__label {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+  
+  &__body {
+    font-size: 14px !important;
+  }
+}
+
+.nut-cell {
+  font-size: 14px !important;
+  min-height: 44px !important;
+  
+  &__title {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+  
+  &__value {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+.nut-navbar {
+  &__title {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+  
+  &__left,
+  &__right {
+    font-size: 14px !important;
+  }
+}
+
+.nut-tabbar {
+  &__item {
+    font-size: 10px !important;
+    
+    &__text {
+      font-size: 10px !important;
+      margin-top: 4px !important;
+    }
+  }
+}
+
+.nut-tabs {
+  &__titles {
+    &__item {
+      font-size: 14px !important;
+      padding: 10px 16px !important;
+    }
+  }
+}
+
+.nut-picker {
+  &__list {
+    font-size: 14px !important;
+  }
+}
+
+.nut-dialog {
+  &__header {
+    font-size: 16px !important;
+    font-weight: 600 !important;
+  }
+  
+  &__content {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+  
+  &__footer {
+    .nut-button {
+      font-size: 14px !important;
+    }
+  }
+}
+
+.nut-toast {
+  font-size: 14px !important;
+  
+  &__text {
+    font-size: 14px !important;
+    line-height: 1.4 !important;
+  }
+}
+
+// 图标大小调整
+.nut-icon {
+  width: 16px !important;
+  height: 16px !important;
+  font-size: 16px !important;
+  line-height: 16px !important;
+  
+  &--large {
+    width: 24px !important;
+    height: 24px !important;
+    font-size: 24px !important;
+    line-height: 24px !important;
+  }
+  
+  &--small {
+    width: 12px !important;
+    height: 12px !important;
+    font-size: 12px !important;
+    line-height: 12px !important;
+  }
+}
+
+// 修复过小的CSS变量
+:root {
+  --nut-icon-height: 16px !important;
+  --nut-icon-width: 16px !important;
+  --nut-icon-line-height: 16px !important;
+  --nut-font-size-base: 14px !important;
+  --nut-font-size-large: 16px !important;
+  --nut-font-size-small: 12px !important;
+}
+
+page {
+  --nut-icon-height: 16px !important;
+  --nut-icon-width: 16px !important;
+  --nut-icon-line-height: 16px !important;
+  --nut-font-size-base: 14px !important;
+  --nut-font-size-large: 16px !important;
+  --nut-font-size-small: 12px !important;
+}

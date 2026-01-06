@@ -1,0 +1,134 @@
+// NutUI 样式修复 - 针对微信小程序
+// 修复字体大小过小的问题
+
+// 重写 NutUI 的 CSS 变量，使用合适的 rpx 值
+:root,
+page {
+  // 字体大小变量 - 使用 rpx 单位
+  --nut-font-size-0: 20rpx !important;
+  --nut-font-size-1: 24rpx !important;
+  --nut-font-size-2: 28rpx !important;
+  --nut-font-size-3: 32rpx !important;
+  --nut-font-size-4: 36rpx !important;
+  --nut-font-size-base: 28rpx !important;
+  --nut-font-size-large: 32rpx !important;
+  --nut-font-size-small: 24rpx !important;
+  
+  // 图标大小变量
+  --nut-icon-height: 32rpx !important;
+  --nut-icon-width: 32rpx !important;
+  --nut-icon-line-height: 32rpx !important;
+  
+  // 组件高度变量
+  --nut-button-default-height: 80rpx !important;
+  --nut-button-large-height: 96rpx !important;
+  --nut-button-small-height: 64rpx !important;
+  --nut-input-height: 80rpx !important;
+  --nut-cell-height: 88rpx !important;
+}
+
+// 全局字体大小设置
+page {
+  font-size: 28rpx;
+}
+
+// 修复 NutUI 组件的字体大小
+.nut-button {
+  font-size: var(--nut-font-size-base) !important;
+  min-height: var(--nut-button-default-height) !important;
+  
+  &--large {
+    font-size: var(--nut-font-size-large) !important;
+    min-height: var(--nut-button-large-height) !important;
+  }
+  
+  &--small {
+    font-size: var(--nut-font-size-small) !important;
+    min-height: var(--nut-button-small-height) !important;
+  }
+}
+
+.nut-input {
+  font-size: var(--nut-font-size-base) !important;
+  min-height: var(--nut-input-height) !important;
+  
+  .nut-input__input {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}
+
+.nut-form-item {
+  .nut-form-item__label {
+    font-size: var(--nut-font-size-base) !important;
+  }
+  
+  .nut-form-item__body {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}
+
+.nut-cell {
+  font-size: var(--nut-font-size-base) !important;
+  min-height: var(--nut-cell-height) !important;
+  
+  .nut-cell__title {
+    font-size: var(--nut-font-size-base) !important;
+  }
+  
+  .nut-cell__value {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}
+
+.nut-navbar {
+  .nut-navbar__title {
+    font-size: var(--nut-font-size-large) !important;
+  }
+  
+  .nut-navbar__left,
+  .nut-navbar__right {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}
+
+.nut-tabs {
+  .nut-tabs__titles-item {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}
+
+.nut-icon {
+  width: var(--nut-icon-width) !important;
+  height: var(--nut-icon-height) !important;
+  font-size: var(--nut-icon-width) !important;
+  line-height: var(--nut-icon-line-height) !important;
+}
+
+// 修复 Tabbar 字体大小
+.nut-tabbar {
+  .nut-tabbar-item {
+    .nut-tabbar-item-text {
+      font-size: 20rpx !important;
+    }
+  }
+}
+
+// 修复 Dialog 字体大小
+.nut-dialog {
+  .nut-dialog__header {
+    font-size: var(--nut-font-size-large) !important;
+  }
+  
+  .nut-dialog__content {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}
+
+// 修复 Toast 字体大小
+.nut-toast {
+  font-size: var(--nut-font-size-base) !important;
+  
+  .nut-toast__text {
+    font-size: var(--nut-font-size-base) !important;
+  }
+}

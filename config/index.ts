@@ -1,13 +1,9 @@
 import { defineConfig, type UserConfigExport } from '@tarojs/cli'
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin'
-import devConfig from './dev'
-import prodConfig from './prod'
-
-// 导入 weapp-tailwindcss
-const WeappTailwindcssDisabled = ['h5', 'rn'].includes(process.env.TARO_ENV)
+import path from 'path'
+const { UnifiedWebpackPluginV5 } = require('weapp-tailwindcss/webpack')
 
 // https://taro-docs.jd.com/docs/next/config#defineconfig-辅助函数
-export default defineConfig<'webpack5'>(async (merge) => {
+export default defineConfig<'webpack5'>((merge) => {
   const baseConfig: UserConfigExport<'webpack5'> = {
     projectName: 'eva-app-new',
     date: '2025-12-25',
@@ -22,171 +18,93 @@ export default defineConfig<'webpack5'>(async (merge) => {
     outputRoot: 'dist',
     plugins: [
       "@tarojs/plugin-generator",
-      ["@tarojs/plugin-html", {
-        injectAdditionalCssVarScope: true // 为 NutUI 兼容性注入额外的 CSS 变量作用域
-      }]
+      "@tarojs/plugin-html"
     ],
     defineConstants: {
-      NODE_ENV: JSON.stringify(process.env.NODE_ENV || 'development'),
-      __DEV__: JSON.stringify(process.env.NODE_ENV !== 'production'),
-      ENABLE_INNER_HTML: JSON.stringify(true),
-      ENABLE_ADJACENT_HTML: JSON.stringify(true),
-      ENABLE_SIZE_APIS: JSON.stringify(true),
-      ENABLE_TEMPLATE_CONTENT: JSON.stringify(true),
-      ENABLE_CLONE_NODE: JSON.stringify(true),
-      ENABLE_CONTAINS: JSON.stringify(true)
     },
     copy: {
-      patterns: [
-      ],
-      options: {
-      }
+      patterns: [],
+      options: {}
     },
     framework: 'react',
-    compiler: 'webpack5',
+    compiler: {
+      type: 'webpack5',
+      prebundle: {
+        enable: false, // 禁用 prebundle 避免问题
+        force: false,
+        include: ['@nutui/nutui-react-taro'], // 指定需要预编译的依赖
+        exclude: [], // 排除不需要预编译的依赖
+        esbuild: {
+          minify: false
+        }
+      }
+    },
     cache: {
-      enable: true // 启用 Webpack 持久化缓存配置，提升二次编译速度
+      enable: true // 启用缓存以提升编译速度
     },
-    prebundle: {
-      enable: false // 关闭依赖预编译功能，避免模块联邦相关的编译问题
-    },
-    logger: {
-      quiet: false,
-      stats: true
+    alias: {
+      '@': path.resolve(__dirname, '..', 'src')
     },
     mini: {
       postcss: {
         pxtransform: {
           enable: true,
           config: {
-            // 设计稿尺寸
-            designWidth: 750,
-            // 设计稿尺寸换算规则
-            deviceRatio: {
-              640: 2.34 / 2,
-              750: 1,
-              828: 1.81 / 2
-            },
-            // 配置 Tailwind CSS 类名不进行 px 转换
-            selectorBlackList: [/^\.tw-/]
+            // 不排除任何选择器，让所有 px 都转换为 rpx
           }
         },
-        // 集成 Tailwind CSS
-        // tailwindcss: {
-        //   enable: true,
-        //   config: {
-        //     content: ['./src/**/*.{js,ts,jsx,tsx}']
-        //   }
-        // },
         cssModules: {
-          enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
-          config: {
-            namingPattern: 'module', // 转换模式，取值为 global/module
-            generateScopedName: '[name]__[local]___[hash:base64:5]'
-          }
+          enable: false
         }
       },
-      // 小程序端专用配置
-      optimizeMainPackage: {
-        enable: true
-      },
-      // 添加小程序分包配置支持
-      addChunkPages(_pages, _pagesNames) {
-        // 可以在这里配置分包逻辑
-      },
-      webpackChain(chain) {
-        chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
-        
-        // 集成 weapp-tailwindcss
-        if (!WeappTailwindcssDisabled) {
-          const WeappTailwindcssPlugin = require('weapp-tailwindcss/webpack')
-          chain
-            .plugin('weapp-tailwindcss')
-            .use(WeappTailwindcssPlugin, [{
-              // 配置选项
-              rem2rpx: true, // 将 rem 转换为 rpx
-              injectAdditionalCssVarScope: true, // 为 NutUI 兼容性注入额外的 CSS 变量作用域
-              // 启用 CSS 优化
-              disabled: false,
-              // CSS 压缩和优化
-              cssPreflightRange: 'view',
-              // 移除未使用的 CSS
-              purge: process.env.NODE_ENV === 'production'
-            }])
-        }
-        
-        // 优化构建性能
-        chain.optimization.splitChunks({
-          chunks: 'all',
-          maxInitialRequests: Infinity,
-          minSize: 0,
-          cacheGroups: {
-            default: {
-              minChunks: 2,
-              priority: -20,
-              reuseExistingChunk: true
-            },
-            vendor: {
-              test: /[\\/]node_modules[\\/]/,
-              name: 'vendors',
-              priority: -10,
-              chunks: 'all'
-            },
-            // Tailwind CSS 单独打包
-            tailwind: {
-              test: /[\\/]node_modules[\\/]tailwindcss[\\/]/,
-              name: 'tailwind',
-              priority: 10,
-              chunks: 'all'
+      webpackChain(chain, webpack) {
+        // 配置 weapp-tailwindcss 插件
+        chain.merge({
+          plugin: {
+            install: {
+              plugin: UnifiedWebpackPluginV5,
+              args: [{
+                appType: 'taro',
+                // 开启 rem -> rpx 的转化
+                rem2rpx: true,
+                // 与 NutUI 一起使用时，重新注入 tailwindcss css var 区域块
+                injectAdditionalCssVarScope: true
+              }]
             }
           }
         })
+        
+        // 配置 optimization 为 prebundle 兼容的值
+        chain.optimization.merge({
+          chunkIds: 'deterministic'
+        })
+        
+        // 移除不兼容的 hash 占位符
+        chain.output.chunkFilename('[name].js')
       }
     },
     h5: {
-      publicPath: '/',
-      staticDirectory: 'static',
       output: {
-        filename: 'js/[name].[hash:8].js',
-        chunkFilename: 'js/[name].[chunkhash:8].js'
-      },
-      miniCssExtractPluginOption: {
-        ignoreOrder: true,
-        filename: 'css/[name].[hash].css',
-        chunkFilename: 'css/[name].[chunkhash].css'
-      },
-      postcss: {
-        autoprefixer: {
-          enable: true,
-          config: {}
-        },
-        cssModules: {
-          enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
-          config: {
-            namingPattern: 'module', // 转换模式，取值为 global/module
-            generateScopedName: '[name]__[local]___[hash:base64:5]'
-          }
-        }
+        // H5端也需要移除hash占位符以兼容prebundle
+        chunkFilename: '[name].js'
       },
       webpackChain(chain) {
-        chain.resolve.plugin('tsconfig-paths').use(TsconfigPathsPlugin)
-      }
-    },
-    rn: {
-      appName: 'taroDemo',
-      postcss: {
-        cssModules: {
-          enable: false, // 默认为 false，如需使用 css modules 功能，则设为 true
-        }
+        // H5端也配置相同的chunkIds
+        chain.optimization.merge({
+          chunkIds: 'deterministic'
+        })
       }
     }
   }
 
-
   if (process.env.NODE_ENV === 'development') {
-    // 本地开发构建配置（不混淆压缩）
-    return merge({}, baseConfig, devConfig)
+    return merge({}, baseConfig, {
+      logger: {
+        quiet: false,
+        stats: true
+      }
+    })
   }
-  // 生产构建配置（默认开启压缩混淆等）
-  return merge({}, baseConfig, prodConfig)
+  
+  return baseConfig
 })

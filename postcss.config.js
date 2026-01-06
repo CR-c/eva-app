@@ -1,6 +1,7 @@
+// postcss 插件配置
 module.exports = {
-  plugins: {
-    '@tailwindcss/postcss': {},
-    autoprefixer: {}
-  }
+  plugins: [
+    require('tailwindcss'),
+    require('autoprefixer'),
+  ],
 }
