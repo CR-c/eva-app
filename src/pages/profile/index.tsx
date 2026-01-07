@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image } from '@tarojs/components'
-import { Cell, CellGroup, Avatar, Loading } from '@nutui/nutui-react-taro'
+import { Button } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserStore } from '@/store/user'
 import { ROUTES } from '@/constants/routes'
-import BasePage from '@/components/BasePage'
 
 interface MenuItem {
   icon: string
   label: string
   key: string
-  arrow?: boolean
+  color?: string
 }
 
 function Profile() {
@@ -22,153 +21,229 @@ function Profile() {
   const logout = useUserStore((state) => state.logout)
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 800)
-
+    const timer = setTimeout(() => setLoading(false), 500)
     return () => clearTimeout(timer)
   }, [])
 
   const menuItems: MenuItem[] = [
-    { icon: '✏️', label: '编辑资料', key: 'edit', arrow: true },
-    { icon: '👤', label: '个人信息', key: 'info', arrow: true },
-    { icon: '⚙️', label: '设置', key: 'setting', arrow: true },
-    { icon: 'ℹ️', label: '关于', key: 'about', arrow: true },
-    { icon: '🚪', label: '退出登录', key: 'logout', arrow: false },
+    { icon: '✏️', label: '编辑资料', key: 'edit' },
+    { icon: '📊', label: '散步记录', key: 'history' },
+    { icon: '⚙️', label: '设置', key: 'setting' },
+    { icon: 'ℹ️', label: '关于我们', key: 'about' },
   ]
 
   const handleMenuClick = (key: string) => {
     switch (key) {
       case 'edit':
-        Taro.navigateTo({
-          url: ROUTES.EDIT_PROFILE,
-        })
+        Taro.navigateTo({ url: ROUTES.EDIT_PROFILE })
         break
-      case 'info':
-        Taro.showToast({
-          title: '个人信息',
-          icon: 'none',
-        })
+      case 'history':
+        Taro.showToast({ title: '散步记录开发中', icon: 'none' })
         break
       case 'setting':
-        Taro.showToast({
-          title: '设置功能开发中',
-          icon: 'none',
-        })
+        Taro.showToast({ title: '设置功能开发中', icon: 'none' })
         break
       case 'about':
         Taro.showModal({
-          title: 'EVA-APP',
-          content: 'EVA-01 TEST TYPE\n初号机基础框架 v0.1.0',
+          title: '遛狗助手',
+          content: '版本 1.0.0\n和爱宠一起享受散步时光',
           showCancel: false,
-          confirmText: '确定',
-        })
-        break
-      case 'logout':
-        Taro.showModal({
-          title: 'LOGOUT',
-          content: '确认退出登录？',
-          confirmText: '确认',
-          cancelText: '取消',
-          success: (res) => {
-            if (res.confirm) {
-              logout()
-              Taro.reLaunch({
-                url: ROUTES.LOGIN,
-              })
-            }
-          },
+          confirmText: '确定'
         })
         break
     }
   }
 
+  const handleLogout = () => {
+    Taro.showModal({
+      title: '退出登录',
+      content: '确认要退出登录吗？',
+      confirmText: '确认',
+      cancelText: '取消',
+      success: (res) => {
+        if (res.confirm) {
+          logout()
+          Taro.reLaunch({ url: ROUTES.LOGIN })
+        }
+      }
+    })
+  }
+
   if (loading) {
     return (
-      <BasePage title="个人中心" safeArea={true} className="bg-gradient-to-b from-gray-50 to-white">
-        <View className="flex justify-center items-center h-64">
-          <Loading type="spinner" />
-          <Text className="ml-2 text-gray-500">加载中...</Text>
-        </View>
-      </BasePage>
+      <View className="min-h-screen bg-[#f5f7f8] flex items-center justify-center">
+        <Text style={{ fontSize: '28rpx' }} className="text-[#64748b]">加载中...</Text>
+      </View>
     )
   }
 
   return (
-    <BasePage title="个人中心" safeArea={true} className="bg-gradient-to-b from-gray-50 to-white">
-      <View className="min-h-screen pb-10">
-        {/* 头部用户卡片 */}
-        <View className="relative px-10 pt-15 pb-10 bg-gradient-to-br from-blue-100 to-blue-200 overflow-hidden">
-          {/* 背景装饰 */}
-          <View className="absolute inset-0 bg-gradient-to-br from-blue-100/30 via-blue-50/50 to-transparent opacity-60" />
-          
-          <View className="relative z-10 flex items-center gap-8">
-            <View className="relative">
-              <Avatar
-                size="80"
+    <View className="min-h-screen bg-[#f5f7f8]">
+      {/* Header Card */}
+      <View
+        className="bg-white relative overflow-hidden"
+        style={{ padding: '48rpx 32rpx 40rpx' }}
+      >
+        {/* Background Decoration */}
+        <View
+          className="absolute bg-[#25aff4] opacity-5"
+          style={{
+            width: '400rpx',
+            height: '400rpx',
+            borderRadius: '200rpx',
+            top: '-200rpx',
+            right: '-100rpx'
+          }}
+        />
+
+        <View className="flex items-center relative" style={{ gap: '32rpx', zIndex: 10 }}>
+          {/* Avatar */}
+          <View className="relative">
+            <View
+              className="overflow-hidden"
+              style={{
+                width: '144rpx',
+                height: '144rpx',
+                borderRadius: '72rpx',
+                border: '6rpx solid #25aff4'
+              }}
+            >
+              <Image
                 src={userInfo?.avatar || 'https://via.placeholder.com/200?text=Avatar'}
-                className="border-4 border-primary-500 shadow-lg shadow-primary-500/30"
+                mode="aspectFill"
+                style={{ width: '100%', height: '100%' }}
               />
-              {/* 状态指示器 */}
-              <View className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 border-3 border-white rounded-full shadow-lg animate-pulse" />
             </View>
-            
-            <View className="flex-1">
-              <Text className="text-xl font-bold text-gray-900 mb-2 block">
-                {userInfo?.nickname || '用户'}
-              </Text>
-              <Text className="text-sm text-gray-600 font-mono block">
-                ID: {userInfo?.id || '---'}
-              </Text>
-            </View>
+            <View
+              className="absolute bg-[#22c55e]"
+              style={{
+                width: '28rpx',
+                height: '28rpx',
+                borderRadius: '14rpx',
+                bottom: '4rpx',
+                right: '4rpx',
+                border: '4rpx solid #fff'
+              }}
+            />
+          </View>
+
+          {/* User Info */}
+          <View className="flex-1">
+            <Text
+              className="block font-bold text-[#0d171c]"
+              style={{ fontSize: '40rpx', marginBottom: '8rpx' }}
+            >
+              {userInfo?.nickname || '用户'}
+            </Text>
+            <Text className="block text-[#64748b]" style={{ fontSize: '26rpx' }}>
+              ID: {userInfo?.id || '---'}
+            </Text>
           </View>
         </View>
 
-        {/* 菜单列表 */}
-        <View className="px-6 py-8">
-          <CellGroup className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-            {menuItems.slice(0, -1).map((item) => (
-              <Cell
-                key={item.key}
-                title={
-                  <View className="flex items-center gap-4">
-                    <Text className="text-lg text-primary-500">{item.icon}</Text>
-                    <Text className="font-semibold text-gray-900">{item.label}</Text>
-                  </View>
-                }
-                isLink={item.arrow}
-                onClick={() => handleMenuClick(item.key)}
-                className="py-4 px-6 border-b border-gray-50 last:border-b-0 active:bg-gray-50 transition-colors"
-              />
-            ))}
-          </CellGroup>
-
-          {/* 退出登录单独处理 */}
-          <View className="mt-6">
-            <CellGroup className="bg-white rounded-2xl shadow-sm border border-orange-200 overflow-hidden">
-              <Cell
-                title={
-                  <View className="flex items-center gap-4">
-                    <Text className="text-lg text-orange-500">🚪</Text>
-                    <Text className="font-semibold text-orange-500">退出登录</Text>
-                  </View>
-                }
-                onClick={() => handleMenuClick('logout')}
-                className="py-4 px-6 active:bg-orange-50 transition-colors"
-              />
-            </CellGroup>
+        {/* Stats Row */}
+        <View
+          className="flex bg-[#f8fafc]"
+          style={{
+            marginTop: '32rpx',
+            padding: '24rpx',
+            borderRadius: '24rpx',
+            gap: '24rpx'
+          }}
+        >
+          <View className="flex-1 text-center">
+            <Text className="block font-bold text-[#0d171c]" style={{ fontSize: '36rpx' }}>
+              28
+            </Text>
+            <Text className="block text-[#64748b]" style={{ fontSize: '24rpx' }}>
+              散步次数
+            </Text>
+          </View>
+          <View style={{ width: '2rpx', background: '#e2e8f0' }} />
+          <View className="flex-1 text-center">
+            <Text className="block font-bold text-[#0d171c]" style={{ fontSize: '36rpx' }}>
+              56.8
+            </Text>
+            <Text className="block text-[#64748b]" style={{ fontSize: '24rpx' }}>
+              总里程(km)
+            </Text>
+          </View>
+          <View style={{ width: '2rpx', background: '#e2e8f0' }} />
+          <View className="flex-1 text-center">
+            <Text className="block font-bold text-[#0d171c]" style={{ fontSize: '36rpx' }}>
+              15h
+            </Text>
+            <Text className="block text-[#64748b]" style={{ fontSize: '24rpx' }}>
+              总时长
+            </Text>
           </View>
         </View>
+      </View>
 
-        {/* 底部版本信息 */}
-        <View className="flex flex-col items-center gap-5 px-10 mt-8">
-          <View className="w-50 h-0.5 bg-gradient-to-r from-transparent via-primary-500 to-transparent" />
-          <Text className="text-sm text-gray-400 font-mono tracking-wider">
-            EVA-APP v0.1.0
+      {/* Menu List */}
+      <View style={{ padding: '24rpx 32rpx' }}>
+        <View
+          className="bg-white"
+          style={{ borderRadius: '32rpx', overflow: 'hidden' }}
+        >
+          {menuItems.map((item, index) => (
+            <View
+              key={item.key}
+              className="flex items-center justify-between"
+              style={{
+                padding: '36rpx 32rpx',
+                borderBottom: index < menuItems.length - 1 ? '2rpx solid #f1f5f9' : 'none'
+              }}
+              onClick={() => handleMenuClick(item.key)}
+            >
+              <View className="flex items-center" style={{ gap: '24rpx' }}>
+                <View
+                  className="flex items-center justify-center bg-[#eff6ff]"
+                  style={{
+                    width: '72rpx',
+                    height: '72rpx',
+                    borderRadius: '20rpx'
+                  }}
+                >
+                  <Text style={{ fontSize: '32rpx' }}>{item.icon}</Text>
+                </View>
+                <Text className="font-medium text-[#0d171c]" style={{ fontSize: '30rpx' }}>
+                  {item.label}
+                </Text>
+              </View>
+              <Text className="text-[#cbd5e1]" style={{ fontSize: '28rpx' }}>›</Text>
+            </View>
+          ))}
+        </View>
+
+        {/* Logout Button */}
+        <Button
+          block
+          onClick={handleLogout}
+          style={{
+            marginTop: '32rpx',
+            height: '96rpx',
+            borderRadius: '48rpx',
+            background: '#fff',
+            border: '2rpx solid #fee2e2'
+          }}
+        >
+          <View className="flex items-center justify-center" style={{ gap: '12rpx' }}>
+            <Text style={{ fontSize: '32rpx' }}>🚪</Text>
+            <Text className="font-medium text-[#ef4444]" style={{ fontSize: '30rpx' }}>
+              退出登录
+            </Text>
+          </View>
+        </Button>
+
+        {/* Version */}
+        <View className="text-center" style={{ marginTop: '48rpx' }}>
+          <Text className="text-[#94a3b8]" style={{ fontSize: '24rpx' }}>
+            遛狗助手 v1.0.0
           </Text>
         </View>
       </View>
-    </BasePage>
+    </View>
   )
 }
 

@@ -1,161 +1,266 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image } from '@tarojs/components'
-import { Button, Card } from '@nutui/nutui-react-taro'
+import { Button } from '@nutui/nutui-react-taro'
 import { useAuth } from '@/hooks/useAuth'
 import Taro from '@tarojs/taro'
-import BasePage from '@/components/BasePage'
 
 function Home() {
   useAuth()
 
-  const [currentTime, setCurrentTime] = useState('')
+  const [greeting, setGreeting] = useState('')
 
   useEffect(() => {
-    // 获取当前时间并设置问候语
-    const updateTime = () => {
-      const now = new Date()
-      const hour = now.getHours()
-      let greeting = '早上好'
-      if (hour >= 12 && hour < 18) {
-        greeting = '下午好'
-      } else if (hour >= 18) {
-        greeting = '晚上好'
+    const updateGreeting = () => {
+      const hour = new Date().getHours()
+      if (hour < 12) {
+        setGreeting('早上好')
+      } else if (hour < 18) {
+        setGreeting('下午好')
+      } else {
+        setGreeting('晚上好')
       }
-      setCurrentTime(greeting)
     }
-    
-    updateTime()
-    const timer = setInterval(updateTime, 60000) // 每分钟更新一次
-    
+
+    updateGreeting()
+    const timer = setInterval(updateGreeting, 60000)
     return () => clearInterval(timer)
   }, [])
 
   const handleStartWalk = () => {
-    Taro.navigateTo({
-      url: '/pages/walking/index'
-    })
+    Taro.navigateTo({ url: '/pages/walking/index' })
   }
 
   return (
-    <BasePage showBack={false} safeArea={true} className="bg-gradient-to-b from-gray-50 to-white">
-      <View className="min-h-screen px-6 pb-8 font-sans">
-        {/* 头部区域 */}
-        <View className="flex justify-between items-start pt-12 pb-4">
-          <View className="flex-1">
-            <Text className="text-2xl font-extrabold text-gray-900 leading-tight mb-1 block">
-              {currentTime}，小莎！
-            </Text>
-            <Text className="text-base text-gray-500 font-medium block">
-              准备好今天的散步了吗？
-            </Text>
-          </View>
-          <View className="relative">
-            <View className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-primary-200">
-              <Image 
-                className="w-full h-full rounded-full"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI9_9IW4-5TZAwkkEs6EsOOPNdkGbU4vbtPTg3wR25cD1mDFbd5RMtWZI5ht8154_ox9C-xNF975cS6weZktS_XgjxOULJIi_qqu4SVjYSVdRNCzzVONtiGWJto9tT1SY0F2_TeUtY5ITS30YYDJ06zc4b92-xlcnoyBzeX3EnZ33PZirqIpays1kib9YfA0x71We3TUe-_Wi8Uy-V6irAs4YvoDsQUU8E50XmRmIeYGdkHPncMsX2m-xjKaBfkb651GIOZy6Az1UG"
-                mode="aspectFill"
-              />
-              <View className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></View>
-            </View>
-          </View>
+    <View className="min-h-screen bg-[#f5f7f8]">
+      {/* Header */}
+      <View
+        className="flex items-center justify-between bg-white"
+        style={{ padding: '48rpx 32rpx 32rpx' }}
+      >
+        <View>
+          <Text
+            className="block font-bold text-[#0d171c]"
+            style={{ fontSize: '40rpx', lineHeight: '48rpx', marginBottom: '8rpx' }}
+          >
+            {greeting}，小莎！
+          </Text>
+          <Text
+            className="block text-[#64748b]"
+            style={{ fontSize: '28rpx' }}
+          >
+            准备好今天的散步了吗？
+          </Text>
         </View>
+        <View className="relative">
+          <Image
+            className="rounded-full"
+            style={{ width: '96rpx', height: '96rpx', border: '4rpx solid rgba(37, 175, 244, 0.2)' }}
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCI9_9IW4-5TZAwkkEs6EsOOPNdkGbU4vbtPTg3wR25cD1mDFbd5RMtWZI5ht8154_ox9C-xNF975cS6weZktS_XgjxOULJIi_qqu4SVjYSVdRNCzzVONtiGWJto9tT1SY0F2_TeUtY5ITS30YYDJ06zc4b92-xlcnoyBzeX3EnZ33PZirqIpays1kib9YfA0x71We3TUe-_Wi8Uy-V6irAs4YvoDsQUU8E50XmRmIeYGdkHPncMsX2m-xjKaBfkb651GIOZy6Az1UG"
+            mode="aspectFill"
+          />
+          <View
+            className="absolute bg-[#22c55e] rounded-full"
+            style={{
+              width: '24rpx',
+              height: '24rpx',
+              bottom: '0',
+              right: '0',
+              border: '4rpx solid #fff'
+            }}
+          />
+        </View>
+      </View>
 
-        {/* 天气卡片 */}
-        <Card className="bg-gradient-to-br from-blue-100 to-blue-200 border border-blue-100 rounded-3xl p-6 mb-6 relative overflow-hidden">
-          <View className="flex justify-between items-start relative z-10">
-            <View className="flex-1 max-w-xs">
-              <Text className="text-sm font-bold text-primary-500 uppercase tracking-wide mb-2 block">
+      {/* Main Content */}
+      <View style={{ padding: '24rpx 32rpx' }}>
+        {/* Weather Card */}
+        <View
+          className="relative overflow-hidden bg-[#eff6ff]"
+          style={{
+            padding: '40rpx',
+            borderRadius: '32rpx',
+            marginBottom: '32rpx',
+            border: '2rpx solid #dbeafe'
+          }}
+        >
+          <View className="flex justify-between items-start relative" style={{ zIndex: 10 }}>
+            <View style={{ maxWidth: '400rpx' }}>
+              <Text
+                className="block font-bold text-[#25aff4] uppercase"
+                style={{ fontSize: '24rpx', letterSpacing: '2rpx', marginBottom: '8rpx' }}
+              >
                 天气
               </Text>
-              <View className="flex items-baseline gap-3 mb-4">
-                <Text className="text-4xl font-black text-gray-900 leading-none block">
+              <View className="flex items-baseline" style={{ gap: '16rpx', marginBottom: '24rpx' }}>
+                <Text
+                  className="block font-black text-[#0d171c]"
+                  style={{ fontSize: '72rpx', lineHeight: '80rpx' }}
+                >
                   22°C
                 </Text>
-                <Text className="text-base font-medium text-gray-600 block">
+                <Text
+                  className="block text-[#64748b]"
+                  style={{ fontSize: '32rpx' }}
+                >
                   晴朗
                 </Text>
               </View>
-              <Text className="text-sm text-gray-700 font-medium leading-relaxed block">
+              <Text
+                className="block text-[#475569]"
+                style={{ fontSize: '28rpx', lineHeight: '40rpx' }}
+              >
                 今天天气很棒！非常适合在公园里长时间散步。
               </Text>
             </View>
-            <View className="flex items-center justify-center">
-              <Text className="text-4xl drop-shadow-lg block">☀️</Text>
-            </View>
+            <Text style={{ fontSize: '100rpx' }}>☀️</Text>
           </View>
-          {/* 背景装饰 */}
-          <View className="absolute -right-8 -bottom-12 w-45 h-45 bg-primary-100 rounded-full opacity-50"></View>
-        </Card>
-
-        {/* 狗狗插图区域 */}
-        <View className="flex justify-center items-center min-h-65 mb-6 relative">
-          {/* 背景装饰 */}
-          <View className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scale-75 w-full h-full bg-gradient-radial from-blue-100/50 to-transparent rounded-full blur-xl"></View>
-          
-          <View className="relative z-10 w-full max-w-80 h-80">
-            <Image 
-              className="w-full h-full transition-transform duration-700 hover:scale-105"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYfOvlwfYUI09BMvOdalvkrLRCfAFBkAiZqgIyTHRs0-c_6FSt38iYTiKghGGNR-S36LKTYwiCV80gjlx4Ed8Zf0eA-NpoXbTRjE7RsVojI_EKw_JWOSbtFzQ_5MAzhfKpF5AiKHcIhK-V07N7W-LV2KFR_-ZiqpEihzXlfmxTUQ3ehS6JhycW5RHHs3z8ydHT0Qpszo1QClFuCIBF6AZkDPH8101CYmDnFAal2MeJGF983VLvGqZwE-j1CF-VjU02VWx5c7xvtXuJ"
-              mode="aspectFit"
-            />
-          </View>
+          {/* Background Decoration */}
+          <View
+            className="absolute bg-[#25aff4] rounded-full opacity-10"
+            style={{
+              width: '300rpx',
+              height: '300rpx',
+              right: '-80rpx',
+              bottom: '-120rpx'
+            }}
+          />
         </View>
 
-        {/* 统计卡片 */}
-        <View className="grid grid-cols-2 gap-4 mb-8">
-          <Card className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-2xl shadow-sm">
-            <View className="w-8 h-8 bg-accent-100 text-accent-600 rounded-xl flex items-center justify-center text-lg">
-              🐾
-            </View>
-            <View className="flex-1">
-              <Text className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1 block">
-                每日目标
-              </Text>
-              <Text className="text-sm font-bold text-gray-900 block">
-                4/5 公里
-              </Text>
-            </View>
-          </Card>
-          
-          <Card className="flex items-center gap-3 p-4 bg-white border border-gray-200 rounded-2xl shadow-sm">
-            <View className="w-8 h-8 bg-purple-100 text-purple-600 rounded-xl flex items-center justify-center text-lg">
-              ⏰
-            </View>
-            <View className="flex-1">
-              <Text className="text-xs text-gray-400 font-semibold uppercase tracking-wide mb-1 block">
-                下次散步
-              </Text>
-              <Text className="text-sm font-bold text-gray-900 block">
-                下午 5:00
-              </Text>
-            </View>
-          </Card>
+        {/* Hero Illustration */}
+        <View
+          className="flex items-center justify-center relative"
+          style={{ height: '420rpx', marginBottom: '32rpx' }}
+        >
+          <View
+            className="absolute bg-[#25aff4] opacity-5 rounded-full"
+            style={{
+              width: '400rpx',
+              height: '400rpx',
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)'
+            }}
+          />
+          <Image
+            className="relative"
+            style={{ width: '400rpx', height: '400rpx', zIndex: 10 }}
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYfOvlwfYUI09BMvOdalvkrLRCfAFBkAiZqgIyTHRs0-c_6FSt38iYTiKghGGNR-S36LKTYwiCV80gjlx4Ed8Zf0eA-NpoXbTRjE7RsVojI_EKw_JWOSbtFzQ_5MAzhfKpF5AiKHcIhK-V07N7W-LV2KFR_-ZiqpEihzXlfmxTUQ3ehS6JhycW5RHHs3z8ydHT0Qpszo1QClFuCIBF6AZkDPH8101CYmDnFAal2MeJGF983VLvGqZwE-j1CF-VjU02VWx5c7xvtXuJ"
+            mode="aspectFit"
+          />
         </View>
 
-        {/* 开始散步按钮 */}
-        <View className="mt-8">
+        {/* Start Walking Button */}
+        <View style={{ marginBottom: '32rpx' }}>
           <Button
             type="primary"
-            size="large"
+            block
             onClick={handleStartWalk}
-            className="w-full h-16 bg-gradient-to-r from-accent-400 to-pink-500 border-none rounded-3xl shadow-lg shadow-pink-500/30 active:scale-95 transition-all"
+            style={{
+              height: '112rpx',
+              borderRadius: '56rpx',
+              background: 'linear-gradient(to right, #FB923C, #EC4899)',
+              border: 'none',
+              boxShadow: '0 16rpx 40rpx -12rpx rgba(236, 72, 153, 0.5)'
+            }}
           >
-            <View className="flex items-center justify-center gap-3 h-full">
-              <View className="bg-white/20 p-2 rounded-full text-base">
-                🐾
+            <View className="flex items-center justify-center" style={{ gap: '16rpx' }}>
+              <View
+                className="flex items-center justify-center rounded-full"
+                style={{
+                  width: '48rpx',
+                  height: '48rpx',
+                  background: 'rgba(255,255,255,0.2)'
+                }}
+              >
+                <Text style={{ fontSize: '28rpx' }}>🐾</Text>
               </View>
-              <Text className="text-white font-bold tracking-wide">
+              <Text
+                className="text-white font-bold"
+                style={{ fontSize: '32rpx', letterSpacing: '2rpx' }}
+              >
                 开始散步
               </Text>
-              <Text className="text-white font-bold transition-transform hover:translate-x-1">
-                →
-              </Text>
+              <Text className="text-white" style={{ fontSize: '32rpx' }}>→</Text>
             </View>
           </Button>
         </View>
+
+        {/* Stats Row */}
+        <View className="flex" style={{ gap: '24rpx', paddingBottom: '32rpx' }}>
+          {/* Daily Goal */}
+          <View
+            className="flex-1 flex items-center bg-white"
+            style={{
+              padding: '28rpx',
+              borderRadius: '24rpx',
+              border: '2rpx solid #f1f5f9'
+            }}
+          >
+            <View
+              className="flex items-center justify-center bg-[#ffedd5]"
+              style={{
+                width: '72rpx',
+                height: '72rpx',
+                borderRadius: '16rpx',
+                marginRight: '20rpx'
+              }}
+            >
+              <Text style={{ fontSize: '36rpx' }}>🐾</Text>
+            </View>
+            <View>
+              <Text
+                className="block text-[#94a3b8] font-semibold uppercase"
+                style={{ fontSize: '20rpx', letterSpacing: '1rpx', marginBottom: '4rpx' }}
+              >
+                每日目标
+              </Text>
+              <Text
+                className="block font-bold text-[#0d171c]"
+                style={{ fontSize: '28rpx' }}
+              >
+                4/5 公里
+              </Text>
+            </View>
+          </View>
+
+          {/* Next Walk */}
+          <View
+            className="flex-1 flex items-center bg-white"
+            style={{
+              padding: '28rpx',
+              borderRadius: '24rpx',
+              border: '2rpx solid #f1f5f9'
+            }}
+          >
+            <View
+              className="flex items-center justify-center bg-[#f3e8ff]"
+              style={{
+                width: '72rpx',
+                height: '72rpx',
+                borderRadius: '16rpx',
+                marginRight: '20rpx'
+              }}
+            >
+              <Text style={{ fontSize: '36rpx' }}>⏰</Text>
+            </View>
+            <View>
+              <Text
+                className="block text-[#94a3b8] font-semibold uppercase"
+                style={{ fontSize: '20rpx', letterSpacing: '1rpx', marginBottom: '4rpx' }}
+              >
+                下次散步
+              </Text>
+              <Text
+                className="block font-bold text-[#0d171c]"
+                style={{ fontSize: '28rpx' }}
+              >
+                下午 5:00
+              </Text>
+            </View>
+          </View>
+        </View>
       </View>
-    </BasePage>
+    </View>
   )
 }
 

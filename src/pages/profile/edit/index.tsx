@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { View, Text, Input, Image, Picker, Button } from '@tarojs/components'
+import { View, Text, Input, Image, Picker } from '@tarojs/components'
+import { Button } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
 import { useAuth } from '@/hooks/useAuth'
 import { useUserStore } from '@/store/user'
