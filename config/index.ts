@@ -53,7 +53,8 @@ export default defineConfig<'webpack5'>((merge) => {
         pxtransform: {
           enable: true,
           config: {
-            // 不排除任何选择器，让所有 px 都转换为 rpx
+            // 排除 NutUI 选择器，让 NutUI 使用原生样式
+            selectorBlackList: ['.nut-']
           }
         },
         cssModules: {
