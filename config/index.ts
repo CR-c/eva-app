@@ -18,7 +18,10 @@ export default defineConfig<'webpack5'>((merge) => {
     outputRoot: 'dist',
     plugins: [
       "@tarojs/plugin-generator",
-      "@tarojs/plugin-html"
+      ["@tarojs/plugin-html", {
+        // 包含额外的 HTML 标签支持
+        pxtransformBlackList: [/demo-/, /^body/]
+      }]
     ],
     defineConstants: {
     },

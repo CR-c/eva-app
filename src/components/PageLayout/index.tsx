@@ -1,5 +1,5 @@
 import { View, Text } from '@tarojs/components'
-import { Icon } from '@nutui/nutui-react-taro'
+import { ArrowLeft } from '@nutui/icons-react-taro'
 import Taro from '@tarojs/taro'
 import { useState, useEffect } from 'react'
 import './index.scss'
@@ -71,7 +71,7 @@ function PageLayout({
       >
         {showBackButton && (
           <View className="nav-back-button" onClick={handleBack}>
-            <Icon name="left" size="24" color="#ffffff" />
+            <ArrowLeft size="24" color="#ffffff" />
           </View>
         )}
         
