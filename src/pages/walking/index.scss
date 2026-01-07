@@ -1,4 +1,4 @@
-// 遛狗页面样式
+// 遛狗页面样式 - 750px设计标准
 .walking-page {
   height: 100vh;
   width: 100%;
@@ -12,7 +12,7 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  
+
   .walking-map {
     width: 100%;
     height: 100%;
@@ -30,7 +30,7 @@
   flex-direction: column;
   justify-content: flex-end;
   pointer-events: none;
-  
+
   .gradient-overlay {
     position: absolute;
     bottom: 0;
@@ -45,22 +45,13 @@
     );
     z-index: -1;
   }
-  
+
   .controls-content {
     width: 100%;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 16px 20px 32px;
+    padding: 32rpx 40rpx 64rpx;
     pointer-events: auto;
     display: flex;
     flex-direction: column;
-    gap: 24px;
-  }
-}
-
-// 响应式适配
-@media (max-width: 375px) {
-  .bottom-controls .controls-content {
-    padding: 16px 16px 32px;
+    gap: 32rpx;
   }
 }

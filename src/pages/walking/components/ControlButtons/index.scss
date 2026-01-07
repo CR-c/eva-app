@@ -1,76 +1,74 @@
+// 控制按钮样式 - 750px设计标准
 .control-buttons {
   display: flex;
   flex-direction: column;
+  gap: 20rpx;
+}
+
+.primary-button {
+  width: 100%;
+  height: 112rpx;
+  border-radius: 56rpx;
+  background: linear-gradient(135deg, #25aff4, #1e9fe0);
+  border: none;
+  box-shadow: 0 12rpx 32rpx rgba(37, 175, 244, 0.35);
+  display: flex;
   align-items: center;
-  gap: 16px;
-  
-  .primary-button {
-    width: 100%;
-    height: 64px;
-    background: linear-gradient(135deg, #25aff4 0%, #4bc4ff 100%);
-    border-radius: 16px;
-    border: none;
-    box-shadow: 0 8px 20px rgba(37, 175, 244, 0.3);
-    transition: all 0.2s ease;
-    position: relative;
-    overflow: hidden;
-    
-    &:active {
-      transform: scale(0.98);
-    }
-    
-    &::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, #25aff4 0%, #4bc4ff 50%, #25aff4 100%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-    
-    &:hover::before {
-      opacity: 0.1;
-    }
-    
-    .button-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      height: 100%;
-      position: relative;
-      z-index: 2;
-      
-      .button-icon {color: #ffffff;
-      }
-      
-      .button-text {
-        font-weight: 700;
-        color: #ffffff;
-        letter-spacing: 0.5px;
-      }
-    }
+  justify-content: center;
+
+  &:active {
+    transform: scale(0.98);
+    box-shadow: 0 8rpx 24rpx rgba(37, 175, 244, 0.25);
   }
-  
-  .secondary-button {
-    background: transparent;
-    border: none;
-    padding: 8px 16px;
-    border-radius: 8px;
-    transition: all 0.2s ease;
-    
-    &:active {
-      background: rgba(100, 116, 139, 0.1);
-    }
-    
-    .secondary-button-text {
-      font-weight: 700;
-      color: #64748b;
-      transition: color 0.2s ease;
-    }
-    
-    &:hover .secondary-button-text {
-      color: #0d171c;
-    }
+
+  // 覆盖 NutUI 默认样式
+  &.nut-button {
+    background: linear-gradient(135deg, #25aff4, #1e9fe0) !important;
+    border: none !important;
   }
+}
+
+.button-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16rpx;
+}
+
+.button-icon {
+  font-size: 36rpx;
+}
+
+.button-text {
+  font-size: 32rpx;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.secondary-button {
+  width: 100%;
+  height: 96rpx;
+  border-radius: 48rpx;
+  background: #ffffff;
+  border: 2rpx solid #fee2e2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:active {
+    background: #fef2f2;
+    transform: scale(0.98);
+  }
+
+  // 覆盖 NutUI 默认样式
+  &.nut-button {
+    background: #ffffff !important;
+    border: 2rpx solid #fee2e2 !important;
+  }
+}
+
+.secondary-button-text {
+  font-size: 30rpx;
+  font-weight: 500;
+  color: #ef4444;
 }

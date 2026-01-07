@@ -1,4 +1,5 @@
-import { View, Text, Button } from '@tarojs/components'
+import { View, Text } from '@tarojs/components'
+import { Button } from '@nutui/nutui-react-taro'
 import './index.scss'
 
 interface ControlButtonsProps {
