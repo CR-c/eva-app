@@ -1,7 +1,22 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Button, Image } from '@tarojs/components'
+import { View, Text, Image } from '@tarojs/components'
+import { Button } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
 import './index.scss'
+
+// 获取导航栏信息
+const getNavBarInfo = () => {
+  try {
+    const systemInfo = Taro.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 44
+    const menuButton = Taro.getMenuButtonBoundingClientRect()
+    const menuButtonMarginTop = menuButton.top - statusBarHeight
+    const navBarHeight = menuButton.height + menuButtonMarginTop * 2
+    return { statusBarHeight, navBarHeight, totalHeight: statusBarHeight + navBarHeight }
+  } catch {
+    return { statusBarHeight: 44, navBarHeight: 44, totalHeight: 88 }
+  }
+}
 
 interface WalkData {
   distance: number
@@ -13,6 +28,7 @@ interface WalkData {
 }
 
 function WalkSummary() {
+  const navBarInfo = getNavBarInfo()
   const [walkData, setWalkData] = useState<WalkData>({
     distance: 3.5,
     duration: 45,
@@ -23,10 +39,9 @@ function WalkSummary() {
   })
 
   useEffect(() => {
-    // 获取路由参数中的散步数据
     const instance = Taro.getCurrentInstance()
     const params = instance.router?.params
-    
+
     if (params) {
       setWalkData(prev => ({
         ...prev,
@@ -37,16 +52,11 @@ function WalkSummary() {
       }))
     }
 
-    // 设置页面标题
-    Taro.setNavigationBarTitle({
-      title: '散步总结'
-    })
+    Taro.setNavigationBarTitle({ title: '散步总结' })
   }, [])
 
   const handleClose = () => {
-    Taro.navigateBack({
-      delta: 2 // 返回到首页，跳过遛狗页面
-    })
+    Taro.navigateBack({ delta: 2 })
   }
 
   const handleMore = () => {
@@ -54,40 +64,27 @@ function WalkSummary() {
       itemList: ['保存到相册', '查看详细数据', '设置提醒'],
       success: (res) => {
         const actions = ['保存到相册', '查看详细数据', '设置提醒']
-        Taro.showToast({
-          title: actions[res.tapIndex],
-          icon: 'none'
-        })
+        Taro.showToast({ title: actions[res.tapIndex], icon: 'none' })
       }
     })
   }
 
   const handleViewRoute = () => {
-    Taro.showToast({
-      title: '查看路线详情',
-      icon: 'none'
-    })
+    Taro.showToast({ title: '查看路线详情', icon: 'none' })
   }
 
   const handleShare = () => {
     Taro.showShareMenu({
       withShareTicket: true,
       success: () => {
-        Taro.showToast({
-          title: '分享成功！',
-          icon: 'success'
-        })
+        Taro.showToast({ title: '分享成功！', icon: 'success' })
       },
       fail: () => {
-        // 如果分享失败，显示其他分享选项
         Taro.showActionSheet({
           itemList: ['分享到朋友圈', '复制链接', '保存图片'],
           success: (res) => {
             const shareActions = ['分享到朋友圈', '复制链接', '保存图片']
-            Taro.showToast({
-              title: shareActions[res.tapIndex],
-              icon: 'success'
-            })
+            Taro.showToast({ title: shareActions[res.tapIndex], icon: 'success' })
           }
         })
       }
@@ -95,9 +92,7 @@ function WalkSummary() {
   }
 
   const handleBackHome = () => {
-    Taro.reLaunch({
-      url: '/pages/home/index'
-    })
+    Taro.switchTab({ url: '/pages/home/index' })
   }
 
   return (
@@ -115,7 +110,13 @@ function WalkSummary() {
       </View>
 
       {/* 顶部导航 */}
-      <View className="top-navigation">
+      <View
+        className="top-navigation"
+        style={{
+          paddingTop: `${navBarInfo.statusBarHeight}px`,
+          height: `${navBarInfo.totalHeight}px`
+        }}
+      >
         <View className="nav-button" onClick={handleClose}>
           <Text className="nav-icon">✕</Text>
         </View>
@@ -143,7 +144,7 @@ function WalkSummary() {
           {/* 浮动头像徽章 */}
           <View className="avatar-badge">
             <View className="avatar-container">
-              <Image 
+              <Image
                 className="avatar-image"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuDNfgPRCj1TjU0V6N812loHs-xGWnz32LFlJNga9llQVEk7GqDBgEOI67iHM2yOVuLW8JDfQ8Z4HqTv-KKwKcVqNgsDCfuECHt-OwVqDRoLcpyMJ_rsv8HmG4PCezcstZNsiVwOORgtmzJQDKXOmBUJoeai8pA0zU6VqHUZSFIpEmJP-8z4ViwtfCE7cViVjaGwTVzibX5xEhcOLJA4RutA0yC8hO9YHai1nx-qxc-PfJ4KucX0Mnhwn5zg2DytkI0v9wqNFglPsJ0Y"
                 mode="aspectFill"
@@ -165,7 +166,6 @@ function WalkSummary() {
 
           {/* 次要统计网格 */}
           <View className="stats-grid">
-            {/* 时长 */}
             <View className="stat-item">
               <View className="stat-icon duration-icon">
                 <Text className="icon-text">⏱️</Text>
@@ -174,7 +174,6 @@ function WalkSummary() {
               <Text className="stat-unit">分钟</Text>
             </View>
 
-            {/* 配速 */}
             <View className="stat-item">
               <View className="stat-icon pace-icon">
                 <Text className="icon-text">⚡</Text>
@@ -183,7 +182,6 @@ function WalkSummary() {
               <Text className="stat-unit">分钟/公里</Text>
             </View>
 
-            {/* 卡路里 */}
             <View className="stat-item">
               <View className="stat-icon calories-icon">
                 <Text className="icon-text">🔥</Text>
@@ -196,7 +194,7 @@ function WalkSummary() {
           {/* 地图预览 */}
           <View className="map-preview" onClick={handleViewRoute}>
             <View className="map-container">
-              <Image 
+              <Image
                 className="map-image"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIZnXnvM2hC2GWxRodzLCTsA9GlsFZPPdjF-RPjdsjlcQkwN2W6iJFKjKMBQ5TeDzt_1yOxtYFH9Sw9blvvmo_fZoHdYA5Xtt95k3_QG7Lbhb8bAMus7J8wfUcZzgCujj13VYZPAjVOBW-6t-CStGyLC-wCN3fIfRU0e5VrnZIYW3T7lXYmx6bP0_PiAF29onp1TU6zWBbmv_8-6rLLQU8Vrk3LOGb7nsXCJXxDEmSf6BFIurpXAdwLPBTN7rhP7VN3ShWAhwsRZcb"
                 mode="aspectFill"
@@ -214,15 +212,34 @@ function WalkSummary() {
 
       {/* 底部操作按钮 */}
       <View className="bottom-actions">
-        {/* 分享按钮 */}
-        <Button className="share-button" onClick={handleShare}>
-          <Text className="share-icon">📤</Text>
-          <Text className="share-text">分享成就</Text>
+        <Button
+          type="primary"
+          block
+          onClick={handleShare}
+          style={{
+            marginBottom: '24rpx',
+            height: '96rpx',
+            borderRadius: '48rpx',
+            background: '#25aff4'
+          }}
+        >
+          <View className="flex items-center justify-center" style={{ gap: '12rpx' }}>
+            <Text style={{ fontSize: '32rpx' }}>📤</Text>
+            <Text className="text-white font-bold" style={{ fontSize: '30rpx' }}>分享成就</Text>
+          </View>
         </Button>
 
-        {/* 返回首页按钮 */}
-        <Button className="home-button" onClick={handleBackHome}>
-          <Text className="home-text">返回首页</Text>
+        <Button
+          block
+          onClick={handleBackHome}
+          style={{
+            height: '96rpx',
+            borderRadius: '48rpx',
+            background: '#f1f5f9',
+            color: '#0d171c'
+          }}
+        >
+          <Text className="font-bold" style={{ fontSize: '30rpx', color: '#0d171c' }}>返回首页</Text>
         </Button>
       </View>
     </View>
