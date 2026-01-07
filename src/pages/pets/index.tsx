@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Image, ScrollView } from '@tarojs/components'
-import { Card, ActionSheet } from '@nutui/nutui-react-taro'
+import { View, Text, Image } from '@tarojs/components'
+import { Button } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import BasePage from '@/components/BasePage'
 
 interface Pet {
   id: string
@@ -21,7 +20,7 @@ function Pets() {
     {
       id: '1',
       name: 'Buddy',
-      breed: 'Golden Retriever',
+      breed: '金毛寻回犬',
       age: 3,
       gender: 'male',
       size: 'large',
@@ -30,17 +29,8 @@ function Pets() {
       createdAt: '2024-01-15'
     }
   ])
-  const [showActionSheet, setShowActionSheet] = useState(false)
-  const [selectedPet, setSelectedPet] = useState<Pet | null>(null)
-
-  const actionSheetOptions = [
-    { name: '查看成长轨迹', value: 'timeline' },
-    { name: '编辑宠物信息', value: 'edit' },
-    { name: '添加成长照片', value: 'photo' }
-  ]
 
   useEffect(() => {
-    // 从本地存储加载宠物数据
     const loadPets = async () => {
       try {
         const storedPets = await Taro.getStorage({ key: 'pets' })
@@ -51,53 +41,34 @@ function Pets() {
         console.log('No stored pets found')
       }
     }
-    
     loadPets()
   }, [])
 
   const handleAddPet = () => {
-    Taro.navigateTo({
-      url: '/pages/addPet/index'
-    })
+    Taro.navigateTo({ url: '/pages/addPet/index' })
   }
 
   const handlePetDetail = (pet: Pet) => {
-    setSelectedPet(pet)
-    setShowActionSheet(true)
-  }
-
-  const handleActionSheetSelect = (item: any) => {
-    if (!selectedPet) return
-    
-    setShowActionSheet(false)
-    
-    switch (item.value) {
-      case 'timeline':
-        // 查看成长轨迹
-        Taro.navigateTo({
-          url: `/pages/growthTimeline/index?petId=${selectedPet.id}`
-        })
-        break
-      case 'edit':
-        // 编辑宠物信息
-        handleEditPet(selectedPet.id)
-        break
-      case 'photo':
-        // 添加成长照片
-        Taro.navigateTo({
-          url: `/pages/addGrowthPhoto/index?petId=${selectedPet.id}`
-        })
-        break
-    }
-  }
-
-  const handleEditPet = (petId: string) => {
-    Taro.navigateTo({
-      url: `/pages/addPet/index?id=${petId}&mode=edit`
+    Taro.showActionSheet({
+      itemList: ['查看成长轨迹', '编辑宠物信息', '添加成长照片'],
+      success: (res) => {
+        switch (res.tapIndex) {
+          case 0:
+            Taro.navigateTo({ url: `/pages/growthTimeline/index?petId=${pet.id}` })
+            break
+          case 1:
+            Taro.navigateTo({ url: `/pages/addPet/index?id=${pet.id}&mode=edit` })
+            break
+          case 2:
+            Taro.navigateTo({ url: `/pages/addGrowthPhoto/index?petId=${pet.id}` })
+            break
+        }
+      }
     })
   }
 
-  const handleDeletePet = (petId: string) => {
+  const handleDeletePet = (e: any, petId: string) => {
+    e.stopPropagation()
     Taro.showModal({
       title: '删除宠物',
       content: '确定要删除这个宠物信息吗？',
@@ -105,159 +76,221 @@ function Pets() {
         if (res.confirm) {
           const newPets = pets.filter(pet => pet.id !== petId)
           setPets(newPets)
-          
-          // 保存到本地存储
-          try {
-            await Taro.setStorage({
-              key: 'pets',
-              data: newPets
-            })
-            Taro.showToast({
-              title: '删除成功',
-              icon: 'success'
-            })
-          } catch (error) {
-            console.error('Failed to save pets:', error)
-          }
+          await Taro.setStorage({ key: 'pets', data: newPets })
+          Taro.showToast({ title: '删除成功', icon: 'success' })
         }
       }
     })
   }
 
   const getSizeText = (size: string) => {
-    const sizeMap = {
-      small: '小型',
-      medium: '中型',
-      large: '大型'
-    }
+    const sizeMap = { small: '小型', medium: '中型', large: '大型' }
     return sizeMap[size] || size
   }
 
-  const getGenderIcon = (gender: string) => {
-    return gender === 'male' ? '♂️' : '♀️'
-  }
-
   return (
-    <BasePage title="我的爱宠" safeArea={true} className="bg-gray-50">
-      <View className="relative min-h-screen">
-        <ScrollView className="h-screen px-4 pb-25" scrollY>
-          {pets.length === 0 ? (
-            // 空状态
-            <View className="flex flex-col items-center justify-center min-h-60vh text-center">
-              <View className="text-6xl mb-6 opacity-60">🐕</View>
-              <Text className="text-lg font-bold text-gray-900 mb-2 block">
-                还没有添加宠物
-              </Text>
-              <Text className="text-sm text-gray-500 leading-relaxed max-w-60 block">
-                点击右下角按钮添加你的第一个爱宠吧
-              </Text>
-            </View>
-          ) : (
-            // 宠物列表
-            <View className="flex flex-col gap-4">
-              {pets.map((pet) => (
-                <Card 
-                  key={pet.id} 
-                  className="bg-white rounded-2xl p-4 shadow-sm border border-gray-200 active:scale-98 transition-all cursor-pointer"
-                  onClick={() => handlePetDetail(pet)}
-                >
-                  <View className="flex gap-4">
-                    {/* 宠物头像 */}
-                    <View className="w-20 h-20 rounded-full overflow-hidden flex-shrink-0">
-                      {pet.photo ? (
-                        <Image 
-                          className="w-full h-full"
-                          src={pet.photo}
-                          mode="aspectFill"
-                        />
-                      ) : (
-                        <View className="w-full h-full bg-gray-200 flex items-center justify-center">
-                          <Text className="text-2xl opacity-60 block">🐕</Text>
-                        </View>
-                      )}
-                    </View>
+    <View className="min-h-screen bg-[#f5f7f8]">
+      {/* Header */}
+      <View
+        className="bg-white"
+        style={{ padding: '48rpx 32rpx 32rpx' }}
+      >
+        <Text
+          className="block font-bold text-[#0d171c]"
+          style={{ fontSize: '40rpx', marginBottom: '8rpx' }}
+        >
+          我的爱宠
+        </Text>
+        <Text className="block text-[#64748b]" style={{ fontSize: '28rpx' }}>
+          {pets.length > 0 ? `共 ${pets.length} 只宠物` : '添加你的第一只爱宠吧'}
+        </Text>
+      </View>
 
-                    {/* 宠物信息 */}
-                    <View className="flex-1 flex flex-col gap-2">
-                      <View className="flex justify-between items-start">
-                        <Text className="text-lg font-bold text-gray-900 leading-tight block">
+      {/* Content */}
+      <View style={{ padding: '24rpx 32rpx 200rpx' }}>
+        {pets.length === 0 ? (
+          /* Empty State */
+          <View
+            className="flex flex-col items-center justify-center bg-white"
+            style={{
+              padding: '80rpx 40rpx',
+              borderRadius: '32rpx',
+              marginTop: '40rpx'
+            }}
+          >
+            <Text style={{ fontSize: '120rpx', marginBottom: '32rpx' }}>🐕</Text>
+            <Text
+              className="block font-bold text-[#0d171c]"
+              style={{ fontSize: '36rpx', marginBottom: '16rpx' }}
+            >
+              还没有添加宠物
+            </Text>
+            <Text
+              className="block text-[#64748b] text-center"
+              style={{ fontSize: '28rpx', lineHeight: '40rpx', maxWidth: '400rpx' }}
+            >
+              点击下方按钮添加你的第一个爱宠吧
+            </Text>
+            <Button
+              type="primary"
+              onClick={handleAddPet}
+              style={{
+                marginTop: '48rpx',
+                height: '88rpx',
+                borderRadius: '44rpx',
+                background: '#25aff4',
+                paddingLeft: '48rpx',
+                paddingRight: '48rpx'
+              }}
+            >
+              <Text className="text-white font-bold" style={{ fontSize: '30rpx' }}>
+                + 添加宠物
+              </Text>
+            </Button>
+          </View>
+        ) : (
+          /* Pet List */
+          <View style={{ display: 'flex', flexDirection: 'column', gap: '24rpx' }}>
+            {pets.map((pet) => (
+              <View
+                key={pet.id}
+                className="bg-white"
+                style={{
+                  borderRadius: '32rpx',
+                  padding: '32rpx',
+                  border: '2rpx solid #f1f5f9'
+                }}
+                onClick={() => handlePetDetail(pet)}
+              >
+                <View className="flex" style={{ gap: '24rpx' }}>
+                  {/* Pet Avatar */}
+                  <View
+                    className="flex-shrink-0 overflow-hidden"
+                    style={{
+                      width: '160rpx',
+                      height: '160rpx',
+                      borderRadius: '24rpx'
+                    }}
+                  >
+                    {pet.photo ? (
+                      <Image
+                        src={pet.photo}
+                        mode="aspectFill"
+                        style={{ width: '100%', height: '100%' }}
+                      />
+                    ) : (
+                      <View
+                        className="flex items-center justify-center bg-[#f1f5f9]"
+                        style={{ width: '100%', height: '100%' }}
+                      >
+                        <Text style={{ fontSize: '60rpx' }}>🐕</Text>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Pet Info */}
+                  <View className="flex-1">
+                    <View className="flex items-center justify-between" style={{ marginBottom: '16rpx' }}>
+                      <View className="flex items-center" style={{ gap: '12rpx' }}>
+                        <Text
+                          className="font-bold text-[#0d171c]"
+                          style={{ fontSize: '34rpx' }}
+                        >
                           {pet.name}
                         </Text>
-                        <View className="flex gap-2">
-                          <View 
-                            className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center active:bg-blue-200 active:scale-90 transition-all cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleEditPet(pet.id)
-                            }}
-                          >
-                            <Text className="text-sm block">✏️</Text>
-                          </View>
-                          <View 
-                            className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center active:bg-red-200 active:scale-90 transition-all cursor-pointer"
-                            onClick={(e) => {
-                              e.stopPropagation()
-                              handleDeletePet(pet.id)
-                            }}
-                          >
-                            <Text className="text-sm block">🗑️</Text>
-                          </View>
-                        </View>
+                        <Text style={{ fontSize: '28rpx' }}>
+                          {pet.gender === 'male' ? '♂️' : '♀️'}
+                        </Text>
                       </View>
-                      
-                      <View className="flex flex-col gap-1">
-                        <View className="flex items-center">
-                          <Text className="text-sm text-gray-500 font-medium min-w-10 block">品种：</Text>
-                          <Text className="text-sm text-gray-900 font-semibold block">{pet.breed}</Text>
-                        </View>
-                        <View className="flex gap-4">
-                          <View className="flex items-center flex-1">
-                            <Text className="text-sm text-gray-500 font-medium min-w-10 block">年龄：</Text>
-                            <Text className="text-sm text-gray-900 font-semibold block">{pet.age}岁</Text>
-                          </View>
-                          <View className="flex items-center flex-1">
-                            <Text className="text-sm text-gray-500 font-medium min-w-10 block">性别：</Text>
-                            <Text className="text-sm text-gray-900 font-semibold block">{getGenderIcon(pet.gender)}</Text>
-                          </View>
-                          <View className="flex items-center flex-1">
-                            <Text className="text-sm text-gray-500 font-medium min-w-10 block">体型：</Text>
-                            <Text className="text-sm text-gray-900 font-semibold block">{getSizeText(pet.size)}</Text>
-                          </View>
-                        </View>
+                      <View
+                        className="flex items-center justify-center"
+                        style={{
+                          width: '56rpx',
+                          height: '56rpx',
+                          borderRadius: '28rpx',
+                          background: '#fee2e2'
+                        }}
+                        onClick={(e) => handleDeletePet(e, pet.id)}
+                      >
+                        <Text style={{ fontSize: '24rpx' }}>🗑️</Text>
                       </View>
+                    </View>
 
-                      {pet.bio && (
-                        <View className="mt-1">
-                          <Text className="text-sm text-gray-500 leading-relaxed bg-gray-50 px-3 py-2 rounded-lg border-l-3 border-primary-500 block">
-                            {pet.bio}
-                          </Text>
-                        </View>
-                      )}
+                    <Text
+                      className="block text-[#64748b]"
+                      style={{ fontSize: '26rpx', marginBottom: '12rpx' }}
+                    >
+                      {pet.breed}
+                    </Text>
+
+                    <View className="flex" style={{ gap: '24rpx' }}>
+                      <View
+                        className="flex items-center justify-center bg-[#eff6ff]"
+                        style={{
+                          padding: '8rpx 20rpx',
+                          borderRadius: '20rpx'
+                        }}
+                      >
+                        <Text className="text-[#25aff4]" style={{ fontSize: '24rpx' }}>
+                          {pet.age}岁
+                        </Text>
+                      </View>
+                      <View
+                        className="flex items-center justify-center bg-[#f0fdf4]"
+                        style={{
+                          padding: '8rpx 20rpx',
+                          borderRadius: '20rpx'
+                        }}
+                      >
+                        <Text className="text-[#22c55e]" style={{ fontSize: '24rpx' }}>
+                          {getSizeText(pet.size)}
+                        </Text>
+                      </View>
                     </View>
                   </View>
-                </Card>
-              ))}
-            </View>
-          )}
-        </ScrollView>
+                </View>
 
-        {/* 悬浮添加按钮 */}
-        <View 
-          className="fixed bottom-6 right-6 w-14 h-14 bg-primary-500 rounded-full flex items-center justify-center shadow-lg shadow-primary-500/30 z-10 active:scale-90 transition-all cursor-pointer"
+                {pet.bio && (
+                  <View
+                    className="bg-[#f8fafc]"
+                    style={{
+                      marginTop: '24rpx',
+                      padding: '20rpx 24rpx',
+                      borderRadius: '16rpx',
+                      borderLeft: '6rpx solid #25aff4'
+                    }}
+                  >
+                    <Text className="text-[#64748b]" style={{ fontSize: '26rpx', lineHeight: '38rpx' }}>
+                      {pet.bio}
+                    </Text>
+                  </View>
+                )}
+              </View>
+            ))}
+          </View>
+        )}
+      </View>
+
+      {/* Floating Add Button */}
+      {pets.length > 0 && (
+        <View
+          className="fixed flex items-center justify-center"
+          style={{
+            bottom: '180rpx',
+            right: '32rpx',
+            width: '112rpx',
+            height: '112rpx',
+            borderRadius: '56rpx',
+            background: 'linear-gradient(135deg, #25aff4, #1e9fe0)',
+            boxShadow: '0 8rpx 24rpx rgba(37, 175, 244, 0.4)',
+            zIndex: 100
+          }}
           onClick={handleAddPet}
         >
-          <Text className="text-2xl font-light text-white leading-none block">+</Text>
+          <Text className="text-white font-light" style={{ fontSize: '56rpx', lineHeight: '56rpx' }}>+</Text>
         </View>
-
-        {/* ActionSheet */}
-        <ActionSheet
-          visible={showActionSheet}
-          options={actionSheetOptions}
-          onSelect={handleActionSheetSelect}
-          onCancel={() => setShowActionSheet(false)}
-        />
-      </View>
-    </BasePage>
+      )}
+    </View>
   )
 }
 
