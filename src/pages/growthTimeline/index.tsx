@@ -1,8 +1,22 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
-import { Card, Button, Tag, Loading, Empty } from '@nutui/nutui-react-taro'
+import { Button } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import BasePage from '@/components/BasePage'
+import './index.scss'
+
+// 获取导航栏信息
+const getNavBarInfo = () => {
+  try {
+    const systemInfo = Taro.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 44
+    const menuButton = Taro.getMenuButtonBoundingClientRect()
+    const menuButtonMarginTop = menuButton.top - statusBarHeight
+    const navBarHeight = menuButton.height + menuButtonMarginTop * 2
+    return { statusBarHeight, navBarHeight, totalHeight: statusBarHeight + navBarHeight }
+  } catch {
+    return { statusBarHeight: 44, navBarHeight: 44, totalHeight: 88 }
+  }
+}
 
 interface Pet {
   id: string
@@ -28,6 +42,7 @@ interface GrowthPhoto {
 }
 
 function GrowthTimeline() {
+  const navBarInfo = getNavBarInfo()
   const [pet, setPet] = useState<Pet | null>(null)
   const [growthPhotos, setGrowthPhotos] = useState<GrowthPhoto[]>([])
   const [activeFilter, setActiveFilter] = useState('all')
@@ -35,17 +50,15 @@ function GrowthTimeline() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // 获取路由参数
     const instance = Taro.getCurrentInstance()
     const params = instance.router?.params
-    
+
     if (params?.petId) {
       setPetId(params.petId)
       loadPetData(params.petId)
       loadGrowthPhotos(params.petId)
     }
-    
-    // 模拟加载时间
+
     const timer = setTimeout(() => {
       setLoading(false)
     }, 800)
@@ -81,6 +94,10 @@ function GrowthTimeline() {
     }
   }
 
+  const handleBack = () => {
+    Taro.navigateBack()
+  }
+
   const handleAddPhoto = () => {
     Taro.navigateTo({
       url: `/pages/addGrowthPhoto/index?petId=${petId}`
@@ -112,7 +129,7 @@ function GrowthTimeline() {
   const getAgeText = (ageInMonths: number) => {
     const years = Math.floor(ageInMonths / 12)
     const months = ageInMonths % 12
-    
+
     if (years === 0) {
       return `${months}个月大`
     } else if (months === 0) {
@@ -124,11 +141,11 @@ function GrowthTimeline() {
 
   const getThenAndNowPhotos = () => {
     if (growthPhotos.length === 0) return { then: null, now: null }
-    
-    const sortedPhotos = [...growthPhotos].sort((a, b) => 
+
+    const sortedPhotos = [...growthPhotos].sort((a, b) =>
       new Date(a.date).getTime() - new Date(b.date).getTime()
     )
-    
+
     return {
       then: sortedPhotos[0] || null,
       now: sortedPhotos[sortedPhotos.length - 1] || null
@@ -146,178 +163,385 @@ function GrowthTimeline() {
 
   if (loading) {
     return (
-      <BasePage 
-        title={`${pet?.name || '宠物'}的成长`} 
-        safeArea={true} 
-        className="bg-gradient-to-b from-gray-50 to-white"
-        rightContent={
-          <Button size="small" type="primary" onClick={handleAddPhoto}>
-            📷
-          </Button>
-        }
-      >
-        <View className="flex justify-center items-center h-64">
-          <Loading type="spinner" />
-          <Text className="ml-2 text-gray-500">加载中...</Text>
+      <View className="min-h-screen bg-[#f5f7f8]">
+        {/* 自定义导航栏 */}
+        <View
+          className="bg-white"
+          style={{
+            paddingTop: `${navBarInfo.statusBarHeight}px`,
+            borderBottom: '2rpx solid #f1f5f9'
+          }}
+        >
+          <View
+            className="flex items-center justify-between"
+            style={{
+              padding: '0 32rpx',
+              height: `${navBarInfo.navBarHeight}px`
+            }}
+          >
+            <View
+              className="flex items-center justify-center bg-[#f1f5f9]"
+              style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+              onClick={handleBack}
+            >
+              <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
+            </View>
+            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+              {pet?.name || '宠物'}的成长
+            </Text>
+            <View style={{ width: '72rpx' }} />
+          </View>
         </View>
-      </BasePage>
+
+        {/* 加载骨架屏 */}
+        <View style={{ padding: '48rpx 32rpx' }}>
+          <View
+            className="bg-[#e2e8f0]"
+            style={{
+              height: '300rpx',
+              borderRadius: '24rpx',
+              marginBottom: '32rpx',
+              animation: 'pulse 1.5s ease-in-out infinite'
+            }}
+          />
+          <View className="flex" style={{ gap: '24rpx', marginBottom: '32rpx' }}>
+            {[1, 2, 3, 4].map(i => (
+              <View
+                key={i}
+                className="bg-[#e2e8f0]"
+                style={{
+                  width: '160rpx',
+                  height: '64rpx',
+                  borderRadius: '32rpx'
+                }}
+              />
+            ))}
+          </View>
+          <View
+            className="bg-[#e2e8f0]"
+            style={{ height: '400rpx', borderRadius: '24rpx' }}
+          />
+        </View>
+      </View>
     )
   }
 
   return (
-    <BasePage 
-      title={`${pet?.name || '宠物'}的成长`} 
-      safeArea={true} 
-      className="bg-gradient-to-b from-gray-50 to-white"
-      rightContent={
-        <Button size="small" type="primary" onClick={handleAddPhoto}>
-          📷
-        </Button>
-      }
-    >
-      <ScrollView className="h-screen pb-8" scrollY>
+    <View className="min-h-screen bg-[#f5f7f8]">
+      {/* 自定义导航栏 */}
+      <View
+        className="bg-white"
+        style={{
+          paddingTop: `${navBarInfo.statusBarHeight}px`,
+          borderBottom: '2rpx solid #f1f5f9',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100
+        }}
+      >
+        <View
+          className="flex items-center justify-between"
+          style={{
+            padding: '0 32rpx',
+            height: `${navBarInfo.navBarHeight}px`
+          }}
+        >
+          <View
+            className="flex items-center justify-center bg-[#f1f5f9]"
+            style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+            onClick={handleBack}
+          >
+            <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
+          </View>
+          <View className="flex flex-col items-center">
+            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+              {pet?.name || '宠物'}的成长
+            </Text>
+            <Text className="text-[#25aff4]" style={{ fontSize: '24rpx' }}>
+              {pet?.age || 0}岁
+            </Text>
+          </View>
+          <View
+            className="flex items-center justify-center bg-[#eff6ff]"
+            style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+            onClick={handleAddPhoto}
+          >
+            <Text style={{ fontSize: '32rpx', color: '#25aff4' }}>📷</Text>
+          </View>
+        </View>
+      </View>
+
+      <ScrollView scrollY style={{ height: `calc(100vh - ${navBarInfo.totalHeight}px)` }}>
         {/* Then vs Now 对比区域 */}
         {(then || now) && (
-          <View className="px-4 py-6">
-            <View className="flex justify-between items-center mb-4">
-              <Text className="text-lg font-bold text-gray-900">那时 vs. 现在</Text>
-              <Button size="small" fill="outline" onClick={handleViewGallery}>
-                查看相册
-              </Button>
+          <View style={{ padding: '32rpx' }}>
+            <View
+              className="flex items-center justify-between"
+              style={{ marginBottom: '24rpx' }}
+            >
+              <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+                那时 vs. 现在
+              </Text>
+              <Text
+                className="text-[#25aff4] font-medium"
+                style={{ fontSize: '26rpx' }}
+                onClick={handleViewGallery}
+              >
+                查看相册 →
+              </Text>
             </View>
-            
-            <View className="grid grid-cols-2 gap-4">
+
+            <View className="flex" style={{ gap: '24rpx' }}>
               {/* Then */}
-              <Card className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+              <View
+                className="flex-1 bg-white"
+                style={{
+                  borderRadius: '24rpx',
+                  padding: '16rpx',
+                  boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.06)'
+                }}
+              >
                 {then ? (
                   <>
-                    <Image 
-                      className="w-full h-32 rounded-xl mb-3"
+                    <Image
                       src={then.photo}
                       mode="aspectFill"
+                      style={{
+                        width: '100%',
+                        height: '240rpx',
+                        borderRadius: '16rpx',
+                        marginBottom: '16rpx'
+                      }}
                     />
-                    <Text className="text-sm font-semibold text-gray-900 mb-1 block">
+                    <Text
+                      className="block font-bold text-[#0d171c]"
+                      style={{ fontSize: '26rpx', marginBottom: '4rpx' }}
+                    >
                       那时 ({getAgeText(then.ageInMonths)})
                     </Text>
-                    <Text className="text-xs text-gray-500 block">
+                    <Text className="block text-[#64748b]" style={{ fontSize: '22rpx' }}>
                       {formatDate(then.date)}
                     </Text>
                   </>
                 ) : (
-                  <View className="h-32 flex items-center justify-center bg-gray-50 rounded-xl mb-3">
-                    <Text className="text-sm text-gray-400">暂无早期照片</Text>
+                  <View
+                    className="flex items-center justify-center bg-[#f8fafc]"
+                    style={{ height: '240rpx', borderRadius: '16rpx' }}
+                  >
+                    <Text className="text-[#94a3b8]" style={{ fontSize: '24rpx' }}>
+                      暂无早期照片
+                    </Text>
                   </View>
                 )}
-              </Card>
+              </View>
 
               {/* Now */}
-              <Card className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
-                {now ? (
+              <View
+                className="flex-1 bg-white"
+                style={{
+                  borderRadius: '24rpx',
+                  padding: '16rpx',
+                  boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.06)'
+                }}
+              >
+                {now && now !== then ? (
                   <>
-                    <Image 
-                      className="w-full h-32 rounded-xl mb-3"
+                    <Image
                       src={now.photo}
                       mode="aspectFill"
+                      style={{
+                        width: '100%',
+                        height: '240rpx',
+                        borderRadius: '16rpx',
+                        marginBottom: '16rpx'
+                      }}
                     />
-                    <Text className="text-sm font-semibold text-gray-900 mb-1 block">
+                    <Text
+                      className="block font-bold text-[#0d171c]"
+                      style={{ fontSize: '26rpx', marginBottom: '4rpx' }}
+                    >
                       现在 ({getAgeText(now.ageInMonths)})
                     </Text>
-                    <Text className="text-xs text-gray-500 block">
+                    <Text className="block text-[#64748b]" style={{ fontSize: '22rpx' }}>
                       {formatDate(now.date)}
                     </Text>
                   </>
                 ) : (
-                  <View className="h-32 flex items-center justify-center bg-gray-50 rounded-xl mb-3">
-                    <Text className="text-sm text-gray-400">暂无近期照片</Text>
+                  <View
+                    className="flex items-center justify-center bg-[#f8fafc]"
+                    style={{ height: '240rpx', borderRadius: '16rpx' }}
+                  >
+                    <Text className="text-[#94a3b8]" style={{ fontSize: '24rpx' }}>
+                      暂无近期照片
+                    </Text>
                   </View>
                 )}
-              </Card>
+              </View>
             </View>
           </View>
         )}
 
         {/* 筛选器 */}
-        <View className="px-4 py-4">
-          <ScrollView className="w-full" scrollX>
-            <View className="flex gap-3 pb-2">
+        <View style={{ padding: '0 32rpx', marginBottom: '32rpx' }}>
+          <ScrollView scrollX style={{ whiteSpace: 'nowrap' }}>
+            <View className="flex" style={{ gap: '20rpx', paddingBottom: '16rpx' }}>
               {filterOptions.map((option) => (
-                <Tag
+                <View
                   key={option.key}
-                  type={activeFilter === option.key ? 'primary' : 'default'}
+                  className="flex items-center justify-center"
+                  style={{
+                    height: '72rpx',
+                    padding: '0 32rpx',
+                    borderRadius: '36rpx',
+                    background: activeFilter === option.key ? '#25aff4' : '#ffffff',
+                    border: activeFilter === option.key ? 'none' : '2rpx solid #e2e8f0',
+                    boxShadow: activeFilter === option.key ? '0 8rpx 24rpx rgba(37, 175, 244, 0.3)' : 'none'
+                  }}
                   onClick={() => setActiveFilter(option.key)}
-                  className="px-4 py-2 rounded-full cursor-pointer"
                 >
-                  {option.label}
-                </Tag>
+                  <Text
+                    style={{
+                      fontSize: '26rpx',
+                      fontWeight: activeFilter === option.key ? '700' : '500',
+                      color: activeFilter === option.key ? '#ffffff' : '#0d171c'
+                    }}
+                  >
+                    {option.label}
+                  </Text>
+                </View>
               ))}
             </View>
           </ScrollView>
         </View>
 
         {/* 时间线 */}
-        <View className="px-4 pb-8">
+        <View style={{ padding: '0 32rpx 64rpx', position: 'relative' }}>
           {growthPhotos.length === 0 ? (
-            <Empty
-              image="https://img12.360buyimg.com/imagetools/jfs/t1/33761/13/9873/4611/5c9b8c2fE676a2df8/de7dc02b1b76c3d8.png"
-              description="还没有成长记录"
+            <View
+              className="flex flex-col items-center justify-center text-center"
+              style={{ minHeight: '500rpx' }}
             >
-              <Button type="primary" onClick={handleAddPhoto}>
-                添加第一张成长照片
+              <Text style={{ fontSize: '120rpx', marginBottom: '32rpx', opacity: 0.6 }}>📷</Text>
+              <Text
+                className="font-bold text-[#0d171c]"
+                style={{ fontSize: '32rpx', marginBottom: '16rpx' }}
+              >
+                还没有成长记录
+              </Text>
+              <Text
+                className="text-[#64748b]"
+                style={{ fontSize: '26rpx', lineHeight: '40rpx', maxWidth: '400rpx', marginBottom: '32rpx' }}
+              >
+                记录{pet?.name || '宠物'}的成长瞬间
+              </Text>
+              <Button
+                type="primary"
+                onClick={handleAddPhoto}
+                style={{
+                  height: '88rpx',
+                  borderRadius: '44rpx',
+                  background: '#25aff4',
+                  paddingLeft: '48rpx',
+                  paddingRight: '48rpx'
+                }}
+              >
+                <Text className="text-white font-bold" style={{ fontSize: '28rpx' }}>
+                  添加第一张成长照片
+                </Text>
               </Button>
-            </Empty>
+            </View>
           ) : (
-            <View className="relative">
+            <View style={{ position: 'relative' }}>
               {/* 时间线轴 */}
-              <View className="absolute left-6 top-0 bottom-0 w-0.5 bg-gradient-to-b from-primary-500 to-primary-300" />
-              
-              <View className="space-y-6">
+              <View
+                style={{
+                  position: 'absolute',
+                  left: '24rpx',
+                  top: 0,
+                  bottom: 0,
+                  width: '4rpx',
+                  background: 'linear-gradient(to bottom, #25aff4 0%, rgba(37,175,244,0.2) 100%)',
+                  borderRadius: '2rpx'
+                }}
+              />
+
+              <View style={{ display: 'flex', flexDirection: 'column', gap: '48rpx' }}>
                 {growthPhotos.map((photo, index) => (
-                  <View key={photo.id} className="relative flex items-start gap-4">
+                  <View
+                    key={photo.id}
+                    style={{ position: 'relative', paddingLeft: '64rpx' }}
+                    onClick={() => handlePhotoDetail(photo.id)}
+                  >
                     {/* 时间线节点 */}
-                    <View className="relative z-10 w-3 h-3 bg-primary-500 rounded-full border-2 border-white shadow-lg mt-4" />
-                    
+                    <View
+                      style={{
+                        position: 'absolute',
+                        left: '8rpx',
+                        top: '32rpx',
+                        width: '32rpx',
+                        height: '32rpx',
+                        background: '#25aff4',
+                        borderRadius: '16rpx',
+                        border: '6rpx solid #f5f7f8',
+                        boxShadow: '0 4rpx 8rpx rgba(37,175,244,0.2)'
+                      }}
+                    />
+
                     {/* 照片卡片 */}
-                    <Card 
-                      className="flex-1 bg-white rounded-2xl p-4 shadow-sm border border-gray-100 active:scale-98 transition-all cursor-pointer"
-                      onClick={() => handlePhotoDetail(photo.id)}
+                    <View
+                      className="bg-white"
+                      style={{
+                        borderRadius: '24rpx',
+                        overflow: 'hidden',
+                        boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)',
+                        border: '2rpx solid rgba(0,0,0,0.05)'
+                      }}
                     >
-                      <View className="flex gap-4">
-                        <Image 
-                          className="w-20 h-20 rounded-xl flex-shrink-0"
-                          src={photo.photo}
-                          mode="aspectFill"
-                        />
-                        <View className="flex-1">
-                          <View className="flex justify-between items-start mb-2">
-                            <Text className="text-sm font-semibold text-gray-900 block">
-                              成长记录 #{growthPhotos.length - index}
-                            </Text>
-                            <Text className="text-xs text-gray-400">⋯</Text>
-                          </View>
-                          
-                          <Text className="text-xs text-gray-500 mb-2 block">
-                            {formatDate(photo.date)} • {getAgeText(photo.ageInMonths)}
+                      <Image
+                        src={photo.photo}
+                        mode="aspectFill"
+                        style={{ width: '100%', height: '300rpx' }}
+                      />
+                      <View style={{ padding: '24rpx' }}>
+                        <View className="flex items-center justify-between" style={{ marginBottom: '12rpx' }}>
+                          <Text className="font-bold text-[#0d171c]" style={{ fontSize: '28rpx' }}>
+                            成长记录 #{growthPhotos.length - index}
                           </Text>
-                          
-                          {photo.notes && (
-                            <Text className="text-sm text-gray-700 mb-3 leading-relaxed block">
-                              {photo.notes}
-                            </Text>
-                          )}
-                          
-                          <Tag type="success" size="small">
-                            成长
-                          </Tag>
+                          <Text className="text-[#94a3b8]" style={{ fontSize: '24rpx' }}>⋯</Text>
                         </View>
+                        <Text className="block text-[#64748b]" style={{ fontSize: '24rpx', marginBottom: '12rpx' }}>
+                          {formatDate(photo.date)} • {getAgeText(photo.ageInMonths)}
+                        </Text>
+                        {photo.notes && (
+                          <Text
+                            className="block text-[#475569]"
+                            style={{ fontSize: '26rpx', lineHeight: '40rpx' }}
+                          >
+                            {photo.notes}
+                          </Text>
+                        )}
                       </View>
-                    </Card>
+                    </View>
                   </View>
                 ))}
-                
+
                 {/* 时间线起点 */}
-                <View className="relative flex items-center gap-4">
-                  <View className="w-4 h-4 bg-accent-500 rounded-full border-2 border-white shadow-lg" />
-                  <Text className="text-sm text-gray-600">
+                <View
+                  className="flex items-center"
+                  style={{ position: 'relative', paddingLeft: '64rpx', height: '64rpx' }}
+                >
+                  <View
+                    style={{
+                      position: 'absolute',
+                      left: '12rpx',
+                      width: '24rpx',
+                      height: '24rpx',
+                      background: '#94a3b8',
+                      borderRadius: '12rpx',
+                      border: '6rpx solid #f5f7f8'
+                    }}
+                  />
+                  <Text className="text-[#94a3b8] italic" style={{ fontSize: '26rpx' }}>
                     {pet?.name}的诞生 • {pet ? formatDate(pet.createdAt) : ''}
                   </Text>
                 </View>
@@ -326,7 +550,7 @@ function GrowthTimeline() {
           )}
         </View>
       </ScrollView>
-    </BasePage>
+    </View>
   )
 }
 

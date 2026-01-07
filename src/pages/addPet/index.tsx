@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Image } from '@tarojs/components'
+import { View, Text, Image, ScrollView } from '@tarojs/components'
+import { Button, Input, TextArea, Picker } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import { 
-  Form, 
-  FormItem, 
-  Input, 
-  TextArea, 
-  Picker, 
-  Toast,
-  Loading
-} from '@nutui/nutui-react-taro'
-import FormPage from '@/components/FormPage'
 import './index.scss'
+
+// 获取导航栏信息
+const getNavBarInfo = () => {
+  try {
+    const systemInfo = Taro.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 44
+    const menuButton = Taro.getMenuButtonBoundingClientRect()
+    const menuButtonMarginTop = menuButton.top - statusBarHeight
+    const navBarHeight = menuButton.height + menuButtonMarginTop * 2
+    return { statusBarHeight, navBarHeight, totalHeight: statusBarHeight + navBarHeight }
+  } catch {
+    return { statusBarHeight: 44, navBarHeight: 44, totalHeight: 88 }
+  }
+}
 
 interface Pet {
   id: string
@@ -26,26 +31,40 @@ interface Pet {
 }
 
 function AddPet() {
+  const navBarInfo = getNavBarInfo()
   const [loading, setLoading] = useState(true)
-  const [form] = Form.useForm()
+  const [saving, setSaving] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
   const [editingId, setEditingId] = useState('')
   const [photoUrl, setPhotoUrl] = useState('')
 
+  // 表单数据
+  const [name, setName] = useState('')
+  const [selectedBreed, setSelectedBreed] = useState('')
+  const [age, setAge] = useState('')
+  const [selectedGender, setSelectedGender] = useState('male')
+  const [selectedSize, setSelectedSize] = useState('medium')
+  const [bio, setBio] = useState('')
+
+  // Picker 状态
+  const [breedPickerVisible, setBreedPickerVisible] = useState(false)
+  const [genderPickerVisible, setGenderPickerVisible] = useState(false)
+  const [sizePickerVisible, setSizePickerVisible] = useState(false)
+
   // 品种选项
   const breeds = [
-    '金毛寻回犬',
-    '拉布拉多',
-    '贵宾犬',
-    '法国斗牛犬',
-    '比格犬',
-    '边境牧羊犬',
-    '哈士奇',
-    '萨摩耶',
-    '柯基',
-    '泰迪',
-    '混血犬',
-    '其他'
+    { text: '金毛寻回犬', value: '金毛寻回犬' },
+    { text: '拉布拉多', value: '拉布拉多' },
+    { text: '贵宾犬', value: '贵宾犬' },
+    { text: '法国斗牛犬', value: '法国斗牛犬' },
+    { text: '比格犬', value: '比格犬' },
+    { text: '边境牧羊犬', value: '边境牧羊犬' },
+    { text: '哈士奇', value: '哈士奇' },
+    { text: '萨摩耶', value: '萨摩耶' },
+    { text: '柯基', value: '柯基' },
+    { text: '泰迪', value: '泰迪' },
+    { text: '混血犬', value: '混血犬' },
+    { text: '其他', value: '其他' }
   ]
 
   // 性别选项
@@ -53,7 +72,7 @@ function AddPet() {
     { text: '♂️ 公', value: 'male' },
     { text: '♀️ 母', value: 'female' }
   ]
-  
+
   // 体型选项
   const sizeOptions = [
     { text: '小型', value: 'small' },
@@ -62,20 +81,19 @@ function AddPet() {
   ]
 
   useEffect(() => {
-    // 模拟加载时间
-    const timer = setTimeout(() => {
-      setLoading(false)
-    }, 800)
-
     // 检查是否是编辑模式
     const instance = Taro.getCurrentInstance()
     const params = instance.router?.params
-    
+
     if (params?.mode === 'edit' && params?.id) {
       setIsEditing(true)
       setEditingId(params.id)
       loadPetData(params.id)
     }
+
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 800)
 
     return () => clearTimeout(timer)
   }, [])
@@ -87,24 +105,22 @@ function AddPet() {
         const pets = storedPets.data as Pet[]
         const pet = pets.find(p => p.id === petId)
         if (pet) {
-          // Set form values using NutUI Form with correct picker format
-          const genderText = genderOptions.find(g => g.value === pet.gender)?.text || '♂️ 公'
-          const sizeText = sizeOptions.find(s => s.value === pet.size)?.text || '中型'
-          
-          form.setFieldsValue({
-            name: pet.name,
-            breed: [pet.breed],
-            age: pet.age.toString(),
-            gender: [genderText],
-            size: [sizeText],
-            bio: pet.bio || ''
-          })
+          setName(pet.name)
+          setSelectedBreed(pet.breed)
+          setAge(pet.age.toString())
+          setSelectedGender(pet.gender)
+          setSelectedSize(pet.size)
+          setBio(pet.bio || '')
           setPhotoUrl(pet.photo || '')
         }
       }
     } catch (error) {
       console.error('Failed to load pet data:', error)
     }
+  }
+
+  const handleBack = () => {
+    Taro.navigateBack()
   }
 
   const handlePhotoUpload = () => {
@@ -118,12 +134,28 @@ function AddPet() {
       },
       fail: (error) => {
         console.error('Failed to choose image:', error)
-        Toast.show('选择图片失败')
+        Taro.showToast({ title: '选择图片失败', icon: 'none' })
       }
     })
   }
 
-  const handleSubmit = async (values: any) => {
+  const handleSubmit = async () => {
+    // 验证表单
+    if (!name.trim()) {
+      Taro.showToast({ title: '请输入宠物名称', icon: 'none' })
+      return
+    }
+    if (!selectedBreed) {
+      Taro.showToast({ title: '请选择宠物品种', icon: 'none' })
+      return
+    }
+    if (!age || parseInt(age) < 0 || parseInt(age) > 30) {
+      Taro.showToast({ title: '请输入有效年龄(0-30)', icon: 'none' })
+      return
+    }
+
+    setSaving(true)
+
     try {
       // 获取现有宠物数据
       let pets: Pet[] = []
@@ -136,210 +168,542 @@ function AddPet() {
         console.log('No existing pets found')
       }
 
-      // Convert picker values back to the expected format
-      let gender: 'male' | 'female' = 'male'
-      if (Array.isArray(values.gender) && values.gender.length > 0) {
-        const genderIndex = genderOptions.map(g => g.text).indexOf(values.gender[0])
-        gender = genderIndex >= 0 ? genderOptions[genderIndex].value as 'male' | 'female' : 'male'
-      }
-
-      let size: 'small' | 'medium' | 'large' = 'medium'
-      if (Array.isArray(values.size) && values.size.length > 0) {
-        const sizeIndex = sizeOptions.map(s => s.text).indexOf(values.size[0])
-        size = sizeIndex >= 0 ? sizeOptions[sizeIndex].value as 'small' | 'medium' | 'large' : 'medium'
-      }
-
-      let breed = ''
-      if (Array.isArray(values.breed) && values.breed.length > 0) {
-        breed = values.breed[0]
-      }
-
       const petData: Pet = {
         id: isEditing ? editingId : Date.now().toString(),
-        name: values.name.trim(),
-        breed: breed.trim(),
-        age: parseInt(values.age),
-        gender: gender,
-        size: size,
+        name: name.trim(),
+        breed: selectedBreed,
+        age: parseInt(age),
+        gender: selectedGender as 'male' | 'female',
+        size: selectedSize as 'small' | 'medium' | 'large',
         photo: photoUrl,
-        bio: values.bio?.trim() || '',
+        bio: bio.trim(),
         createdAt: isEditing ? pets.find(p => p.id === editingId)?.createdAt || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
       }
 
       if (isEditing) {
-        // 更新现有宠物
         const index = pets.findIndex(p => p.id === editingId)
         if (index !== -1) {
           pets[index] = petData
         }
       } else {
-        // 添加新宠物
         pets.push(petData)
       }
 
-      // 保存到本地存储
       await Taro.setStorage({
         key: 'pets',
         data: pets
       })
 
-      // 延迟返回，让用户看到成功提示
+      Taro.showToast({
+        title: isEditing ? '更新成功' : '保存成功',
+        icon: 'success'
+      })
+
       setTimeout(() => {
         Taro.navigateBack()
       }, 1500)
 
     } catch (error) {
       console.error('Failed to save pet:', error)
-      throw new Error('保存失败，请重试')
+      Taro.showToast({ title: '保存失败，请重试', icon: 'none' })
+    } finally {
+      setSaving(false)
     }
+  }
+
+  const getGenderText = () => {
+    const option = genderOptions.find(g => g.value === selectedGender)
+    return option ? option.text : '请选择性别'
+  }
+
+  const getSizeText = () => {
+    const option = sizeOptions.find(s => s.value === selectedSize)
+    return option ? option.text : '请选择体型'
   }
 
   if (loading) {
     return (
-      <FormPage title={isEditing ? '编辑宠物' : '添加新宠物'} showSubmitButton={false}>
-        <View className="flex justify-center items-center h-64">
-          <Loading type="spinner" />
-          <Text className="ml-2 text-gray-500">加载中...</Text>
+      <View className="min-h-screen bg-[#f5f7f8]">
+        {/* 自定义导航栏 */}
+        <View
+          className="bg-white"
+          style={{
+            paddingTop: `${navBarInfo.statusBarHeight}px`,
+            borderBottom: '2rpx solid #f1f5f9'
+          }}
+        >
+          <View
+            className="flex items-center justify-between"
+            style={{
+              padding: '0 32rpx',
+              height: `${navBarInfo.navBarHeight}px`
+            }}
+          >
+            <View
+              className="flex items-center justify-center bg-[#f1f5f9]"
+              style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+              onClick={handleBack}
+            >
+              <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
+            </View>
+            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+              {isEditing ? '编辑宠物' : '添加新宠物'}
+            </Text>
+            <View style={{ width: '72rpx' }} />
+          </View>
         </View>
-      </FormPage>
+
+        {/* 加载骨架屏 */}
+        <View style={{ padding: '48rpx 32rpx' }}>
+          {/* 照片骨架 */}
+          <View className="flex flex-col items-center" style={{ marginBottom: '48rpx' }}>
+            <View
+              className="bg-[#e2e8f0]"
+              style={{
+                width: '256rpx',
+                height: '256rpx',
+                borderRadius: '128rpx',
+                animation: 'pulse 1.5s ease-in-out infinite'
+              }}
+            />
+            <View
+              className="bg-[#e2e8f0]"
+              style={{
+                width: '200rpx',
+                height: '32rpx',
+                borderRadius: '16rpx',
+                marginTop: '24rpx'
+              }}
+            />
+          </View>
+          {/* 表单骨架 */}
+          {[1, 2, 3, 4].map(i => (
+            <View
+              key={i}
+              className="bg-[#e2e8f0]"
+              style={{
+                height: '120rpx',
+                borderRadius: '24rpx',
+                marginBottom: '24rpx'
+              }}
+            />
+          ))}
+        </View>
+      </View>
     )
   }
 
   return (
-    <FormPage
-      title={isEditing ? '编辑宠物' : '添加新宠物'}
-      onSubmit={handleSubmit}
-      submitText={isEditing ? '更新宠物资料' : '保存宠物资料'}
-      className="bg-gray-50"
-    >
-      {/* 照片上传器 */}
-      <View className="mb-6 flex flex-col items-center">
-        <View 
-          className="relative w-32 h-32 bg-gray-100 rounded-full border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-          onClick={handlePhotoUpload}
+    <View className="min-h-screen bg-[#f5f7f8]">
+      {/* 自定义导航栏 */}
+      <View
+        className="bg-white"
+        style={{
+          paddingTop: `${navBarInfo.statusBarHeight}px`,
+          borderBottom: '2rpx solid #f1f5f9',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100
+        }}
+      >
+        <View
+          className="flex items-center justify-between"
+          style={{
+            padding: '0 32rpx',
+            height: `${navBarInfo.navBarHeight}px`
+          }}
         >
-          {photoUrl ? (
-            <Image 
-              className="w-full h-full rounded-full object-cover"
-              src={photoUrl}
-              mode="aspectFill"
-            />
-          ) : (
-            <View className="flex flex-col items-center">
-              <Text className="text-3xl mb-1">📷</Text>
-              <Text className="text-xs text-gray-500">上传照片</Text>
+          <View
+            className="flex items-center justify-center bg-[#f1f5f9]"
+            style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+            onClick={handleBack}
+          >
+            <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
+          </View>
+          <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+            {isEditing ? '编辑宠物' : '添加新宠物'}
+          </Text>
+          <View style={{ width: '72rpx' }} />
+        </View>
+      </View>
+
+      <ScrollView scrollY style={{ height: `calc(100vh - ${navBarInfo.totalHeight}px)` }}>
+        <View style={{ padding: '32rpx', paddingBottom: '200rpx' }}>
+          {/* 照片上传器 */}
+          <View
+            className="flex flex-col items-center bg-white"
+            style={{
+              padding: '48rpx',
+              borderRadius: '32rpx',
+              marginBottom: '32rpx',
+              boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)'
+            }}
+          >
+            <View
+              style={{
+                width: '256rpx',
+                height: '256rpx',
+                borderRadius: '128rpx',
+                position: 'relative'
+              }}
+              onClick={handlePhotoUpload}
+            >
+              {photoUrl ? (
+                <Image
+                  src={photoUrl}
+                  mode="aspectFill"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '128rpx',
+                    border: '6rpx solid #25aff4'
+                  }}
+                />
+              ) : (
+                <View
+                  className="flex flex-col items-center justify-center"
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    borderRadius: '128rpx',
+                    border: '6rpx dashed #25aff4',
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+                  }}
+                >
+                  <Text style={{ fontSize: '48rpx', color: '#25aff4' }}>📷</Text>
+                  <Text style={{ fontSize: '24rpx', fontWeight: '600', color: '#25aff4', marginTop: '12rpx' }}>
+                    上传照片
+                  </Text>
+                </View>
+              )}
+              <View
+                style={{
+                  position: 'absolute',
+                  bottom: '16rpx',
+                  right: '16rpx',
+                  width: '56rpx',
+                  height: '56rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '28rpx',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '6rpx solid #ffffff',
+                  boxShadow: '0 4rpx 16rpx rgba(37,175,244,0.3)'
+                }}
+              >
+                <Text style={{ fontSize: '24rpx', color: 'white' }}>✏️</Text>
+              </View>
             </View>
-          )}
-          <View className="absolute -bottom-1 -right-1 w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-            <Text className="text-white text-sm">✏️</Text>
+            <Text style={{ marginTop: '24rpx', fontSize: '26rpx', color: '#64748b' }}>
+              点击添加宠物照片
+            </Text>
           </View>
-        </View>
-        <Text className="mt-2 text-sm text-gray-500">点击添加宠物照片</Text>
-      </View>
 
-      {/* 宠物名称 */}
-      <FormItem
-        label="宠物名称"
-        name="name"
-        rules={[
-          { required: true, message: '请输入宠物名称' },
-          { min: 1, max: 20, message: '宠物名称长度应在1-20个字符之间' }
-        ]}
-      >
-        <Input
-          placeholder="例如：小白"
-          className="bg-white border border-gray-200 rounded-lg px-3 py-2"
-        />
-      </FormItem>
-
-      {/* 品种选择 */}
-      <FormItem
-        label="品种"
-        name="breed"
-        rules={[{ required: true, message: '请选择宠物品种' }]}
-      >
-        <Picker
-          options={[breeds]}
-          placeholder="请选择品种"
-          className="bg-white border border-gray-200 rounded-lg"
-        />
-      </FormItem>
-
-      {/* 年龄和性别 */}
-      <View className="flex gap-4">
-        <View className="flex-1">
-          <FormItem
-            label="年龄（岁）"
-            name="age"
-            rules={[
-              { required: true, message: '请输入年龄' },
-              { 
-                validator: (_, value) => {
-                  const age = parseInt(value)
-                  if (isNaN(age) || age < 0 || age > 30) {
-                    return Promise.reject(new Error('请输入0-30之间的有效年龄'))
-                  }
-                  return Promise.resolve(true)
-                }
-              }
-            ]}
+          {/* 宠物名称 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '24rpx',
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+            }}
           >
+            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>宠物名称</Text>
+            </View>
             <Input
-              type="number"
-              placeholder="0"
-              className="bg-white border border-gray-200 rounded-lg px-3 py-2"
+              value={name}
+              onChange={(val) => setName(val)}
+              placeholder="例如：小白"
+              style={{
+                '--nutui-input-padding': '0 24rpx',
+                '--nutui-input-font-size': '28rpx',
+                height: '88rpx',
+                background: '#f8fafc',
+                border: '2rpx solid #e2e8f0',
+                borderRadius: '20rpx'
+              }}
             />
-          </FormItem>
-        </View>
-
-        <View className="flex-1">
-          <FormItem
-            label="性别"
-            name="gender"
-            rules={[{ required: true, message: '请选择性别' }]}
-            initialValue="male"
-          >
-            <Picker
-              options={[genderOptions.map(g => g.text)]}
-              placeholder="请选择性别"
-              className="bg-white border border-gray-200 rounded-lg"
-            />
-          </FormItem>
-        </View>
-      </View>
-
-      {/* 体型选择 */}
-      <FormItem
-        label="体型"
-        name="size"
-        rules={[{ required: true, message: '请选择体型' }]}
-        initialValue="medium"
-      >
-        <Picker
-          options={[sizeOptions.map(s => s.text)]}
-          placeholder="请选择体型"
-          className="bg-white border border-gray-200 rounded-lg"
-        />
-      </FormItem>
-
-      {/* 宠物简介 */}
-      <FormItem
-        label={
-          <View className="flex items-center">
-            <Text>关于宠物</Text>
-            <Text className="ml-2 text-sm text-gray-400">（可选）</Text>
           </View>
-        }
-        name="bio"
+
+          {/* 品种选择 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '24rpx',
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+            }}
+          >
+            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>品种</Text>
+            </View>
+            <View
+              className="flex items-center justify-between"
+              style={{
+                height: '88rpx',
+                background: '#f8fafc',
+                border: '2rpx solid #e2e8f0',
+                borderRadius: '20rpx',
+                padding: '0 24rpx'
+              }}
+              onClick={() => setBreedPickerVisible(true)}
+            >
+              <Text style={{ fontSize: '28rpx', color: selectedBreed ? '#0d171c' : '#94a3b8' }}>
+                {selectedBreed || '请选择品种'}
+              </Text>
+              <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
+            </View>
+            <Picker
+              visible={breedPickerVisible}
+              options={[breeds]}
+              onClose={() => setBreedPickerVisible(false)}
+              onConfirm={(_, values) => {
+                if (values && values[0]) {
+                  setSelectedBreed(values[0] as string)
+                }
+                setBreedPickerVisible(false)
+              }}
+            />
+          </View>
+
+          {/* 年龄和性别 */}
+          <View className="flex" style={{ gap: '24rpx', marginBottom: '24rpx' }}>
+            <View
+              className="flex-1 bg-white"
+              style={{
+                borderRadius: '24rpx',
+                padding: '32rpx',
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              }}
+            >
+              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+                <View
+                  style={{
+                    width: '8rpx',
+                    height: '32rpx',
+                    background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                    borderRadius: '4rpx',
+                    marginRight: '16rpx'
+                  }}
+                />
+                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>年龄（岁）</Text>
+              </View>
+              <Input
+                type="number"
+                value={age}
+                onChange={(val) => setAge(val)}
+                placeholder="0"
+                style={{
+                  '--nutui-input-padding': '0 24rpx',
+                  '--nutui-input-font-size': '28rpx',
+                  height: '88rpx',
+                  background: '#f8fafc',
+                  border: '2rpx solid #e2e8f0',
+                  borderRadius: '20rpx'
+                }}
+              />
+            </View>
+
+            <View
+              className="flex-1 bg-white"
+              style={{
+                borderRadius: '24rpx',
+                padding: '32rpx',
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              }}
+            >
+              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+                <View
+                  style={{
+                    width: '8rpx',
+                    height: '32rpx',
+                    background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                    borderRadius: '4rpx',
+                    marginRight: '16rpx'
+                  }}
+                />
+                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>性别</Text>
+              </View>
+              <View
+                className="flex items-center justify-between"
+                style={{
+                  height: '88rpx',
+                  background: '#f8fafc',
+                  border: '2rpx solid #e2e8f0',
+                  borderRadius: '20rpx',
+                  padding: '0 24rpx'
+                }}
+                onClick={() => setGenderPickerVisible(true)}
+              >
+                <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>
+                  {getGenderText()}
+                </Text>
+                <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
+              </View>
+              <Picker
+                visible={genderPickerVisible}
+                options={[genderOptions]}
+                onClose={() => setGenderPickerVisible(false)}
+                onConfirm={(_, values) => {
+                  if (values && values[0]) {
+                    setSelectedGender(values[0] as string)
+                  }
+                  setGenderPickerVisible(false)
+                }}
+              />
+            </View>
+          </View>
+
+          {/* 体型选择 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '24rpx',
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+            }}
+          >
+            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>体型</Text>
+            </View>
+            <View
+              className="flex items-center justify-between"
+              style={{
+                height: '88rpx',
+                background: '#f8fafc',
+                border: '2rpx solid #e2e8f0',
+                borderRadius: '20rpx',
+                padding: '0 24rpx'
+              }}
+              onClick={() => setSizePickerVisible(true)}
+            >
+              <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>
+                {getSizeText()}
+              </Text>
+              <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
+            </View>
+            <Picker
+              visible={sizePickerVisible}
+              options={[sizeOptions]}
+              onClose={() => setSizePickerVisible(false)}
+              onConfirm={(_, values) => {
+                if (values && values[0]) {
+                  setSelectedSize(values[0] as string)
+                }
+                setSizePickerVisible(false)
+              }}
+            />
+          </View>
+
+          {/* 宠物简介 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '24rpx',
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+            }}
+          >
+            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>关于宠物</Text>
+              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
+            </View>
+            <TextArea
+              value={bio}
+              onChange={(val) => setBio(val)}
+              placeholder="任何特殊习惯、喜欢的玩具或医疗需求？"
+              maxLength={200}
+              style={{
+                '--nutui-textarea-padding': '24rpx',
+                '--nutui-textarea-font-size': '28rpx',
+                width: '100%',
+                minHeight: '160rpx',
+                background: '#f8fafc',
+                border: '2rpx solid #e2e8f0',
+                borderRadius: '20rpx'
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* 底部保存按钮 */}
+      <View
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '32rpx',
+          paddingBottom: '64rpx',
+          background: 'linear-gradient(to top, #f5f7f8 0%, #f5f7f8 70%, transparent 100%)',
+          zIndex: 100
+        }}
       >
-        <TextArea
-          placeholder="任何特殊习惯、喜欢的玩具或医疗需求？"
-          rows={4}
-          maxLength={200}
-          className="bg-white border border-gray-200 rounded-lg p-3"
-        />
-      </FormItem>
-    </FormPage>
+        <Button
+          type="primary"
+          disabled={saving}
+          onClick={handleSubmit}
+          style={{
+            width: '100%',
+            height: '100rpx',
+            background: saving ? '#94a3b8' : '#25aff4',
+            borderRadius: '50rpx',
+            border: 'none',
+            boxShadow: '0 16rpx 40rpx rgba(37,175,244,0.35)'
+          }}
+        >
+          <View className="flex items-center justify-center" style={{ gap: '16rpx' }}>
+            <Text style={{ fontSize: '32rpx' }}>🐾</Text>
+            <Text style={{ fontSize: '30rpx', fontWeight: '700', color: 'white' }}>
+              {saving ? '保存中...' : (isEditing ? '更新宠物资料' : '保存宠物资料')}
+            </Text>
+          </View>
+        </Button>
+      </View>
+    </View>
   )
 }
 

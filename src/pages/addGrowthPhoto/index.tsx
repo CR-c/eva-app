@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Image } from '@tarojs/components'
+import { View, Text, Image, ScrollView } from '@tarojs/components'
+import { Button, TextArea, DatePicker } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import { 
-  Form, 
-  FormItem, 
-  TextArea, 
-  DatePicker,
-  Toast,
-  Loading
-} from '@nutui/nutui-react-taro'
-import FormPage from '@/components/FormPage'
 import './index.scss'
+
+// 获取导航栏信息
+const getNavBarInfo = () => {
+  try {
+    const systemInfo = Taro.getSystemInfoSync()
+    const statusBarHeight = systemInfo.statusBarHeight || 44
+    const menuButton = Taro.getMenuButtonBoundingClientRect()
+    const menuButtonMarginTop = menuButton.top - statusBarHeight
+    const navBarHeight = menuButton.height + menuButtonMarginTop * 2
+    return { statusBarHeight, navBarHeight, totalHeight: statusBarHeight + navBarHeight }
+  } catch {
+    return { statusBarHeight: 44, navBarHeight: 44, totalHeight: 88 }
+  }
+}
 
 interface GrowthPhoto {
   id: string
@@ -24,34 +30,34 @@ interface GrowthPhoto {
 }
 
 function AddGrowthPhoto() {
-  const [form] = Form.useForm()
+  const navBarInfo = getNavBarInfo()
   const [petId, setPetId] = useState('')
   const [petName, setPetName] = useState('')
   const [photo, setPhoto] = useState('')
   const [ageInMonths, setAgeInMonths] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+
+  // 表单数据
+  const [selectedDate, setSelectedDate] = useState(new Date())
+  const [notes, setNotes] = useState('')
+  const [datePickerVisible, setDatePickerVisible] = useState(false)
 
   useEffect(() => {
     // 获取路由参数
     const instance = Taro.getCurrentInstance()
     const params = instance.router?.params
-    
+
     if (params?.petId) {
       setPetId(params.petId)
       loadPetInfo(params.petId)
     }
 
-    // 设置默认日期为今天
-    const today = new Date()
-    const formattedDate = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`
-    
-    // 设置表单默认值
-    form.setFieldsValue({
-      date: formattedDate,
-      notes: ''
-    })
+    const timer = setTimeout(() => {
+      setLoading(false)
+    }, 800)
 
-    setLoading(false)
+    return () => clearTimeout(timer)
   }, [])
 
   const loadPetInfo = async (id: string) => {
@@ -64,14 +70,18 @@ function AddGrowthPhoto() {
           // 计算宠物年龄（月数）
           const birthDate = new Date(pet.createdAt)
           const currentDate = new Date()
-          const months = (currentDate.getFullYear() - birthDate.getFullYear()) * 12 + 
-                        (currentDate.getMonth() - birthDate.getMonth())
+          const months = (currentDate.getFullYear() - birthDate.getFullYear()) * 12 +
+            (currentDate.getMonth() - birthDate.getMonth())
           setAgeInMonths(Math.max(0, months))
         }
       }
     } catch (error) {
       console.error('Failed to load pet info:', error)
     }
+  }
+
+  const handleBack = () => {
+    Taro.navigateBack()
   }
 
   const handlePhotoUpload = () => {
@@ -85,18 +95,22 @@ function AddGrowthPhoto() {
       },
       fail: (error) => {
         console.error('Failed to choose image:', error)
-        Toast.show({
-          content: '选择图片失败',
-          type: 'fail'
-        })
+        Taro.showToast({ title: '选择图片失败', icon: 'none' })
       }
     })
   }
 
-  const handleSubmit = async (values: any) => {
+  const formatDate = (date: Date) => {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
+  }
+
+  const handleSubmit = async () => {
     if (!photo) {
-      throw new Error('请选择照片')
+      Taro.showToast({ title: '请选择照片', icon: 'none' })
+      return
     }
+
+    setSaving(true)
 
     try {
       // 获取现有成长记录
@@ -114,117 +128,389 @@ function AddGrowthPhoto() {
         id: Date.now().toString(),
         petId,
         photo,
-        date: values.date,
-        notes: values.notes?.trim() || '',
+        date: formatDate(selectedDate),
+        notes: notes.trim(),
         ageInMonths,
-        tags: [], // 可以后续扩展标签功能
+        tags: [],
         createdAt: new Date().toISOString()
       }
 
       growthPhotos.push(newPhoto)
 
-      // 保存到本地存储
       await Taro.setStorage({
         key: 'growthPhotos',
         data: growthPhotos
       })
 
-      // 延迟返回，让用户看到成功提示
+      Taro.showToast({
+        title: '保存成功',
+        icon: 'success'
+      })
+
       setTimeout(() => {
         Taro.navigateBack()
       }, 1500)
 
     } catch (error) {
       console.error('Failed to save growth photo:', error)
-      throw new Error('保存失败，请重试')
+      Taro.showToast({ title: '保存失败，请重试', icon: 'none' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const getAgeText = () => {
+    const years = Math.floor(ageInMonths / 12)
+    const months = ageInMonths % 12
+
+    if (years === 0) {
+      return `${months}个月`
+    } else if (months === 0) {
+      return `${years}岁`
+    } else {
+      return `${years}岁${months}个月`
     }
   }
 
   if (loading) {
     return (
-      <FormPage title="新增成长记录" showSubmitButton={false}>
-        <View className="flex justify-center items-center h-64">
-          <Loading type="spinner" />
-          <Text className="ml-2 text-gray-500">加载中...</Text>
+      <View className="min-h-screen bg-[#f5f7f8]">
+        {/* 自定义导航栏 */}
+        <View
+          className="bg-white"
+          style={{
+            paddingTop: `${navBarInfo.statusBarHeight}px`,
+            borderBottom: '2rpx solid #f1f5f9'
+          }}
+        >
+          <View
+            className="flex items-center justify-between"
+            style={{
+              padding: '0 32rpx',
+              height: `${navBarInfo.navBarHeight}px`
+            }}
+          >
+            <View
+              className="flex items-center justify-center bg-[#f1f5f9]"
+              style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+              onClick={handleBack}
+            >
+              <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
+            </View>
+            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+              新增成长记录
+            </Text>
+            <View style={{ width: '72rpx' }} />
+          </View>
         </View>
-      </FormPage>
+
+        {/* 加载骨架屏 */}
+        <View style={{ padding: '48rpx 32rpx' }}>
+          {/* 宠物信息骨架 */}
+          <View
+            className="bg-[#e2e8f0]"
+            style={{
+              height: '80rpx',
+              borderRadius: '40rpx',
+              marginBottom: '48rpx',
+              animation: 'pulse 1.5s ease-in-out infinite'
+            }}
+          />
+          {/* 照片上传骨架 */}
+          <View
+            className="bg-[#e2e8f0]"
+            style={{
+              height: '400rpx',
+              borderRadius: '24rpx',
+              marginBottom: '48rpx'
+            }}
+          />
+          {/* 表单骨架 */}
+          {[1, 2].map(i => (
+            <View
+              key={i}
+              className="bg-[#e2e8f0]"
+              style={{
+                height: '120rpx',
+                borderRadius: '24rpx',
+                marginBottom: '24rpx'
+              }}
+            />
+          ))}
+        </View>
+      </View>
     )
   }
 
   return (
-    <FormPage
-      title="新增成长记录"
-      onSubmit={handleSubmit}
-      submitText="保存到时间线"
-      className="bg-gray-50"
-    >
-      {/* 宠物信息提示 */}
-      {petName && (
-        <View className="mb-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <View className="flex items-center">
-            <Text className="text-2xl mr-2">🐕</Text>
-            <Text className="text-blue-800 font-medium">
-              {petName} 现在 {Math.floor(ageInMonths / 12)} 岁 {ageInMonths % 12} 个月了！
-            </Text>
-          </View>
-        </View>
-      )}
-
-      {/* 照片上传区域 */}
-      <View className="mb-6">
-        <Text className="text-lg font-medium mb-3 text-gray-800">成长照片</Text>
-        <View 
-          className="relative w-full h-64 bg-gray-100 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center cursor-pointer hover:bg-gray-50 transition-colors"
-          onClick={handlePhotoUpload}
+    <View className="min-h-screen bg-[#f5f7f8]">
+      {/* 自定义导航栏 */}
+      <View
+        className="bg-white"
+        style={{
+          paddingTop: `${navBarInfo.statusBarHeight}px`,
+          borderBottom: '2rpx solid #f1f5f9',
+          position: 'sticky',
+          top: 0,
+          zIndex: 100
+        }}
+      >
+        <View
+          className="flex items-center justify-between"
+          style={{
+            padding: '0 32rpx',
+            height: `${navBarInfo.navBarHeight}px`
+          }}
         >
-          {photo ? (
-            <Image 
-              className="w-full h-full rounded-lg object-cover"
-              src={photo}
-              mode="aspectFill"
-            />
-          ) : (
-            <View className="flex flex-col items-center p-8">
-              <View className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mb-4">
-                <Text className="text-3xl">📷</Text>
-              </View>
-              <Text className="text-lg font-medium text-gray-700 mb-2">添加照片</Text>
-              <Text className="text-sm text-gray-500 text-center mb-4">
-                点击这里上传你的宠物照片
-              </Text>
-              <View className="px-6 py-2 bg-blue-500 rounded-lg">
-                <Text className="text-white font-medium">选择照片</Text>
-              </View>
-            </View>
-          )}
+          <View
+            className="flex items-center justify-center bg-[#f1f5f9]"
+            style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+            onClick={handleBack}
+          >
+            <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
+          </View>
+          <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+            新增成长记录
+          </Text>
+          <View style={{ width: '72rpx' }} />
         </View>
       </View>
 
-      {/* 拍摄日期 */}
-      <FormItem
-        label="拍摄日期"
-        name="date"
-        rules={[{ required: true, message: '请选择拍摄日期' }]}
-      >
-        <DatePicker
-          type="date"
-          className="bg-white border border-gray-200 rounded-lg"
-        />
-      </FormItem>
+      <ScrollView scrollY style={{ height: `calc(100vh - ${navBarInfo.totalHeight}px)` }}>
+        <View style={{ padding: '32rpx', paddingBottom: '200rpx' }}>
+          {/* 宠物信息提示 */}
+          {petName && (
+            <View
+              className="flex items-center justify-center"
+              style={{
+                gap: '16rpx',
+                padding: '24rpx 32rpx',
+                background: 'rgba(37, 175, 244, 0.1)',
+                borderRadius: '48rpx',
+                marginBottom: '32rpx'
+              }}
+            >
+              <Text style={{ fontSize: '32rpx' }}>🐕</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '700', color: '#25aff4' }}>
+                {petName} 现在 {getAgeText()}了！
+              </Text>
+            </View>
+          )}
 
-      {/* 备注 */}
-      <FormItem
-        label="备注"
-        name="notes"
+          {/* 照片上传区域 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '32rpx',
+              boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)'
+            }}
+          >
+            <View className="flex items-center" style={{ marginBottom: '24rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>成长照片</Text>
+            </View>
+
+            <View
+              style={{
+                width: '100%',
+                minHeight: '400rpx',
+                borderRadius: '20rpx',
+                border: photo ? '4rpx solid #25aff4' : '4rpx dashed #cee0e8',
+                background: photo ? 'transparent' : '#ffffff',
+                overflow: 'hidden'
+              }}
+              onClick={handlePhotoUpload}
+            >
+              {photo ? (
+                <Image
+                  src={photo}
+                  mode="aspectFill"
+                  style={{
+                    width: '100%',
+                    height: '400rpx'
+                  }}
+                />
+              ) : (
+                <View
+                  className="flex flex-col items-center justify-center"
+                  style={{ minHeight: '400rpx', padding: '48rpx' }}
+                >
+                  <View
+                    className="flex items-center justify-center"
+                    style={{
+                      width: '128rpx',
+                      height: '128rpx',
+                      borderRadius: '64rpx',
+                      background: 'rgba(37, 175, 244, 0.1)',
+                      marginBottom: '32rpx',
+                      boxShadow: '0 4rpx 16rpx rgba(37, 175, 244, 0.2)'
+                    }}
+                  >
+                    <Text style={{ fontSize: '48rpx', color: '#25aff4' }}>📷</Text>
+                  </View>
+                  <Text style={{ fontSize: '32rpx', fontWeight: '700', color: '#0d171c', marginBottom: '8rpx' }}>
+                    添加照片
+                  </Text>
+                  <Text style={{ fontSize: '26rpx', color: '#64748b', textAlign: 'center', marginBottom: '24rpx' }}>
+                    点击这里上传你的宠物照片
+                  </Text>
+                  <View
+                    style={{
+                      padding: '16rpx 48rpx',
+                      background: '#f5f7f8',
+                      border: '2rpx solid #cee0e8',
+                      borderRadius: '24rpx'
+                    }}
+                  >
+                    <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                      选择照片
+                    </Text>
+                  </View>
+                </View>
+              )}
+            </View>
+          </View>
+
+          {/* 拍摄日期 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '24rpx',
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+            }}
+          >
+            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>拍摄日期</Text>
+            </View>
+            <View
+              className="flex items-center justify-between"
+              style={{
+                height: '88rpx',
+                background: '#f8fafc',
+                border: '2rpx solid #e2e8f0',
+                borderRadius: '20rpx',
+                padding: '0 24rpx'
+              }}
+              onClick={() => setDatePickerVisible(true)}
+            >
+              <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>
+                {formatDate(selectedDate)}
+              </Text>
+              <Text style={{ fontSize: '32rpx', color: '#25aff4' }}>📅</Text>
+            </View>
+            <DatePicker
+              visible={datePickerVisible}
+              defaultValue={selectedDate}
+              onClose={() => setDatePickerVisible(false)}
+              onConfirm={(_, values) => {
+                if (values && values.length >= 3) {
+                  const newDate = new Date(
+                    parseInt(values[0]),
+                    parseInt(values[1]) - 1,
+                    parseInt(values[2])
+                  )
+                  setSelectedDate(newDate)
+                }
+                setDatePickerVisible(false)
+              }}
+            />
+          </View>
+
+          {/* 备注 */}
+          <View
+            className="bg-white"
+            style={{
+              borderRadius: '24rpx',
+              padding: '32rpx',
+              marginBottom: '24rpx',
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+            }}
+          >
+            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View
+                style={{
+                  width: '8rpx',
+                  height: '32rpx',
+                  background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                  borderRadius: '4rpx',
+                  marginRight: '16rpx'
+                }}
+              />
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>备注</Text>
+              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
+            </View>
+            <TextArea
+              value={notes}
+              onChange={(val) => setNotes(val)}
+              placeholder="记录体重、身高或者可爱的瞬间..."
+              maxLength={300}
+              style={{
+                '--nutui-textarea-padding': '24rpx',
+                '--nutui-textarea-font-size': '28rpx',
+                width: '100%',
+                minHeight: '200rpx',
+                background: '#f8fafc',
+                border: '2rpx solid #e2e8f0',
+                borderRadius: '20rpx'
+              }}
+            />
+          </View>
+        </View>
+      </ScrollView>
+
+      {/* 底部保存按钮 */}
+      <View
+        style={{
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          padding: '32rpx',
+          paddingBottom: '64rpx',
+          background: 'linear-gradient(to top, #f5f7f8 0%, #f5f7f8 70%, transparent 100%)',
+          zIndex: 100
+        }}
       >
-        <TextArea
-          placeholder="记录体重、身高或者可爱的瞬间..."
-          rows={4}
-          maxLength={300}
-          className="bg-white border border-gray-200 rounded-lg p-3"
-        />
-      </FormItem>
-    </FormPage>
+        <Button
+          type="primary"
+          disabled={saving}
+          onClick={handleSubmit}
+          style={{
+            width: '100%',
+            height: '100rpx',
+            background: saving ? '#94a3b8' : '#25aff4',
+            borderRadius: '50rpx',
+            border: 'none',
+            boxShadow: '0 16rpx 40rpx rgba(37,175,244,0.35)'
+          }}
+        >
+          <Text style={{ fontSize: '30rpx', fontWeight: '700', color: 'white' }}>
+            {saving ? '保存中...' : '保存到时间线'}
+          </Text>
+        </Button>
+      </View>
+    </View>
   )
 }
 
