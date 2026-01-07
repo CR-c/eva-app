@@ -8,7 +8,6 @@ import { useUserStore } from './store/user'
 import './styles/tailwind.css'
 // 全局样式
 import './styles/index.scss'
-import './styles/nutui-fix.scss' // 修复 NutUI 样式
 
 function App({ children }: { children: React.ReactNode }) {
   const restoreLoginState = useUserStore((state) => state.restoreLoginState)
@@ -38,18 +37,11 @@ function App({ children }: { children: React.ReactNode }) {
     <ConfigProvider
       locale={zhCN}
       theme={{
-        primaryColor: '#3b82f6', // Eva app 主色
-        primaryColorHover: '#1d4ed8',
-        nutuiBrandColor: '#3b82f6',
-        nutuiBrandColorStart: '#3b82f6',
-        nutuiBrandColorEnd: '#1d4ed8',
-        // 字体大小相关的主题变量
-        nutuiFontSizeBase: '28rpx',
-        nutuiFontSizeLarge: '32rpx',
-        nutuiFontSizeSmall: '24rpx',
-        nutIconHeight: '32rpx',
-        nutIconWidth: '32rpx',
-        nutIconLineHeight: '32rpx',
+        primaryColor: '#25aff4', // Eva app 主色（天空蓝）
+        primaryColorHover: '#1e9fe0',
+        nutuiBrandColor: '#25aff4',
+        nutuiBrandColorStart: '#25aff4',
+        nutuiBrandColorEnd: '#1e9fe0',
       }}
     >
       {children}
