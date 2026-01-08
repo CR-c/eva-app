@@ -86,3 +86,166 @@ export interface WxUserInfo {
   avatarUrl: string
   gender: 0 | 1 | 2
 }
+
+// ==================== 宠物模块类型 ====================
+
+/**
+ * 宠物性别
+ */
+export type PetGender = 'male' | 'female'
+
+/**
+ * 宠物体型
+ */
+export type PetSize = 'small' | 'medium' | 'large'
+
+/**
+ * 宠物信息
+ */
+export interface Pet {
+  id: number
+  name: string
+  breed: string
+  age: number
+  gender: PetGender
+  size: PetSize
+  photo?: string
+  bio?: string
+  birthDate?: string
+  createdAt: string
+}
+
+/**
+ * 宠物统计信息
+ */
+export interface PetStats {
+  photoCount: number
+  recordCount: number
+}
+
+/**
+ * 宠物详情（含统计）
+ */
+export interface PetVO extends Pet {
+  stats?: PetStats
+}
+
+/**
+ * 创建/更新宠物参数
+ */
+export interface PetDTO {
+  name: string
+  breed: string
+  age: number
+  gender: PetGender
+  size: PetSize
+  photo?: string
+  bio?: string
+  birthDate?: string
+}
+
+/**
+ * 宠物查询参数
+ */
+export interface PetQueryDTO {
+  name?: string
+  breed?: string
+  gender?: PetGender
+  size?: PetSize
+  pageNum?: number
+  pageSize?: number
+}
+
+/**
+ * 标签
+ */
+export interface PetTag {
+  id: number
+  name: string
+  icon?: string
+  sortOrder: number
+}
+
+/**
+ * 成长照片
+ */
+export interface GrowthPhoto {
+  id: number
+  petId: number
+  photoUrl: string
+  photoDate: string
+  description?: string
+  ageInMonths?: number
+  tags: PetTag[]
+  createdAt: string
+}
+
+/**
+ * 创建/更新成长照片参数
+ */
+export interface GrowthPhotoDTO {
+  photoUrl: string
+  photoDate: string
+  description?: string
+  tagIds?: number[]
+}
+
+/**
+ * 成长照片查询参数
+ */
+export interface GrowthPhotoQueryDTO {
+  tagId?: number
+  startDate?: string
+  endDate?: string
+  pageNum?: number
+  pageSize?: number
+}
+
+/**
+ * 成长记录
+ */
+export interface GrowthRecord {
+  id: number
+  petId: number
+  recordDate: string
+  weight?: number
+  height?: number
+  notes?: string
+  photoUrl?: string
+  milestone?: string
+  createdAt: string
+}
+
+/**
+ * 创建/更新成长记录参数
+ */
+export interface GrowthRecordDTO {
+  recordDate: string
+  weight?: number
+  height?: number
+  notes?: string
+  photoUrl?: string
+  milestone?: string
+}
+
+/**
+ * 成长记录查询参数
+ */
+export interface GrowthRecordQueryDTO {
+  startDate?: string
+  endDate?: string
+  hasMilestone?: boolean
+  pageNum?: number
+  pageSize?: number
+}
+
+/**
+ * 分页响应
+ */
+export interface PageInfo<T> {
+  list: T[]
+  total: number
+  pageNum: number
+  pageSize: number
+  pages: number
+}

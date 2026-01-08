@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import { Button, Input, TextArea, Picker } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
+import { createPet, updatePet, getPetById } from '@/services/pet'
+import type { PetDTO, PetGender, PetSize } from '@/constants/types'
 import './index.scss'
 
 // 获取导航栏信息
@@ -18,33 +20,22 @@ const getNavBarInfo = () => {
   }
 }
 
-interface Pet {
-  id: string
-  name: string
-  breed: string
-  age: number
-  gender: 'male' | 'female'
-  size: 'small' | 'medium' | 'large'
-  photo?: string
-  bio?: string
-  createdAt: string
-}
-
 function AddPet() {
   const navBarInfo = getNavBarInfo()
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
-  const [editingId, setEditingId] = useState('')
+  const [editingId, setEditingId] = useState<number | null>(null)
   const [photoUrl, setPhotoUrl] = useState('')
 
   // 表单数据
   const [name, setName] = useState('')
   const [selectedBreed, setSelectedBreed] = useState('')
   const [age, setAge] = useState('')
-  const [selectedGender, setSelectedGender] = useState('male')
-  const [selectedSize, setSelectedSize] = useState('medium')
+  const [selectedGender, setSelectedGender] = useState<PetGender>('male')
+  const [selectedSize, setSelectedSize] = useState<PetSize>('medium')
   const [bio, setBio] = useState('')
+  const [birthDate, setBirthDate] = useState('')
 
   // Picker 状态
   const [breedPickerVisible, setBreedPickerVisible] = useState(false)
@@ -87,35 +78,31 @@ function AddPet() {
 
     if (params?.mode === 'edit' && params?.id) {
       setIsEditing(true)
-      setEditingId(params.id)
-      loadPetData(params.id)
-    }
-
-    const timer = setTimeout(() => {
+      setEditingId(parseInt(params.id))
+      loadPetData(parseInt(params.id))
+    } else {
       setLoading(false)
-    }, 800)
-
-    return () => clearTimeout(timer)
+    }
   }, [])
 
-  const loadPetData = async (petId: string) => {
+  const loadPetData = async (petId: number) => {
     try {
-      const storedPets = await Taro.getStorage({ key: 'pets' })
-      if (storedPets.data && Array.isArray(storedPets.data)) {
-        const pets = storedPets.data as Pet[]
-        const pet = pets.find(p => p.id === petId)
-        if (pet) {
-          setName(pet.name)
-          setSelectedBreed(pet.breed)
-          setAge(pet.age.toString())
-          setSelectedGender(pet.gender)
-          setSelectedSize(pet.size)
-          setBio(pet.bio || '')
-          setPhotoUrl(pet.photo || '')
-        }
+      const pet = await getPetById(petId)
+      if (pet) {
+        setName(pet.name)
+        setSelectedBreed(pet.breed)
+        setAge(pet.age.toString())
+        setSelectedGender(pet.gender)
+        setSelectedSize(pet.size)
+        setBio(pet.bio || '')
+        setPhotoUrl(pet.photo || '')
+        setBirthDate(pet.birthDate || '')
       }
     } catch (error) {
       console.error('Failed to load pet data:', error)
+      Taro.showToast({ title: '加载宠物信息失败', icon: 'none' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -130,6 +117,7 @@ function AddPet() {
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0]
+        // TODO: 实际项目中需要上传到服务器获取URL
         setPhotoUrl(tempFilePath)
       },
       fail: (error) => {
@@ -157,47 +145,24 @@ function AddPet() {
     setSaving(true)
 
     try {
-      // 获取现有宠物数据
-      let pets: Pet[] = []
-      try {
-        const storedPets = await Taro.getStorage({ key: 'pets' })
-        if (storedPets.data && Array.isArray(storedPets.data)) {
-          pets = storedPets.data as Pet[]
-        }
-      } catch (error) {
-        console.log('No existing pets found')
-      }
-
-      const petData: Pet = {
-        id: isEditing ? editingId : Date.now().toString(),
+      const petData: PetDTO = {
         name: name.trim(),
         breed: selectedBreed,
         age: parseInt(age),
-        gender: selectedGender as 'male' | 'female',
-        size: selectedSize as 'small' | 'medium' | 'large',
-        photo: photoUrl,
-        bio: bio.trim(),
-        createdAt: isEditing ? pets.find(p => p.id === editingId)?.createdAt || new Date().toISOString().split('T')[0] : new Date().toISOString().split('T')[0]
+        gender: selectedGender,
+        size: selectedSize,
+        photo: photoUrl || undefined,
+        bio: bio.trim() || undefined,
+        birthDate: birthDate || undefined,
       }
 
-      if (isEditing) {
-        const index = pets.findIndex(p => p.id === editingId)
-        if (index !== -1) {
-          pets[index] = petData
-        }
+      if (isEditing && editingId) {
+        await updatePet(editingId, petData)
+        Taro.showToast({ title: '更新成功', icon: 'success' })
       } else {
-        pets.push(petData)
+        await createPet(petData)
+        Taro.showToast({ title: '保存成功', icon: 'success' })
       }
-
-      await Taro.setStorage({
-        key: 'pets',
-        data: pets
-      })
-
-      Taro.showToast({
-        title: isEditing ? '更新成功' : '保存成功',
-        icon: 'success'
-      })
 
       setTimeout(() => {
         Taro.navigateBack()
@@ -205,7 +170,6 @@ function AddPet() {
 
     } catch (error) {
       console.error('Failed to save pet:', error)
-      Taro.showToast({ title: '保存失败，请重试', icon: 'none' })
     } finally {
       setSaving(false)
     }
@@ -568,7 +532,7 @@ function AddPet() {
                 onClose={() => setGenderPickerVisible(false)}
                 onConfirm={(_, values) => {
                   if (values && values[0]) {
-                    setSelectedGender(values[0] as string)
+                    setSelectedGender(values[0] as PetGender)
                   }
                   setGenderPickerVisible(false)
                 }}
@@ -620,7 +584,7 @@ function AddPet() {
               onClose={() => setSizePickerVisible(false)}
               onConfirm={(_, values) => {
                 if (values && values[0]) {
-                  setSelectedSize(values[0] as string)
+                  setSelectedSize(values[0] as PetSize)
                 }
                 setSizePickerVisible(false)
               }}

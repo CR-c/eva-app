@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import { Button, TextArea, DatePicker } from '@nutui/nutui-react-taro'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
+import { getPetById, getTagList, createGrowthPhoto } from '@/services/pet'
+import type { PetVO, PetTag, GrowthPhotoDTO } from '@/constants/types'
 import './index.scss'
 
 // 获取导航栏信息
@@ -18,29 +20,21 @@ const getNavBarInfo = () => {
   }
 }
 
-interface GrowthPhoto {
-  id: string
-  petId: string
-  photo: string
-  date: string
-  notes: string
-  ageInMonths: number
-  tags: string[]
-  createdAt: string
-}
-
 function AddGrowthPhoto() {
   const navBarInfo = getNavBarInfo()
-  const [petId, setPetId] = useState('')
-  const [petName, setPetName] = useState('')
+  const [petId, setPetId] = useState<number | null>(null)
+  const [pet, setPet] = useState<PetVO | null>(null)
   const [photo, setPhoto] = useState('')
-  const [ageInMonths, setAgeInMonths] = useState(0)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
+  // 标签相关
+  const [tags, setTags] = useState<PetTag[]>([])
+  const [selectedTagIds, setSelectedTagIds] = useState<number[]>([])
+
   // 表单数据
   const [selectedDate, setSelectedDate] = useState(new Date())
-  const [notes, setNotes] = useState('')
+  const [description, setDescription] = useState('')
   const [datePickerVisible, setDatePickerVisible] = useState(false)
 
   useEffect(() => {
@@ -49,34 +43,27 @@ function AddGrowthPhoto() {
     const params = instance.router?.params
 
     if (params?.petId) {
-      setPetId(params.petId)
-      loadPetInfo(params.petId)
-    }
-
-    const timer = setTimeout(() => {
+      const id = parseInt(params.petId)
+      setPetId(id)
+      loadData(id)
+    } else {
       setLoading(false)
-    }, 800)
-
-    return () => clearTimeout(timer)
+    }
   }, [])
 
-  const loadPetInfo = async (id: string) => {
+  const loadData = async (id: number) => {
     try {
-      const storedPets = await Taro.getStorage({ key: 'pets' })
-      if (storedPets.data && Array.isArray(storedPets.data)) {
-        const pet = storedPets.data.find(p => p.id === id)
-        if (pet) {
-          setPetName(pet.name)
-          // 计算宠物年龄（月数）
-          const birthDate = new Date(pet.createdAt)
-          const currentDate = new Date()
-          const months = (currentDate.getFullYear() - birthDate.getFullYear()) * 12 +
-            (currentDate.getMonth() - birthDate.getMonth())
-          setAgeInMonths(Math.max(0, months))
-        }
-      }
+      const [petData, tagList] = await Promise.all([
+        getPetById(id),
+        getTagList()
+      ])
+      setPet(petData)
+      setTags(tagList)
     } catch (error) {
-      console.error('Failed to load pet info:', error)
+      console.error('Failed to load data:', error)
+      Taro.showToast({ title: '加载数据失败', icon: 'none' })
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -91,6 +78,7 @@ function AddGrowthPhoto() {
       sourceType: ['album', 'camera'],
       success: (res) => {
         const tempFilePath = res.tempFilePaths[0]
+        // TODO: 实际项目中需要上传到服务器获取URL
         setPhoto(tempFilePath)
       },
       fail: (error) => {
@@ -104,43 +92,36 @@ function AddGrowthPhoto() {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`
   }
 
+  const toggleTag = (tagId: number) => {
+    setSelectedTagIds(prev =>
+      prev.includes(tagId)
+        ? prev.filter(id => id !== tagId)
+        : [...prev, tagId]
+    )
+  }
+
   const handleSubmit = async () => {
     if (!photo) {
       Taro.showToast({ title: '请选择照片', icon: 'none' })
       return
     }
 
+    if (!petId) {
+      Taro.showToast({ title: '宠物ID无效', icon: 'none' })
+      return
+    }
+
     setSaving(true)
 
     try {
-      // 获取现有成长记录
-      let growthPhotos: GrowthPhoto[] = []
-      try {
-        const storedPhotos = await Taro.getStorage({ key: 'growthPhotos' })
-        if (storedPhotos.data && Array.isArray(storedPhotos.data)) {
-          growthPhotos = storedPhotos.data
-        }
-      } catch (error) {
-        console.log('No existing growth photos found')
+      const photoData: GrowthPhotoDTO = {
+        photoUrl: photo,
+        photoDate: formatDate(selectedDate),
+        description: description.trim() || undefined,
+        tagIds: selectedTagIds.length > 0 ? selectedTagIds : undefined
       }
 
-      const newPhoto: GrowthPhoto = {
-        id: Date.now().toString(),
-        petId,
-        photo,
-        date: formatDate(selectedDate),
-        notes: notes.trim(),
-        ageInMonths,
-        tags: [],
-        createdAt: new Date().toISOString()
-      }
-
-      growthPhotos.push(newPhoto)
-
-      await Taro.setStorage({
-        key: 'growthPhotos',
-        data: growthPhotos
-      })
+      await createGrowthPhoto(petId, photoData)
 
       Taro.showToast({
         title: '保存成功',
@@ -153,23 +134,18 @@ function AddGrowthPhoto() {
 
     } catch (error) {
       console.error('Failed to save growth photo:', error)
-      Taro.showToast({ title: '保存失败，请重试', icon: 'none' })
     } finally {
       setSaving(false)
     }
   }
 
   const getAgeText = () => {
-    const years = Math.floor(ageInMonths / 12)
-    const months = ageInMonths % 12
-
+    if (!pet) return ''
+    const years = pet.age
     if (years === 0) {
-      return `${months}个月`
-    } else if (months === 0) {
-      return `${years}岁`
-    } else {
-      return `${years}岁${months}个月`
+      return '不到1岁'
     }
+    return `${years}岁`
   }
 
   if (loading) {
@@ -198,7 +174,7 @@ function AddGrowthPhoto() {
               <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
             </View>
             <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
-              新增成长记录
+              新增成长照片
             </Text>
             <View style={{ width: '72rpx' }} />
           </View>
@@ -206,7 +182,6 @@ function AddGrowthPhoto() {
 
         {/* 加载骨架屏 */}
         <View style={{ padding: '48rpx 32rpx' }}>
-          {/* 宠物信息骨架 */}
           <View
             className="bg-[#e2e8f0]"
             style={{
@@ -216,7 +191,6 @@ function AddGrowthPhoto() {
               animation: 'pulse 1.5s ease-in-out infinite'
             }}
           />
-          {/* 照片上传骨架 */}
           <View
             className="bg-[#e2e8f0]"
             style={{
@@ -225,7 +199,6 @@ function AddGrowthPhoto() {
               marginBottom: '48rpx'
             }}
           />
-          {/* 表单骨架 */}
           {[1, 2].map(i => (
             <View
               key={i}
@@ -270,7 +243,7 @@ function AddGrowthPhoto() {
             <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
           </View>
           <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
-            新增成长记录
+            新增成长照片
           </Text>
           <View style={{ width: '72rpx' }} />
         </View>
@@ -279,7 +252,7 @@ function AddGrowthPhoto() {
       <ScrollView scrollY style={{ height: `calc(100vh - ${navBarInfo.totalHeight}px)` }}>
         <View style={{ padding: '32rpx', paddingBottom: '200rpx' }}>
           {/* 宠物信息提示 */}
-          {petName && (
+          {pet && (
             <View
               className="flex items-center justify-center"
               style={{
@@ -292,7 +265,7 @@ function AddGrowthPhoto() {
             >
               <Text style={{ fontSize: '32rpx' }}>🐕</Text>
               <Text style={{ fontSize: '28rpx', fontWeight: '700', color: '#25aff4' }}>
-                {petName} 现在 {getAgeText()}了！
+                {pet.name} 现在 {getAgeText()}了！
               </Text>
             </View>
           )}
@@ -437,7 +410,59 @@ function AddGrowthPhoto() {
             />
           </View>
 
-          {/* 备注 */}
+          {/* 标签选择 */}
+          {tags.length > 0 && (
+            <View
+              className="bg-white"
+              style={{
+                borderRadius: '24rpx',
+                padding: '32rpx',
+                marginBottom: '24rpx',
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              }}
+            >
+              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+                <View
+                  style={{
+                    width: '8rpx',
+                    height: '32rpx',
+                    background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
+                    borderRadius: '4rpx',
+                    marginRight: '16rpx'
+                  }}
+                />
+                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>标签</Text>
+                <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可多选）</Text>
+              </View>
+              <View className="flex flex-wrap" style={{ gap: '16rpx' }}>
+                {tags.map(tag => (
+                  <View
+                    key={tag.id}
+                    className="flex items-center justify-center"
+                    style={{
+                      padding: '12rpx 24rpx',
+                      borderRadius: '24rpx',
+                      background: selectedTagIds.includes(tag.id) ? '#25aff4' : '#f8fafc',
+                      border: selectedTagIds.includes(tag.id) ? 'none' : '2rpx solid #e2e8f0'
+                    }}
+                    onClick={() => toggleTag(tag.id)}
+                  >
+                    {tag.icon && <Text style={{ marginRight: '8rpx' }}>{tag.icon}</Text>}
+                    <Text
+                      style={{
+                        fontSize: '26rpx',
+                        color: selectedTagIds.includes(tag.id) ? '#ffffff' : '#0d171c'
+                      }}
+                    >
+                      {tag.name}
+                    </Text>
+                  </View>
+                ))}
+              </View>
+            </View>
+          )}
+
+          {/* 描述 */}
           <View
             className="bg-white"
             style={{
@@ -457,13 +482,13 @@ function AddGrowthPhoto() {
                   marginRight: '16rpx'
                 }}
               />
-              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>备注</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>描述</Text>
               <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
             </View>
             <TextArea
-              value={notes}
-              onChange={(val) => setNotes(val)}
-              placeholder="记录体重、身高或者可爱的瞬间..."
+              value={description}
+              onChange={(val) => setDescription(val)}
+              placeholder="记录这个可爱的瞬间..."
               maxLength={300}
               style={{
                 '--nutui-textarea-padding': '24rpx',

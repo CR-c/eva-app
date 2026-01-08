@@ -1,56 +1,36 @@
-import { useState, useEffect } from 'react'
+import { useEffect } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import { Button } from '@nutui/nutui-react-taro'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
+import { usePetStore } from '@/store/pet'
+import { deletePet } from '@/services/pet'
+import type { PetVO, PetSize } from '@/constants/types'
 
-interface Pet {
-  id: string
-  name: string
-  breed: string
-  age: number
-  gender: 'male' | 'female'
-  size: 'small' | 'medium' | 'large'
-  photo?: string
-  bio?: string
-  createdAt: string
+const SIZE_MAP: Record<PetSize, string> = {
+  small: '小型',
+  medium: '中型',
+  large: '大型',
 }
 
 function Pets() {
-  const [pets, setPets] = useState<Pet[]>([
-    {
-      id: '1',
-      name: 'Buddy',
-      breed: '金毛寻回犬',
-      age: 3,
-      gender: 'male',
-      size: 'large',
-      photo: 'https://lh3.googleusercontent.com/aida-public/AB6AXuDNfgPRCj1TjU0V6N812loHs-xGWnz32LFlJNga9llQVEk7GqDBgEOI67iHM2yOVuLW8JDfQ8Z4HqTv-KKwKcVqNgsDCfuECHt-OwVqDRoLcpyMJ_rsv8HmG4PCezcstZNsiVwOORgtmzJQDKXOmBUJoeai8pA0zU6VqHUZSFIpEmJP-8z4ViwtfCE7cViVjaGwTVzibX5xEhcOLJA4RutA0yC8hO9YHai1nx-qxc-PfJ4KucX0Mnhwn5zg2DytkI0v9wqNFglPsJ0Y',
-      bio: '活泼好动，喜欢玩飞盘和游泳',
-      createdAt: '2024-01-15'
-    }
-  ])
+  const { pets, loading, fetchPets, removePet } = usePetStore()
+
+  // 页面显示时刷新数据
+  useDidShow(() => {
+    fetchPets()
+  })
 
   useEffect(() => {
-    const loadPets = async () => {
-      try {
-        const storedPets = await Taro.getStorage({ key: 'pets' })
-        if (storedPets.data && Array.isArray(storedPets.data)) {
-          setPets(storedPets.data)
-        }
-      } catch (error) {
-        console.log('No stored pets found')
-      }
-    }
-    loadPets()
+    fetchPets()
   }, [])
 
   const handleAddPet = () => {
     Taro.navigateTo({ url: '/pages/addPet/index' })
   }
 
-  const handlePetDetail = (pet: Pet) => {
+  const handlePetDetail = (pet: PetVO) => {
     Taro.showActionSheet({
-      itemList: ['查看成长轨迹', '编辑宠物信息', '添加成长照片'],
+      itemList: ['查看成长轨迹', '编辑宠物信息', '添加成长照片', '成长记录'],
       success: (res) => {
         switch (res.tapIndex) {
           case 0:
@@ -62,30 +42,35 @@ function Pets() {
           case 2:
             Taro.navigateTo({ url: `/pages/addGrowthPhoto/index?petId=${pet.id}` })
             break
+          case 3:
+            Taro.navigateTo({ url: `/pages/growthRecords/index?petId=${pet.id}` })
+            break
         }
       }
     })
   }
 
-  const handleDeletePet = (e: any, petId: string) => {
+  const handleDeletePet = (e: any, petId: number) => {
     e.stopPropagation()
     Taro.showModal({
       title: '删除宠物',
-      content: '确定要删除这个宠物信息吗？',
+      content: '确定要删除这个宠物信息吗？删除后相关的成长照片和记录也将被删除。',
       success: async (res) => {
         if (res.confirm) {
-          const newPets = pets.filter(pet => pet.id !== petId)
-          setPets(newPets)
-          await Taro.setStorage({ key: 'pets', data: newPets })
-          Taro.showToast({ title: '删除成功', icon: 'success' })
+          try {
+            await deletePet(petId)
+            removePet(petId)
+            Taro.showToast({ title: '删除成功', icon: 'success' })
+          } catch (error) {
+            console.error('Delete pet failed:', error)
+          }
         }
       }
     })
   }
 
-  const getSizeText = (size: string) => {
-    const sizeMap = { small: '小型', medium: '中型', large: '大型' }
-    return sizeMap[size] || size
+  const getSizeText = (size: PetSize) => {
+    return SIZE_MAP[size] || size
   }
 
   return (
@@ -108,7 +93,17 @@ function Pets() {
 
       {/* Content */}
       <View style={{ padding: '24rpx 32rpx 200rpx' }}>
-        {pets.length === 0 ? (
+        {loading && pets.length === 0 ? (
+          /* Loading State */
+          <View
+            className="flex flex-col items-center justify-center"
+            style={{ padding: '80rpx 40rpx' }}
+          >
+            <Text className="text-[#64748b]" style={{ fontSize: '28rpx' }}>
+              加载中...
+            </Text>
+          </View>
+        ) : pets.length === 0 ? (
           /* Empty State */
           <View
             className="flex flex-col items-center justify-center bg-white"
@@ -246,6 +241,19 @@ function Pets() {
                           {getSizeText(pet.size)}
                         </Text>
                       </View>
+                      {pet.stats && (
+                        <View
+                          className="flex items-center justify-center bg-[#fef3c7]"
+                          style={{
+                            padding: '8rpx 20rpx',
+                            borderRadius: '20rpx'
+                          }}
+                        >
+                          <Text className="text-[#d97706]" style={{ fontSize: '24rpx' }}>
+                            {pet.stats.photoCount}张照片
+                          </Text>
+                        </View>
+                      )}
                     </View>
                   </View>
                 </View>

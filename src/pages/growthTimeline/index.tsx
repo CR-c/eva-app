@@ -1,7 +1,9 @@
 import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import { Button } from '@nutui/nutui-react-taro'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
+import { getPetById, getGrowthPhotoList, getTagList } from '@/services/pet'
+import type { PetVO, GrowthPhoto, PetTag } from '@/constants/types'
 import './index.scss'
 
 // 获取导航栏信息
@@ -18,35 +20,13 @@ const getNavBarInfo = () => {
   }
 }
 
-interface Pet {
-  id: string
-  name: string
-  breed: string
-  age: number
-  gender: 'male' | 'female'
-  size: 'small' | 'medium' | 'large'
-  photo?: string
-  bio?: string
-  createdAt: string
-}
-
-interface GrowthPhoto {
-  id: string
-  petId: string
-  photo: string
-  date: string
-  notes: string
-  ageInMonths: number
-  tags: string[]
-  createdAt: string
-}
-
 function GrowthTimeline() {
   const navBarInfo = getNavBarInfo()
-  const [pet, setPet] = useState<Pet | null>(null)
+  const [pet, setPet] = useState<PetVO | null>(null)
   const [growthPhotos, setGrowthPhotos] = useState<GrowthPhoto[]>([])
-  const [activeFilter, setActiveFilter] = useState('all')
-  const [petId, setPetId] = useState('')
+  const [tags, setTags] = useState<PetTag[]>([])
+  const [activeFilter, setActiveFilter] = useState<number | null>(null) // null = 所有
+  const [petId, setPetId] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
@@ -54,43 +34,58 @@ function GrowthTimeline() {
     const params = instance.router?.params
 
     if (params?.petId) {
-      setPetId(params.petId)
-      loadPetData(params.petId)
-      loadGrowthPhotos(params.petId)
-    }
-
-    const timer = setTimeout(() => {
+      const id = parseInt(params.petId)
+      setPetId(id)
+      loadData(id)
+    } else {
       setLoading(false)
-    }, 800)
-
-    return () => clearTimeout(timer)
+    }
   }, [])
 
-  const loadPetData = async (id: string) => {
+  // 页面显示时刷新照片列表
+  useDidShow(() => {
+    if (petId) {
+      loadPhotos(petId, activeFilter)
+    }
+  })
+
+  const loadData = async (id: number) => {
     try {
-      const storedPets = await Taro.getStorage({ key: 'pets' })
-      if (storedPets.data && Array.isArray(storedPets.data)) {
-        const petData = storedPets.data.find(p => p.id === id)
-        if (petData) {
-          setPet(petData)
-        }
-      }
+      const [petData, tagList] = await Promise.all([
+        getPetById(id),
+        getTagList()
+      ])
+      setPet(petData)
+      setTags(tagList)
+      await loadPhotos(id, null)
     } catch (error) {
-      console.error('Failed to load pet data:', error)
+      console.error('Failed to load data:', error)
+      Taro.showToast({ title: '加载数据失败', icon: 'none' })
+    } finally {
+      setLoading(false)
     }
   }
 
-  const loadGrowthPhotos = async (id: string) => {
+  const loadPhotos = async (id: number, tagId: number | null) => {
     try {
-      const storedPhotos = await Taro.getStorage({ key: 'growthPhotos' })
-      if (storedPhotos.data && Array.isArray(storedPhotos.data)) {
-        const petPhotos = storedPhotos.data
-          .filter(photo => photo.petId === id)
-          .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-        setGrowthPhotos(petPhotos)
-      }
+      const result = await getGrowthPhotoList(id, {
+        tagId: tagId || undefined,
+        pageSize: 100
+      })
+      // 按日期降序排序
+      const sorted = (result.list || []).sort((a, b) =>
+        new Date(b.photoDate).getTime() - new Date(a.photoDate).getTime()
+      )
+      setGrowthPhotos(sorted)
     } catch (error) {
-      console.log('No growth photos found')
+      console.error('Failed to load photos:', error)
+    }
+  }
+
+  const handleFilterChange = (tagId: number | null) => {
+    setActiveFilter(tagId)
+    if (petId) {
+      loadPhotos(petId, tagId)
     }
   }
 
@@ -99,18 +94,22 @@ function GrowthTimeline() {
   }
 
   const handleAddPhoto = () => {
-    Taro.navigateTo({
-      url: `/pages/addGrowthPhoto/index?petId=${petId}`
-    })
+    if (petId) {
+      Taro.navigateTo({
+        url: `/pages/addGrowthPhoto/index?petId=${petId}`
+      })
+    }
   }
 
   const handleViewGallery = () => {
-    Taro.navigateTo({
-      url: `/pages/growthGallery/index?petId=${petId}`
-    })
+    if (petId) {
+      Taro.navigateTo({
+        url: `/pages/growthGallery/index?petId=${petId}`
+      })
+    }
   }
 
-  const handlePhotoDetail = (photoId: string) => {
+  const handlePhotoDetail = (photoId: number) => {
     Taro.showToast({
       title: '查看照片详情',
       icon: 'none'
@@ -126,7 +125,8 @@ function GrowthTimeline() {
     })
   }
 
-  const getAgeText = (ageInMonths: number) => {
+  const getAgeText = (ageInMonths?: number) => {
+    if (!ageInMonths) return ''
     const years = Math.floor(ageInMonths / 12)
     const months = ageInMonths % 12
 
@@ -143,7 +143,7 @@ function GrowthTimeline() {
     if (growthPhotos.length === 0) return { then: null, now: null }
 
     const sortedPhotos = [...growthPhotos].sort((a, b) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
+      new Date(a.photoDate).getTime() - new Date(b.photoDate).getTime()
     )
 
     return {
@@ -153,13 +153,6 @@ function GrowthTimeline() {
   }
 
   const { then, now } = getThenAndNowPhotos()
-
-  const filterOptions = [
-    { key: 'all', label: '所有照片' },
-    { key: 'milestones', label: '里程碑' },
-    { key: 'vet', label: '看医生' },
-    { key: 'training', label: '训练' }
-  ]
 
   if (loading) {
     return (
@@ -304,7 +297,7 @@ function GrowthTimeline() {
                 {then ? (
                   <>
                     <Image
-                      src={then.photo}
+                      src={then.photoUrl}
                       mode="aspectFill"
                       style={{
                         width: '100%',
@@ -320,7 +313,7 @@ function GrowthTimeline() {
                       那时 ({getAgeText(then.ageInMonths)})
                     </Text>
                     <Text className="block text-[#64748b]" style={{ fontSize: '22rpx' }}>
-                      {formatDate(then.date)}
+                      {formatDate(then.photoDate)}
                     </Text>
                   </>
                 ) : (
@@ -347,7 +340,7 @@ function GrowthTimeline() {
                 {now && now !== then ? (
                   <>
                     <Image
-                      src={now.photo}
+                      src={now.photoUrl}
                       mode="aspectFill"
                       style={{
                         width: '100%',
@@ -363,7 +356,7 @@ function GrowthTimeline() {
                       现在 ({getAgeText(now.ageInMonths)})
                     </Text>
                     <Text className="block text-[#64748b]" style={{ fontSize: '22rpx' }}>
-                      {formatDate(now.date)}
+                      {formatDate(now.photoDate)}
                     </Text>
                   </>
                 ) : (
@@ -385,28 +378,53 @@ function GrowthTimeline() {
         <View style={{ padding: '0 32rpx', marginBottom: '32rpx' }}>
           <ScrollView scrollX style={{ whiteSpace: 'nowrap' }}>
             <View className="flex" style={{ gap: '20rpx', paddingBottom: '16rpx' }}>
-              {filterOptions.map((option) => (
+              {/* 所有照片 */}
+              <View
+                className="flex items-center justify-center"
+                style={{
+                  height: '72rpx',
+                  padding: '0 32rpx',
+                  borderRadius: '36rpx',
+                  background: activeFilter === null ? '#25aff4' : '#ffffff',
+                  border: activeFilter === null ? 'none' : '2rpx solid #e2e8f0',
+                  boxShadow: activeFilter === null ? '0 8rpx 24rpx rgba(37, 175, 244, 0.3)' : 'none'
+                }}
+                onClick={() => handleFilterChange(null)}
+              >
+                <Text
+                  style={{
+                    fontSize: '26rpx',
+                    fontWeight: activeFilter === null ? '700' : '500',
+                    color: activeFilter === null ? '#ffffff' : '#0d171c'
+                  }}
+                >
+                  所有照片
+                </Text>
+              </View>
+              {/* 标签筛选 */}
+              {tags.map((tag) => (
                 <View
-                  key={option.key}
+                  key={tag.id}
                   className="flex items-center justify-center"
                   style={{
                     height: '72rpx',
                     padding: '0 32rpx',
                     borderRadius: '36rpx',
-                    background: activeFilter === option.key ? '#25aff4' : '#ffffff',
-                    border: activeFilter === option.key ? 'none' : '2rpx solid #e2e8f0',
-                    boxShadow: activeFilter === option.key ? '0 8rpx 24rpx rgba(37, 175, 244, 0.3)' : 'none'
+                    background: activeFilter === tag.id ? '#25aff4' : '#ffffff',
+                    border: activeFilter === tag.id ? 'none' : '2rpx solid #e2e8f0',
+                    boxShadow: activeFilter === tag.id ? '0 8rpx 24rpx rgba(37, 175, 244, 0.3)' : 'none'
                   }}
-                  onClick={() => setActiveFilter(option.key)}
+                  onClick={() => handleFilterChange(tag.id)}
                 >
+                  {tag.icon && <Text style={{ marginRight: '8rpx' }}>{tag.icon}</Text>}
                   <Text
                     style={{
                       fontSize: '26rpx',
-                      fontWeight: activeFilter === option.key ? '700' : '500',
-                      color: activeFilter === option.key ? '#ffffff' : '#0d171c'
+                      fontWeight: activeFilter === tag.id ? '700' : '500',
+                      color: activeFilter === tag.id ? '#ffffff' : '#0d171c'
                     }}
                   >
-                    {option.label}
+                    {tag.name}
                   </Text>
                 </View>
               ))}
@@ -426,7 +444,7 @@ function GrowthTimeline() {
                 className="font-bold text-[#0d171c]"
                 style={{ fontSize: '32rpx', marginBottom: '16rpx' }}
               >
-                还没有成长记录
+                还没有成长照片
               </Text>
               <Text
                 className="text-[#64748b]"
@@ -498,7 +516,7 @@ function GrowthTimeline() {
                       }}
                     >
                       <Image
-                        src={photo.photo}
+                        src={photo.photoUrl}
                         mode="aspectFill"
                         style={{ width: '100%', height: '300rpx' }}
                       />
@@ -510,14 +528,33 @@ function GrowthTimeline() {
                           <Text className="text-[#94a3b8]" style={{ fontSize: '24rpx' }}>⋯</Text>
                         </View>
                         <Text className="block text-[#64748b]" style={{ fontSize: '24rpx', marginBottom: '12rpx' }}>
-                          {formatDate(photo.date)} • {getAgeText(photo.ageInMonths)}
+                          {formatDate(photo.photoDate)} {photo.ageInMonths ? `• ${getAgeText(photo.ageInMonths)}` : ''}
                         </Text>
-                        {photo.notes && (
+                        {/* 标签 */}
+                        {photo.tags && photo.tags.length > 0 && (
+                          <View className="flex flex-wrap" style={{ gap: '8rpx', marginBottom: '12rpx' }}>
+                            {photo.tags.map(tag => (
+                              <View
+                                key={tag.id}
+                                style={{
+                                  padding: '4rpx 16rpx',
+                                  borderRadius: '16rpx',
+                                  background: '#eff6ff'
+                                }}
+                              >
+                                <Text style={{ fontSize: '22rpx', color: '#25aff4' }}>
+                                  {tag.icon} {tag.name}
+                                </Text>
+                              </View>
+                            ))}
+                          </View>
+                        )}
+                        {photo.description && (
                           <Text
                             className="block text-[#475569]"
                             style={{ fontSize: '26rpx', lineHeight: '40rpx' }}
                           >
-                            {photo.notes}
+                            {photo.description}
                           </Text>
                         )}
                       </View>
@@ -542,7 +579,7 @@ function GrowthTimeline() {
                     }}
                   />
                   <Text className="text-[#94a3b8] italic" style={{ fontSize: '26rpx' }}>
-                    {pet?.name}的诞生 • {pet ? formatDate(pet.createdAt) : ''}
+                    {pet?.name}的诞生 {pet?.birthDate ? `• ${formatDate(pet.birthDate)}` : ''}
                   </Text>
                 </View>
               </View>
