@@ -249,3 +249,11 @@ export interface PageInfo<T> {
   pageSize: number
   pages: number
 }
+
+/**
+ * 选项项（用于下拉选择等）
+ */
+export interface OptionItem {
+  value: string
+  label: string
+}

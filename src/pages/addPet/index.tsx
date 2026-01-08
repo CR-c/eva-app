@@ -2,8 +2,8 @@ import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import { Button, Input, TextArea, Picker } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import { createPet, updatePet, getPetById } from '@/services/pet'
-import type { PetDTO, PetGender, PetSize } from '@/constants/types'
+import { createPet, updatePet, getPetById, getBreedOptions, getSizeOptions, getGenderOptions } from '@/services/pet'
+import type { PetDTO, PetGender, PetSize, OptionItem } from '@/constants/types'
 import './index.scss'
 
 // 获取导航栏信息
@@ -42,34 +42,58 @@ function AddPet() {
   const [genderPickerVisible, setGenderPickerVisible] = useState(false)
   const [sizePickerVisible, setSizePickerVisible] = useState(false)
 
-  // 品种选项
-  const breeds = [
-    { text: '金毛寻回犬', value: '金毛寻回犬' },
-    { text: '拉布拉多', value: '拉布拉多' },
-    { text: '贵宾犬', value: '贵宾犬' },
-    { text: '法国斗牛犬', value: '法国斗牛犬' },
-    { text: '比格犬', value: '比格犬' },
-    { text: '边境牧羊犬', value: '边境牧羊犬' },
-    { text: '哈士奇', value: '哈士奇' },
-    { text: '萨摩耶', value: '萨摩耶' },
-    { text: '柯基', value: '柯基' },
-    { text: '泰迪', value: '泰迪' },
-    { text: '混血犬', value: '混血犬' },
-    { text: '其他', value: '其他' }
-  ]
+  // 选项列表（从API获取）
+  const [breeds, setBreeds] = useState<{ text: string; value: string }[]>([])
+  const [genderOptions, setGenderOptions] = useState<{ text: string; value: string }[]>([])
+  const [sizeOptions, setSizeOptions] = useState<{ text: string; value: string }[]>([])
 
-  // 性别选项
-  const genderOptions = [
-    { text: '♂️ 公', value: 'male' },
-    { text: '♀️ 母', value: 'female' }
-  ]
+  // 加载选项数据
+  useEffect(() => {
+    loadOptions()
+  }, [])
 
-  // 体型选项
-  const sizeOptions = [
-    { text: '小型', value: 'small' },
-    { text: '中型', value: 'medium' },
-    { text: '大型', value: 'large' }
-  ]
+  const loadOptions = async () => {
+    try {
+      const [breedsData, gendersData, sizesData] = await Promise.all([
+        getBreedOptions(),
+        getGenderOptions(),
+        getSizeOptions()
+      ])
+
+      // 转换为 Picker 需要的格式
+      setBreeds(breedsData.map((item: OptionItem) => ({
+        text: item.label,
+        value: item.value
+      })))
+
+      setGenderOptions(gendersData.map((item: OptionItem) => ({
+        text: item.value === 'male' ? '♂️ ' + item.label : '♀️ ' + item.label,
+        value: item.value
+      })))
+
+      setSizeOptions(sizesData.map((item: OptionItem) => ({
+        text: item.label,
+        value: item.value
+      })))
+    } catch (error) {
+      console.error('Failed to load options:', error)
+      // 加载失败时使用默认选项
+      setBreeds([
+        { text: '金毛寻回犬', value: '金毛寻回犬' },
+        { text: '拉布拉多', value: '拉布拉多' },
+        { text: '其他', value: '其他' }
+      ])
+      setGenderOptions([
+        { text: '♂️ 公', value: 'male' },
+        { text: '♀️ 母', value: 'female' }
+      ])
+      setSizeOptions([
+        { text: '小型', value: 'small' },
+        { text: '中型', value: 'medium' },
+        { text: '大型', value: 'large' }
+      ])
+    }
+  }
 
   useEffect(() => {
     // 检查是否是编辑模式

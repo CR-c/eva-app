@@ -12,6 +12,7 @@ import type {
   GrowthRecordDTO,
   GrowthRecordQueryDTO,
   PageInfo,
+  OptionItem,
 } from '@/constants/types'
 
 // ==================== 宠物管理 ====================
@@ -165,5 +166,31 @@ export async function deleteGrowthRecord(petId: number, id: number) {
   const response = await del<void>(`/api/v1/pets/${petId}/growth-records/${id}`, undefined, {
     showLoading: true,
   })
+  return response.data
+}
+
+// ==================== 选项接口 ====================
+
+/**
+ * 获取品种选项列表
+ */
+export async function getBreedOptions() {
+  const response = await get<OptionItem[]>('/api/v1/pets/options/breeds')
+  return response.data
+}
+
+/**
+ * 获取体型选项列表
+ */
+export async function getSizeOptions() {
+  const response = await get<OptionItem[]>('/api/v1/pets/options/sizes')
+  return response.data
+}
+
+/**
+ * 获取性别选项列表
+ */
+export async function getGenderOptions() {
+  const response = await get<OptionItem[]>('/api/v1/pets/options/genders')
   return response.data
 }

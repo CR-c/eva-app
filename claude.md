@@ -13,6 +13,31 @@
 - 全局状态使用 Zustand
 - 所有请求必须通过 services 层
 - 禁止页面中直接调用 Taro.request
+- UI 组件必须使用 NutUI（@nutui/nutui-react-taro），禁止使用 @tarojs/components 的 Button 等交互组件
+
+## UI Components
+
+使用 NutUI 组件库（@nutui/nutui-react-taro）：
+
+```typescript
+// ✅ 正确 - 使用 NutUI 组件
+import { View, Text, Image } from '@tarojs/components'  // 基础容器组件可以用 Taro
+import { Button, Input, Form, Cell, NavBar, Toast } from '@nutui/nutui-react-taro'  // 交互组件用 NutUI
+
+// ❌ 错误 - 禁止使用 Taro 原生交互组件
+import { Button, Input } from '@tarojs/components'
+```
+
+可以使用 @tarojs/components 的组件：
+- View, Text, Image, ScrollView（基础容器）
+- Map（地图组件）
+- Picker（选择器，NutUI 的 Picker 在小程序有兼容问题时可用）
+
+必须使用 NutUI 的组件：
+- Button, Input, Form, Checkbox, Radio, Switch
+- Cell, NavBar, TabBar, Tabs
+- Dialog, Toast, Popup, ActionSheet
+- 其他所有交互类 UI 组件
 
 ## Project Facts
 

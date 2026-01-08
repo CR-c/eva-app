@@ -20,7 +20,30 @@
       "Bash(git commit -m \"$\\(cat <<''EOF''\nfeat: EVA-01小程序基础框架 v1.0.0\n\n## 核心功能\n- ✅ Taro 4 + React + TypeScript 技术栈\n- ✅ 微信小程序支持\n- ✅ 双登录模式（微信一键登录 + 账号密码登录）\n- ✅ 微信注册流程（用户不存在时自动注册）\n- ✅ Zustand全局状态管理\n- ✅ 完整的用户认证系统\n- ✅ Token自动注入与401处理\n\n## 页面实现\n- 🏠 首页（带骨架屏）\n- 📋 菜单页（带骨架屏）\n- 👤 个人中心（用户信息 + 功能菜单）\n- 📝 个人资料编辑（性别/生日/地区选择器）\n- 🔐 登录页（双模式切换）\n\n## UI设计\n- 🎨 EVA-01 Test Type配色方案\n  - 紫色主题：#6A0DAD, #4B0082\n  - 荧光绿强调色：#39FF14\n  - 橙色细节：#FF6600\n- ✨ 统一的视觉风格\n- 🎭 骨架屏加载效果\n\n## 技术架构\n- 📁 完整的目录结构（pages/components/hooks/services/store/utils）\n- 🔄 统一的API请求封装\n- 💾 LocalStorage状态持久化\n- 🎯 TypeScript类型安全\n- 🚀 pnpm包管理\n\n## Mock功能\n- 账号密码登录（admin/admin123）\n- 微信登录模拟\n- 用户注册模拟\n- 用户信息查询模拟\nEOF\n\\)\")",
       "Bash(git tag:*)",
       "Bash(git remote add:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "WebFetch(domain:docs.taro.zone)",
+      "mcp__context7__resolve-library-id",
+      "mcp__context7__query-docs",
+      "mcp__github__get_file_contents",
+      "Bash(del \"D:\\\\code\\\\eva\\\\eva-app\\\\src\\\\styles\\\\tailwind.css\")",
+      "Bash(pnpm list:*)",
+      "Bash(timeout 120 pnpm dev:weapp:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nfix: 修复TailwindCSS配置，添加plugin-html支持\n\n## 变更内容\n- 修复 postcss.config.js 使用 require\\(\\) 方式注册插件\n- 将 tailwind.config.ts 转换为 tailwind.config.js\n- 添加 @tarojs/plugin-html 插件支持 NutUI HTML 标签\n- 重构样式引入方式，使用独立的 tailwind.css 文件\n- 添加 NutUI 样式修复文件\n\n## 配置说明\n- TailwindCSS 3.4.19 + weapp-tailwindcss 4.9.2\n- 启用 rem2rpx 转换\n- 启用 injectAdditionalCssVarScope 兼容 NutUI\nEOF\n\\)\")",
+      "Bash(git commit --no-verify -m \"$\\(cat <<''EOF''\nfix: 修复TailwindCSS配置，添加plugin-html支持\n\n## 变更内容\n- 修复 postcss.config.js 使用 require\\(\\) 方式注册插件\n- 将 tailwind.config.ts 转换为 tailwind.config.js\n- 添加 @tarojs/plugin-html 插件支持 NutUI HTML 标签\n- 重构样式引入方式，使用独立的 tailwind.css 文件\n- 添加 NutUI 样式修复文件\n\n## 配置说明\n- TailwindCSS 3.4.19 + weapp-tailwindcss 4.9.2\n- 启用 rem2rpx 转换\n- 启用 injectAdditionalCssVarScope 兼容 NutUI\nEOF\n\\)\")",
+      "Bash(timeout 90 pnpm dev:weapp:*)",
+      "Bash(pnpm build:weapp:*)",
+      "Bash(cat:*)",
+      "Bash(git commit --no-verify -m \"$\\(cat <<''EOF''\nfix: 修复NutUI Icon组件导入和plugin-html配置\n\n## 变更内容\n- 将 Icon 组件从 @nutui/nutui-react-taro 改为 @nutui/icons-react-taro\n- 使用 ArrowLeft 替代已废弃的 Icon name=\"left\"\n- 添加 @nutui/icons-react-taro 依赖\n- 配置 @tarojs/plugin-html 的 pxtransformBlackList\nEOF\n\\)\")",
+      "Bash(del \"D:\\\\code\\\\eva\\\\eva-app\\\\src\\\\styles\\\\nutui-fix.scss\")",
+      "Bash(cmd /c \"del D:\\\\code\\\\eva\\\\eva-app\\\\src\\\\styles\\\\nutui-fix.scss\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nchore: 更新TailwindCSS和构建配置\n\n- 调整tailwind.config.js配置\n- 更新config/index.ts构建选项\nEOF\n\\)\")",
+      "Bash(src/pages/addPet/index.tsx )",
+      "Bash(src/pages/addPet/index.scss )",
+      "Bash(src/pages/addGrowthPhoto/index.tsx )",
+      "Bash(src/pages/addGrowthPhoto/index.scss )",
+      "Bash(src/pages/growthTimeline/index.tsx )",
+      "Bash(src/pages/growthTimeline/index.scss)",
+      "Bash(git commit --no-verify -m \"$\\(cat <<''EOF''\nrefactor: 统一表单页面使用NutUI组件和安全区域\n\n- addPet页面使用NutUI Input/TextArea/Picker组件\n- addGrowthPhoto页面使用NutUI TextArea/DatePicker组件\n- growthTimeline页面优化布局\n- 所有页面添加安全区域支持\\(状态栏+胶囊按钮\\)\n- 统一骨架屏加载效果\nEOF\n\\)\")"
     ]
   }
 }
