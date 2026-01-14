@@ -17,7 +17,9 @@
 
 ## UI Components
 
-使用 NutUI 组件库（@nutui/nutui-react-taro）：
+使用 NutUI 组件库（@nutui/nutui-react-taro v3.0.18）：
+- 版本：3.0.18
+- 文档：https://nutui.jd.com/taro/react/3x/#/zh-CN/component/
 
 ```typescript
 // ✅ 正确 - 使用 NutUI 组件
@@ -31,13 +33,35 @@ import { Button, Input } from '@tarojs/components'
 可以使用 @tarojs/components 的组件：
 - View, Text, Image, ScrollView（基础容器）
 - Map（地图组件）
-- Picker（选择器，NutUI 的 Picker 在小程序有兼容问题时可用）
 
 必须使用 NutUI 的组件：
 - Button, Input, Form, Checkbox, Radio, Switch
 - Cell, NavBar, TabBar, Tabs
-- Dialog, Toast, Popup, ActionSheet
+- Dialog, Toast, Popup, ActionSheet, Picker
 - 其他所有交互类 UI 组件
+
+### Picker 组件用法
+
+```typescript
+// options 数据结构 - 使用 label 字段（不是 text）
+const options = [
+  [
+    { value: 'option1', label: '选项1' },
+    { value: 'option2', label: '选项2' },
+  ],
+]
+
+// 使用示例
+<Picker
+  visible={visible}
+  options={options}
+  onConfirm={(selectedOptions, selectedValue) => {
+    // selectedOptions: 选中的选项对象数组
+    // selectedValue: 选中的值数组
+  }}
+  onClose={() => setVisible(false)}
+/>
+```
 
 ## Project Facts
 

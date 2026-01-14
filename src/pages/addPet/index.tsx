@@ -42,10 +42,36 @@ function AddPet() {
   const [genderPickerVisible, setGenderPickerVisible] = useState(false)
   const [sizePickerVisible, setSizePickerVisible] = useState(false)
 
-  // 选项列表（从API获取）
-  const [breeds, setBreeds] = useState<{ text: string; value: string }[]>([])
-  const [genderOptions, setGenderOptions] = useState<{ text: string; value: string }[]>([])
-  const [sizeOptions, setSizeOptions] = useState<{ text: string; value: string }[]>([])
+  // 默认选项（初始化时使用，API加载后会覆盖）
+  const defaultBreeds = [
+    { label: '金毛寻回犬', value: '金毛寻回犬' },
+    { label: '拉布拉多', value: '拉布拉多' },
+    { label: '贵宾犬', value: '贵宾犬' },
+    { label: '法国斗牛犬', value: '法国斗牛犬' },
+    { label: '边境牧羊犬', value: '边境牧羊犬' },
+    { label: '哈士奇', value: '哈士奇' },
+    { label: '萨摩耶', value: '萨摩耶' },
+    { label: '柯基', value: '柯基' },
+    { label: '泰迪', value: '泰迪' },
+    { label: '混血犬', value: '混血犬' },
+    { label: '其他', value: '其他' }
+  ]
+
+  const defaultGenderOptions = [
+    { label: '♂️ 公', value: 'male' },
+    { label: '♀️ 母', value: 'female' }
+  ]
+
+  const defaultSizeOptions = [
+    { label: '小型', value: 'small' },
+    { label: '中型', value: 'medium' },
+    { label: '大型', value: 'large' }
+  ]
+
+  // 选项列表（从API获取，初始使用默认值）
+  const [breeds, setBreeds] = useState<{ label: string; value: string }[]>(defaultBreeds)
+  const [genderOptions, setGenderOptions] = useState<{ label: string; value: string }[]>(defaultGenderOptions)
+  const [sizeOptions, setSizeOptions] = useState<{ label: string; value: string }[]>(defaultSizeOptions)
 
   // 加载选项数据
   useEffect(() => {
@@ -60,38 +86,24 @@ function AddPet() {
         getSizeOptions()
       ])
 
-      // 转换为 Picker 需要的格式
+      // 转换为 Picker 需要的格式（使用 label 字段）
       setBreeds(breedsData.map((item: OptionItem) => ({
-        text: item.label,
+        label: item.label,
         value: item.value
       })))
 
       setGenderOptions(gendersData.map((item: OptionItem) => ({
-        text: item.value === 'male' ? '♂️ ' + item.label : '♀️ ' + item.label,
+        label: item.value === 'male' ? '♂️ ' + item.label : '♀️ ' + item.label,
         value: item.value
       })))
 
       setSizeOptions(sizesData.map((item: OptionItem) => ({
-        text: item.label,
+        label: item.label,
         value: item.value
       })))
     } catch (error) {
       console.error('Failed to load options:', error)
-      // 加载失败时使用默认选项
-      setBreeds([
-        { text: '金毛寻回犬', value: '金毛寻回犬' },
-        { text: '拉布拉多', value: '拉布拉多' },
-        { text: '其他', value: '其他' }
-      ])
-      setGenderOptions([
-        { text: '♂️ 公', value: 'male' },
-        { text: '♀️ 母', value: 'female' }
-      ])
-      setSizeOptions([
-        { text: '小型', value: 'small' },
-        { text: '中型', value: 'medium' },
-        { text: '大型', value: 'large' }
-      ])
+      // 加载失败时保持默认选项（已在初始化时设置）
     }
   }
 
@@ -201,12 +213,12 @@ function AddPet() {
 
   const getGenderText = () => {
     const option = genderOptions.find(g => g.value === selectedGender)
-    return option ? option.text : '请选择性别'
+    return option ? option.label : '请选择性别'
   }
 
   const getSizeText = () => {
     const option = sizeOptions.find(s => s.value === selectedSize)
-    return option ? option.text : '请选择体型'
+    return option ? option.label : '请选择体型'
   }
 
   if (loading) {
@@ -464,11 +476,12 @@ function AddPet() {
               <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
             </View>
             <Picker
+              title="请选择品种"
               visible={breedPickerVisible}
               options={[breeds]}
               onClose={() => setBreedPickerVisible(false)}
-              onConfirm={(_, values) => {
-                if (values && values[0]) {
+              onConfirm={(options, values) => {
+                if (values && values.length > 0) {
                   setSelectedBreed(values[0] as string)
                 }
                 setBreedPickerVisible(false)
@@ -551,11 +564,12 @@ function AddPet() {
                 <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
               </View>
               <Picker
+                title="请选择性别"
                 visible={genderPickerVisible}
                 options={[genderOptions]}
                 onClose={() => setGenderPickerVisible(false)}
-                onConfirm={(_, values) => {
-                  if (values && values[0]) {
+                onConfirm={(options, values) => {
+                  if (values && values.length > 0) {
                     setSelectedGender(values[0] as PetGender)
                   }
                   setGenderPickerVisible(false)
@@ -603,11 +617,12 @@ function AddPet() {
               <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
             </View>
             <Picker
+              title="请选择体型"
               visible={sizePickerVisible}
               options={[sizeOptions]}
               onClose={() => setSizePickerVisible(false)}
-              onConfirm={(_, values) => {
-                if (values && values[0]) {
+              onConfirm={(options, values) => {
+                if (values && values.length > 0) {
                   setSelectedSize(values[0] as PetSize)
                 }
                 setSizePickerVisible(false)

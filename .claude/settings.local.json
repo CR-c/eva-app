@@ -43,7 +43,9 @@
       "Bash(src/pages/addGrowthPhoto/index.scss )",
       "Bash(src/pages/growthTimeline/index.tsx )",
       "Bash(src/pages/growthTimeline/index.scss)",
-      "Bash(git commit --no-verify -m \"$\\(cat <<''EOF''\nrefactor: 统一表单页面使用NutUI组件和安全区域\n\n- addPet页面使用NutUI Input/TextArea/Picker组件\n- addGrowthPhoto页面使用NutUI TextArea/DatePicker组件\n- growthTimeline页面优化布局\n- 所有页面添加安全区域支持\\(状态栏+胶囊按钮\\)\n- 统一骨架屏加载效果\nEOF\n\\)\")"
+      "Bash(git commit --no-verify -m \"$\\(cat <<''EOF''\nrefactor: 统一表单页面使用NutUI组件和安全区域\n\n- addPet页面使用NutUI Input/TextArea/Picker组件\n- addGrowthPhoto页面使用NutUI TextArea/DatePicker组件\n- growthTimeline页面优化布局\n- 所有页面添加安全区域支持\\(状态栏+胶囊按钮\\)\n- 统一骨架屏加载效果\nEOF\n\\)\")",
+      "WebSearch",
+      "WebFetch(domain:nutui.jd.com)"
     ]
   }
 }
