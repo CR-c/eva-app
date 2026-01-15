@@ -1,9 +1,9 @@
 import Taro from '@tarojs/taro'
 import type { ApiResponse } from '@/constants/types'
-import { getCache } from './cache'
 import { CACHE_KEYS } from '@/constants/cache'
 import { ROUTES } from '@/constants/routes'
 import { BASE_URL } from '@/constants/env'
+import { getCache } from './cache'
 
 // 正在进行的请求 Map，用于防止重复请求
 const pendingRequests = new Map<string, Promise<any>>()
@@ -44,9 +44,7 @@ function handle401(): void {
 /**
  * 统一请求封装
  */
-export async function request<T = any>(
-  options: RequestOptions
-): Promise<ApiResponse<T>> {
+export async function request<T = any>(options: RequestOptions): Promise<ApiResponse<T>> {
   const {
     url,
     method = 'GET',
@@ -91,7 +89,7 @@ export async function request<T = any>(
     data,
     header: requestHeader,
   })
-    .then((res) => {
+    .then(res => {
       const response = res.data as ApiResponse<T>
 
       // 业务状态码判断
@@ -110,7 +108,7 @@ export async function request<T = any>(
         throw new Error(response.msg || '请求失败')
       }
     })
-    .catch((error) => {
+    .catch(error => {
       // 网络错误
       console.error('Request error:', error)
       Taro.showToast({

@@ -19,19 +19,19 @@ function Walking() {
   const [distance, setDistance] = useState(1.2) // km
   const [currentLocation, setCurrentLocation] = useState({
     latitude: 39.908823,
-    longitude: 116.397470
+    longitude: 116.39747,
   })
   const [walkPath] = useState<LocationPoint[]>([
-    { latitude: 39.908823, longitude: 116.397470, timestamp: Date.now() - 870000 },
-    { latitude: 39.909123, longitude: 116.397770, timestamp: Date.now() - 800000 },
-    { latitude: 39.909423, longitude: 116.398070, timestamp: Date.now() - 700000 },
-    { latitude: 39.909723, longitude: 116.398370, timestamp: Date.now() - 600000 },
-    { latitude: 39.910023, longitude: 116.398670, timestamp: Date.now() - 500000 },
-    { latitude: 39.910323, longitude: 116.398970, timestamp: Date.now() - 400000 },
-    { latitude: 39.910623, longitude: 116.399270, timestamp: Date.now() - 300000 },
-    { latitude: 39.910923, longitude: 116.399570, timestamp: Date.now() - 200000 },
-    { latitude: 39.911223, longitude: 116.399870, timestamp: Date.now() - 100000 },
-    { latitude: 39.911523, longitude: 116.400170, timestamp: Date.now() }
+    { latitude: 39.908823, longitude: 116.39747, timestamp: Date.now() - 870000 },
+    { latitude: 39.909123, longitude: 116.39777, timestamp: Date.now() - 800000 },
+    { latitude: 39.909423, longitude: 116.39807, timestamp: Date.now() - 700000 },
+    { latitude: 39.909723, longitude: 116.39837, timestamp: Date.now() - 600000 },
+    { latitude: 39.910023, longitude: 116.39867, timestamp: Date.now() - 500000 },
+    { latitude: 39.910323, longitude: 116.39897, timestamp: Date.now() - 400000 },
+    { latitude: 39.910623, longitude: 116.39927, timestamp: Date.now() - 300000 },
+    { latitude: 39.910923, longitude: 116.39957, timestamp: Date.now() - 200000 },
+    { latitude: 39.911223, longitude: 116.39987, timestamp: Date.now() - 100000 },
+    { latitude: 39.911523, longitude: 116.40017, timestamp: Date.now() },
   ])
 
   // 计时器
@@ -53,9 +53,9 @@ function Walking() {
         // 模拟位置变化
         setCurrentLocation(prev => ({
           latitude: prev.latitude + (Math.random() - 0.5) * 0.0001,
-          longitude: prev.longitude + (Math.random() - 0.5) * 0.0001
+          longitude: prev.longitude + (Math.random() - 0.5) * 0.0001,
         }))
-        
+
         // 更新距离（简单模拟）
         setDistance(prev => prev + 0.001)
       }, 5000)
@@ -70,7 +70,7 @@ function Walking() {
   const handleSettings = () => {
     Taro.showToast({
       title: '设置功能',
-      icon: 'none'
+      icon: 'none',
     })
   }
 
@@ -78,7 +78,7 @@ function Walking() {
     setIsWalking(!isWalking)
     Taro.showToast({
       title: isWalking ? '已暂停' : '继续散步',
-      icon: 'success'
+      icon: 'success',
     })
   }
 
@@ -86,21 +86,21 @@ function Walking() {
     Taro.showModal({
       title: '结束散步',
       content: '确定要结束这次散步吗？',
-      success: (res) => {
+      success: res => {
         if (res.confirm) {
           // 跳转到汇总页面，传递散步数据
           const params = new URLSearchParams({
             distance: distance.toFixed(1),
             duration: Math.floor(duration / 60).toString(),
             pace: '12',
-            calories: Math.floor(distance * 100).toString()
+            calories: Math.floor(distance * 100).toString(),
           })
-          
+
           Taro.navigateTo({
-            url: `/pages/walkSummary/index?${params.toString()}`
+            url: `/pages/walkSummary/index?${params.toString()}`,
           })
         }
-      }
+      },
     })
   }
 
@@ -124,53 +124,53 @@ function Walking() {
   }
 
   // 地图路径数据
-  const polylineData = [{
-    points: walkPath.map(point => ({
-      latitude: point.latitude,
-      longitude: point.longitude
-    })),
-    color: '#25aff4',
-    width: 6,
-    arrowLine: true
-  }]
+  const polylineData = [
+    {
+      points: walkPath.map(point => ({
+        latitude: point.latitude,
+        longitude: point.longitude,
+      })),
+      color: '#25aff4',
+      width: 6,
+      arrowLine: true,
+    },
+  ]
 
   // 地图标记
-  const markersData = [{
-    id: 1,
-    latitude: currentLocation.latitude,
-    longitude: currentLocation.longitude,
-    iconPath: '/assets/icons/dog-marker.png',
-    width: 40,
-    height: 40,
-    callout: {
-      content: 'Buddy',
-      color: '#ffffff',
-      fontSize: 12,
-      borderRadius: 8,
-      bgColor: '#25aff4',
-      padding: 8,
-      display: 'ALWAYS' as const,
-      anchorX: 0,
-      anchorY: 0,
-      borderWidth: 0,
-      borderColor: '#25aff4',
-      textAlign: 'center' as const
-    }
-  }]
+  const markersData = [
+    {
+      id: 1,
+      latitude: currentLocation.latitude,
+      longitude: currentLocation.longitude,
+      iconPath: '/assets/icons/dog-marker.png',
+      width: 40,
+      height: 40,
+      callout: {
+        content: 'Buddy',
+        color: '#ffffff',
+        fontSize: 12,
+        borderRadius: 8,
+        bgColor: '#25aff4',
+        padding: 8,
+        display: 'ALWAYS' as const,
+        anchorX: 0,
+        anchorY: 0,
+        borderWidth: 0,
+        borderColor: '#25aff4',
+        textAlign: 'center' as const,
+      },
+    },
+  ]
 
   return (
-    <View className="walking-page">
+    <View className='walking-page'>
       {/* 顶部导航 */}
-      <TopNavigation 
-        onBack={handleBack}
-        onSettings={handleSettings}
-        isLive={isWalking}
-      />
+      <TopNavigation onBack={handleBack} onSettings={handleSettings} isLive={isWalking} />
 
       {/* 地图区域 */}
-      <View className="map-container">
+      <View className='map-container'>
         <Map
-          className="walking-map"
+          className='walking-map'
           latitude={currentLocation.latitude}
           longitude={currentLocation.longitude}
           scale={16}
@@ -182,29 +182,22 @@ function Walking() {
           enableZoom
           enableScroll
           enableRotate
-          onError={(e) => console.error('Map error:', e)}
+          onError={e => console.error('Map error:', e)}
         />
-        
+
         {/* 地图控制按钮 */}
-        <MapControls
-          onZoomIn={handleZoomIn}
-          onZoomOut={handleZoomOut}
-          onLocate={handleLocate}
-        />
+        <MapControls onZoomIn={handleZoomIn} onZoomOut={handleZoomOut} onLocate={handleLocate} />
       </View>
 
       {/* 底部控制区域 */}
-      <View className="bottom-controls">
+      <View className='bottom-controls'>
         {/* 渐变遮罩 */}
-        <View className="gradient-overlay" />
-        
-        <View className="controls-content">
+        <View className='gradient-overlay' />
+
+        <View className='controls-content'>
           {/* 统计卡片 */}
-          <StatsCards
-            distance={distance}
-            duration={formatDuration(duration)}
-          />
-          
+          <StatsCards distance={distance} duration={formatDuration(duration)} />
+
           {/* 控制按钮 */}
           <ControlButtons
             isWalking={isWalking}

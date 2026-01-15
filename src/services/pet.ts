@@ -1,6 +1,5 @@
 import { get, post, put, del } from '@/utils/request'
 import type {
-  Pet,
   PetVO,
   PetDTO,
   PetQueryDTO,

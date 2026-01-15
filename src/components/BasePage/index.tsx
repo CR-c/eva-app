@@ -33,7 +33,7 @@ const BasePage: React.FC<BasePageProps> = ({
   rightContent,
   className = '',
   children,
-  safeArea = true
+  safeArea = true,
 }) => {
   const navBarInfo = getNavBarInfo()
 
@@ -54,26 +54,26 @@ const BasePage: React.FC<BasePageProps> = ({
       {/* 自定义导航栏 */}
       {title && (
         <View
-          className="bg-white"
+          className='bg-white'
           style={{
             paddingTop: safeArea ? `${navBarInfo.statusBarHeight}px` : 0,
             borderBottom: '2rpx solid #f1f5f9',
             position: 'sticky',
             top: 0,
-            zIndex: 100
+            zIndex: 100,
           }}
         >
           <View
-            className="flex items-center justify-between"
+            className='flex items-center justify-between'
             style={{
               padding: '0 32rpx',
-              height: `${navBarInfo.navBarHeight}px`
+              height: `${navBarInfo.navBarHeight}px`,
             }}
           >
             {/* 左侧返回按钮 */}
             {showBack ? (
               <View
-                className="flex items-center justify-center bg-[#f1f5f9]"
+                className='flex items-center justify-center bg-[#f1f5f9]'
                 style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
                 onClick={handleBack}
               >
@@ -84,30 +84,31 @@ const BasePage: React.FC<BasePageProps> = ({
             )}
 
             {/* 标题 */}
-            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+            <Text className='font-bold text-[#0d171c]' style={{ fontSize: '32rpx' }}>
               {title}
             </Text>
 
             {/* 右侧内容 */}
-            {rightContent || (showHome ? (
-              <View
-                className="flex items-center justify-center bg-[#eff6ff]"
-                style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
-                onClick={handleHome}
-              >
-                <Text style={{ fontSize: '24rpx', color: '#25aff4', fontWeight: '600' }}>首页</Text>
-              </View>
-            ) : (
-              <View style={{ width: '72rpx' }} />
-            ))}
+            {rightContent ||
+              (showHome ? (
+                <View
+                  className='flex items-center justify-center bg-[#eff6ff]'
+                  style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
+                  onClick={handleHome}
+                >
+                  <Text style={{ fontSize: '24rpx', color: '#25aff4', fontWeight: '600' }}>
+                    首页
+                  </Text>
+                </View>
+              ) : (
+                <View style={{ width: '72rpx' }} />
+              ))}
           </View>
         </View>
       )}
 
       {/* 页面内容 */}
-      <View className="flex-1 relative">
-        {children}
-      </View>
+      <View className='flex-1 relative'>{children}</View>
     </View>
   )
 }

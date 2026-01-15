@@ -1,31 +1,19 @@
 // Test utilities for NutUI-React components
 import React from 'react'
-import { render, RenderOptions } from '@testing-library/react'
-import { ConfigProvider } from '@nutui/nutui-react-taro'
+import { render as rtlRender, RenderOptions } from '@testing-library/react'
 
 // Mock ConfigProvider for testing
 const MockConfigProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  return (
-    <div data-testid="config-provider">
-      {children}
-    </div>
-  )
+  return <div data-testid='config-provider'>{children}</div>
 }
 
 // Custom render function that includes NutUI-React providers
-const customRender = (
-  ui: React.ReactElement,
-  options?: Omit<RenderOptions, 'wrapper'>
-) => {
+const customRender = (ui: React.ReactElement, options?: Omit<RenderOptions, 'wrapper'>) => {
   const Wrapper: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    return (
-      <MockConfigProvider>
-        {children}
-      </MockConfigProvider>
-    )
+    return <MockConfigProvider>{children}</MockConfigProvider>
   }
 
-  return render(ui, { wrapper: Wrapper, ...options })
+  return rtlRender(ui, { wrapper: Wrapper, ...options })
 }
 
 // Test utilities for Taro4 components
@@ -34,21 +22,21 @@ export const taroTestUtils = {
   mockNavigation: () => {
     const navigateTo = jest.fn()
     const navigateBack = jest.fn()
-    
+
     global.Taro.navigateTo = navigateTo
     global.Taro.navigateBack = navigateBack
-    
+
     return { navigateTo, navigateBack }
   },
 
   // Mock Taro storage
   mockStorage: () => {
     const storage = new Map<string, any>()
-    
+
     global.Taro.getStorageSync = jest.fn((key: string) => storage.get(key) || '')
     global.Taro.setStorageSync = jest.fn((key: string, value: any) => storage.set(key, value))
     global.Taro.removeStorageSync = jest.fn((key: string) => storage.delete(key))
-    
+
     return storage
   },
 
@@ -63,13 +51,13 @@ export const taroTestUtils = {
       windowWidth: 375,
       windowHeight: 667,
       pixelRatio: 2,
-      ...info
+      ...info,
     }
-    
+
     global.Taro.getSystemInfo = jest.fn(() => Promise.resolve(defaultInfo))
-    
+
     return defaultInfo
-  }
+  },
 }
 
 // NutUI-React component test utilities
@@ -84,7 +72,7 @@ export const nutUITestUtils = {
   expectButtonInteraction: (button: HTMLElement, onClick: jest.Mock) => {
     expect(button).toBeInTheDocument()
     expect(button).not.toBeDisabled()
-    
+
     button.click()
     expect(onClick).toHaveBeenCalled()
   },
@@ -95,11 +83,19 @@ export const nutUITestUtils = {
     if (title) {
       expect(element).toHaveTextContent(title)
     }
-  }
+  },
 }
 
-// Re-export everything from testing-library
-export * from '@testing-library/react'
+// Re-export everything from testing-library except render
+export {
+  screen,
+  fireEvent,
+  waitFor,
+  within,
+  cleanup,
+  act,
+  renderHook,
+} from '@testing-library/react'
 
-// Override the default render with our custom render
+// Export our custom render as the default render
 export { customRender as render }

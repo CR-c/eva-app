@@ -26,30 +26,24 @@ function TopNavigation({ onBack, onSettings, isLive }: TopNavigationProps) {
   const navBarInfo = getNavBarInfo()
 
   return (
-    <View
-      className="top-navigation"
-      style={{ paddingTop: `${navBarInfo.statusBarHeight}px` }}
-    >
-      <View
-        className="nav-content"
-        style={{ height: `${navBarInfo.navBarHeight}px` }}
-      >
+    <View className='top-navigation' style={{ paddingTop: `${navBarInfo.statusBarHeight}px` }}>
+      <View className='nav-content' style={{ height: `${navBarInfo.navBarHeight}px` }}>
         {/* 返回按钮 */}
-        <View className="nav-button" onClick={onBack}>
-          <Text className="nav-icon">←</Text>
+        <View className='nav-button' onClick={onBack}>
+          <Text className='nav-icon'>←</Text>
         </View>
-        
+
         {/* 中间状态区域 */}
-        <View className="nav-center">
-          <View className="status-indicator">
-            {isLive && <View className="live-dot" />}
-            <Text className="status-text">Buddy • {isLive ? '直播中' : '已暂停'}</Text>
+        <View className='nav-center'>
+          <View className='status-indicator'>
+            {isLive && <View className='live-dot' />}
+            <Text className='status-text'>Buddy • {isLive ? '直播中' : '已暂停'}</Text>
           </View>
         </View>
-        
+
         {/* 设置按钮 */}
-        <View className="nav-button" onClick={onSettings}>
-          <Text className="nav-icon">⚙️</Text>
+        <View className='nav-button' onClick={onSettings}>
+          <Text className='nav-icon'>⚙️</Text>
         </View>
       </View>
     </View>

@@ -32,7 +32,7 @@ const CustomSkeleton: React.FC<CustomSkeletonProps> = ({
   title = false,
   card = false,
   className = '',
-  animated = true
+  animated = true,
 }) => {
   // 如果不是加载状态，直接返回子组件
   if (!loading) {
@@ -42,48 +42,39 @@ const CustomSkeleton: React.FC<CustomSkeletonProps> = ({
   const avatarSizeMap = {
     small: '40',
     medium: '60',
-    large: '80'
+    large: '80',
   }
 
-  const cardClasses = card 
-    ? 'bg-white rounded-2xl p-6 border border-gray-100 shadow-sm'
-    : ''
+  const cardClasses = card ? 'bg-white rounded-2xl p-6 border border-gray-100 shadow-sm' : ''
 
   return (
     <View className={`${cardClasses} ${className}`}>
       <View className={`flex ${avatar ? 'gap-4' : ''}`}>
         {/* 头像骨架 */}
         {avatar && (
-          <View className="flex-shrink-0">
+          <View className='flex-shrink-0'>
             <Skeleton
               width={avatarSizeMap[avatarSize]}
               height={avatarSizeMap[avatarSize]}
               animated={animated}
-              className="rounded-full"
+              className='rounded-full'
             />
           </View>
         )}
-        
+
         {/* 内容骨架 */}
-        <View className="flex-1 space-y-3">
+        <View className='flex-1 space-y-3'>
           {/* 标题骨架 */}
-          {title && (
-            <Skeleton
-              width="60%"
-              height="20"
-              animated={animated}
-              className="rounded"
-            />
-          )}
-          
+          {title && <Skeleton width='60%' height='20' animated={animated} className='rounded' />}
+
           {/* 行骨架 */}
           {Array.from({ length: rows }).map((_, index) => (
             <Skeleton
               key={index}
               width={index === rows - 1 ? '80%' : '100%'}
-              height="16"
+              height='16'
               animated={animated}
-              className="rounded"
+              className='rounded'
             />
           ))}
         </View>

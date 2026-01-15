@@ -1,6 +1,6 @@
 // NutUI-React Taro 类型声明文件
 declare module '@nutui/nutui-react-taro' {
-  import { ComponentType, ReactNode } from 'react'
+  import { ComponentType } from 'react'
 
   // 基础组件
   export const Button: ComponentType<any>

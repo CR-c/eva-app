@@ -97,5 +97,6 @@ module.exports = {
     'babel.config.js',
     'postcss.config.js',
     '.eslintrc.js',
+    'src/test/',
   ],
 }

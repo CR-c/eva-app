@@ -26,15 +26,16 @@ const CustomEmpty: React.FC<CustomEmptyProps> = ({
   actionText,
   onAction,
   className = '',
-  showDefaultImage = true
+  showDefaultImage = true,
 }) => {
   const sizeClasses = {
     small: 'w-24 h-24',
-    medium: 'w-32 h-32', 
-    large: 'w-40 h-40'
+    medium: 'w-32 h-32',
+    large: 'w-40 h-40',
   }
 
-  const defaultImageSrc = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik00MCA2NEg4OFY3Mkg0MFY2NFoiIGZpbGw9IiNEOUQ5RDkiLz4KPHBhdGggZD0iTTQ4IDQ4SDgwVjU2SDQ4VjQ4WiIgZmlsbD0iI0Q5RDlEOSIvPgo8L3N2Zz4K'
+  const defaultImageSrc =
+    'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjVGNUY1Ii8+CjxwYXRoIGQ9Ik00MCA2NEg4OFY3Mkg0MFY2NFoiIGZpbGw9IiNEOUQ5RDkiLz4KPHBhdGggZD0iTTQ4IDQ4SDgwVjU2SDQ4VjQ4WiIgZmlsbD0iI0Q5RDlEOSIvPgo8L3N2Zz4K'
 
   return (
     <View className={`flex flex-col items-center justify-center py-16 px-8 ${className}`}>
@@ -43,24 +44,24 @@ const CustomEmpty: React.FC<CustomEmptyProps> = ({
         <View className={`${sizeClasses[imageSize]} mb-6 flex items-center justify-center`}>
           <Image
             src={image || defaultImageSrc}
-            className="w-full h-full object-contain opacity-60"
-            mode="aspectFit"
+            className='w-full h-full object-contain opacity-60'
+            mode='aspectFit'
           />
         </View>
       )}
-      
+
       {/* 描述文本 */}
-      <Text className="text-gray-400 text-base text-center mb-6 leading-relaxed">
+      <Text className='text-gray-400 text-base text-center mb-6 leading-relaxed'>
         {description}
       </Text>
-      
+
       {/* 操作按钮 */}
       {actionText && onAction && (
         <Button
-          type="primary"
-          size="small"
+          type='primary'
+          size='small'
           onClick={onAction}
-          className="bg-blue-500 border-blue-500 hover:bg-blue-600 px-6"
+          className='bg-blue-500 border-blue-500 hover:bg-blue-600 px-6'
         >
           {actionText}
         </Button>

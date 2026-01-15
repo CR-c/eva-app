@@ -2,7 +2,14 @@ import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import { Button, Input, TextArea, Picker } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import { createPet, updatePet, getPetById, getBreedOptions, getSizeOptions, getGenderOptions } from '@/services/pet'
+import {
+  createPet,
+  updatePet,
+  getPetById,
+  getBreedOptions,
+  getSizeOptions,
+  getGenderOptions,
+} from '@/services/pet'
 import type { PetDTO, PetGender, PetSize, OptionItem } from '@/constants/types'
 import './index.scss'
 
@@ -54,24 +61,26 @@ function AddPet() {
     { label: '柯基', value: '柯基' },
     { label: '泰迪', value: '泰迪' },
     { label: '混血犬', value: '混血犬' },
-    { label: '其他', value: '其他' }
+    { label: '其他', value: '其他' },
   ]
 
   const defaultGenderOptions = [
     { label: '♂️ 公', value: 'male' },
-    { label: '♀️ 母', value: 'female' }
+    { label: '♀️ 母', value: 'female' },
   ]
 
   const defaultSizeOptions = [
     { label: '小型', value: 'small' },
     { label: '中型', value: 'medium' },
-    { label: '大型', value: 'large' }
+    { label: '大型', value: 'large' },
   ]
 
   // 选项列表（从API获取，初始使用默认值）
   const [breeds, setBreeds] = useState<{ label: string; value: string }[]>(defaultBreeds)
-  const [genderOptions, setGenderOptions] = useState<{ label: string; value: string }[]>(defaultGenderOptions)
-  const [sizeOptions, setSizeOptions] = useState<{ label: string; value: string }[]>(defaultSizeOptions)
+  const [genderOptions, setGenderOptions] =
+    useState<{ label: string; value: string }[]>(defaultGenderOptions)
+  const [sizeOptions, setSizeOptions] =
+    useState<{ label: string; value: string }[]>(defaultSizeOptions)
 
   // 加载选项数据
   useEffect(() => {
@@ -83,24 +92,30 @@ function AddPet() {
       const [breedsData, gendersData, sizesData] = await Promise.all([
         getBreedOptions(),
         getGenderOptions(),
-        getSizeOptions()
+        getSizeOptions(),
       ])
 
       // 转换为 Picker 需要的格式（使用 label 字段）
-      setBreeds(breedsData.map((item: OptionItem) => ({
-        label: item.label,
-        value: item.value
-      })))
+      setBreeds(
+        breedsData.map((item: OptionItem) => ({
+          label: item.label,
+          value: item.value,
+        }))
+      )
 
-      setGenderOptions(gendersData.map((item: OptionItem) => ({
-        label: item.value === 'male' ? '♂️ ' + item.label : '♀️ ' + item.label,
-        value: item.value
-      })))
+      setGenderOptions(
+        gendersData.map((item: OptionItem) => ({
+          label: item.value === 'male' ? `♂️ ${item.label}` : `♀️ ${item.label}`,
+          value: item.value,
+        }))
+      )
 
-      setSizeOptions(sizesData.map((item: OptionItem) => ({
-        label: item.label,
-        value: item.value
-      })))
+      setSizeOptions(
+        sizesData.map((item: OptionItem) => ({
+          label: item.label,
+          value: item.value,
+        }))
+      )
     } catch (error) {
       console.error('Failed to load options:', error)
       // 加载失败时保持默认选项（已在初始化时设置）
@@ -151,15 +166,15 @@ function AddPet() {
       count: 1,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
-      success: (res) => {
+      success: res => {
         const tempFilePath = res.tempFilePaths[0]
         // TODO: 实际项目中需要上传到服务器获取URL
         setPhotoUrl(tempFilePath)
       },
-      fail: (error) => {
+      fail: error => {
         console.error('Failed to choose image:', error)
         Taro.showToast({ title: '选择图片失败', icon: 'none' })
-      }
+      },
     })
   }
 
@@ -203,7 +218,6 @@ function AddPet() {
       setTimeout(() => {
         Taro.navigateBack()
       }, 1500)
-
     } catch (error) {
       console.error('Failed to save pet:', error)
     } finally {
@@ -223,30 +237,30 @@ function AddPet() {
 
   if (loading) {
     return (
-      <View className="min-h-screen bg-[#f5f7f8]">
+      <View className='min-h-screen bg-[#f5f7f8]'>
         {/* 自定义导航栏 */}
         <View
-          className="bg-white"
+          className='bg-white'
           style={{
             paddingTop: `${navBarInfo.statusBarHeight}px`,
-            borderBottom: '2rpx solid #f1f5f9'
+            borderBottom: '2rpx solid #f1f5f9',
           }}
         >
           <View
-            className="flex items-center justify-between"
+            className='flex items-center justify-between'
             style={{
               padding: '0 32rpx',
-              height: `${navBarInfo.navBarHeight}px`
+              height: `${navBarInfo.navBarHeight}px`,
             }}
           >
             <View
-              className="flex items-center justify-center bg-[#f1f5f9]"
+              className='flex items-center justify-center bg-[#f1f5f9]'
               style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
               onClick={handleBack}
             >
               <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
             </View>
-            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+            <Text className='font-bold text-[#0d171c]' style={{ fontSize: '32rpx' }}>
               {isEditing ? '编辑宠物' : '添加新宠物'}
             </Text>
             <View style={{ width: '72rpx' }} />
@@ -256,23 +270,23 @@ function AddPet() {
         {/* 加载骨架屏 */}
         <View style={{ padding: '48rpx 32rpx' }}>
           {/* 照片骨架 */}
-          <View className="flex flex-col items-center" style={{ marginBottom: '48rpx' }}>
+          <View className='flex flex-col items-center' style={{ marginBottom: '48rpx' }}>
             <View
-              className="bg-[#e2e8f0]"
+              className='bg-[#e2e8f0]'
               style={{
                 width: '256rpx',
                 height: '256rpx',
                 borderRadius: '128rpx',
-                animation: 'pulse 1.5s ease-in-out infinite'
+                animation: 'pulse 1.5s ease-in-out infinite',
               }}
             />
             <View
-              className="bg-[#e2e8f0]"
+              className='bg-[#e2e8f0]'
               style={{
                 width: '200rpx',
                 height: '32rpx',
                 borderRadius: '16rpx',
-                marginTop: '24rpx'
+                marginTop: '24rpx',
               }}
             />
           </View>
@@ -280,11 +294,11 @@ function AddPet() {
           {[1, 2, 3, 4].map(i => (
             <View
               key={i}
-              className="bg-[#e2e8f0]"
+              className='bg-[#e2e8f0]'
               style={{
                 height: '120rpx',
                 borderRadius: '24rpx',
-                marginBottom: '24rpx'
+                marginBottom: '24rpx',
               }}
             />
           ))}
@@ -294,33 +308,33 @@ function AddPet() {
   }
 
   return (
-    <View className="min-h-screen bg-[#f5f7f8]">
+    <View className='min-h-screen bg-[#f5f7f8]'>
       {/* 自定义导航栏 */}
       <View
-        className="bg-white"
+        className='bg-white'
         style={{
           paddingTop: `${navBarInfo.statusBarHeight}px`,
           borderBottom: '2rpx solid #f1f5f9',
           position: 'sticky',
           top: 0,
-          zIndex: 100
+          zIndex: 100,
         }}
       >
         <View
-          className="flex items-center justify-between"
+          className='flex items-center justify-between'
           style={{
             padding: '0 32rpx',
-            height: `${navBarInfo.navBarHeight}px`
+            height: `${navBarInfo.navBarHeight}px`,
           }}
         >
           <View
-            className="flex items-center justify-center bg-[#f1f5f9]"
+            className='flex items-center justify-center bg-[#f1f5f9]'
             style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
             onClick={handleBack}
           >
             <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
           </View>
-          <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+          <Text className='font-bold text-[#0d171c]' style={{ fontSize: '32rpx' }}>
             {isEditing ? '编辑宠物' : '添加新宠物'}
           </Text>
           <View style={{ width: '72rpx' }} />
@@ -331,12 +345,12 @@ function AddPet() {
         <View style={{ padding: '32rpx', paddingBottom: '200rpx' }}>
           {/* 照片上传器 */}
           <View
-            className="flex flex-col items-center bg-white"
+            className='flex flex-col items-center bg-white'
             style={{
               padding: '48rpx',
               borderRadius: '32rpx',
               marginBottom: '32rpx',
-              boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)'
+              boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)',
             }}
           >
             <View
@@ -344,34 +358,41 @@ function AddPet() {
                 width: '256rpx',
                 height: '256rpx',
                 borderRadius: '128rpx',
-                position: 'relative'
+                position: 'relative',
               }}
               onClick={handlePhotoUpload}
             >
               {photoUrl ? (
                 <Image
                   src={photoUrl}
-                  mode="aspectFill"
+                  mode='aspectFill'
                   style={{
                     width: '100%',
                     height: '100%',
                     borderRadius: '128rpx',
-                    border: '6rpx solid #25aff4'
+                    border: '6rpx solid #25aff4',
                   }}
                 />
               ) : (
                 <View
-                  className="flex flex-col items-center justify-center"
+                  className='flex flex-col items-center justify-center'
                   style={{
                     width: '100%',
                     height: '100%',
                     borderRadius: '128rpx',
                     border: '6rpx dashed #25aff4',
-                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)'
+                    background: 'linear-gradient(135deg, #ffffff 0%, #f8fafc 100%)',
                   }}
                 >
                   <Text style={{ fontSize: '48rpx', color: '#25aff4' }}>📷</Text>
-                  <Text style={{ fontSize: '24rpx', fontWeight: '600', color: '#25aff4', marginTop: '12rpx' }}>
+                  <Text
+                    style={{
+                      fontSize: '24rpx',
+                      fontWeight: '600',
+                      color: '#25aff4',
+                      marginTop: '12rpx',
+                    }}
+                  >
                     上传照片
                   </Text>
                 </View>
@@ -389,7 +410,7 @@ function AddPet() {
                   alignItems: 'center',
                   justifyContent: 'center',
                   border: '6rpx solid #ffffff',
-                  boxShadow: '0 4rpx 16rpx rgba(37,175,244,0.3)'
+                  boxShadow: '0 4rpx 16rpx rgba(37,175,244,0.3)',
                 }}
               >
                 <Text style={{ fontSize: '24rpx', color: 'white' }}>✏️</Text>
@@ -402,71 +423,73 @@ function AddPet() {
 
           {/* 宠物名称 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
-              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>宠物名称</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                宠物名称
+              </Text>
             </View>
             <Input
               value={name}
-              onChange={(val) => setName(val)}
-              placeholder="例如：小白"
+              onChange={val => setName(val)}
+              placeholder='例如：小白'
               style={{
                 '--nutui-input-padding': '0 24rpx',
                 '--nutui-input-font-size': '28rpx',
                 height: '88rpx',
                 background: '#f8fafc',
                 border: '2rpx solid #e2e8f0',
-                borderRadius: '20rpx'
+                borderRadius: '20rpx',
               }}
             />
           </View>
 
           {/* 品种选择 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
               <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>品种</Text>
             </View>
             <View
-              className="flex items-center justify-between"
+              className='flex items-center justify-between'
               style={{
                 height: '88rpx',
                 background: '#f8fafc',
                 border: '2rpx solid #e2e8f0',
                 borderRadius: '20rpx',
-                padding: '0 24rpx'
+                padding: '0 24rpx',
               }}
               onClick={() => setBreedPickerVisible(true)}
             >
@@ -476,7 +499,7 @@ function AddPet() {
               <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
             </View>
             <Picker
-              title="请选择品种"
+              title='请选择品种'
               visible={breedPickerVisible}
               options={[breeds]}
               onClose={() => setBreedPickerVisible(false)}
@@ -490,81 +513,81 @@ function AddPet() {
           </View>
 
           {/* 年龄和性别 */}
-          <View className="flex" style={{ gap: '24rpx', marginBottom: '24rpx' }}>
+          <View className='flex' style={{ gap: '24rpx', marginBottom: '24rpx' }}>
             <View
-              className="flex-1 bg-white"
+              className='flex-1 bg-white'
               style={{
                 borderRadius: '24rpx',
                 padding: '32rpx',
-                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
               }}
             >
-              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
                 <View
                   style={{
                     width: '8rpx',
                     height: '32rpx',
                     background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                     borderRadius: '4rpx',
-                    marginRight: '16rpx'
+                    marginRight: '16rpx',
                   }}
                 />
-                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>年龄（岁）</Text>
+                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                  年龄（岁）
+                </Text>
               </View>
               <Input
-                type="number"
+                type='number'
                 value={age}
-                onChange={(val) => setAge(val)}
-                placeholder="0"
+                onChange={val => setAge(val)}
+                placeholder='0'
                 style={{
                   '--nutui-input-padding': '0 24rpx',
                   '--nutui-input-font-size': '28rpx',
                   height: '88rpx',
                   background: '#f8fafc',
                   border: '2rpx solid #e2e8f0',
-                  borderRadius: '20rpx'
+                  borderRadius: '20rpx',
                 }}
               />
             </View>
 
             <View
-              className="flex-1 bg-white"
+              className='flex-1 bg-white'
               style={{
                 borderRadius: '24rpx',
                 padding: '32rpx',
-                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
               }}
             >
-              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
                 <View
                   style={{
                     width: '8rpx',
                     height: '32rpx',
                     background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                     borderRadius: '4rpx',
-                    marginRight: '16rpx'
+                    marginRight: '16rpx',
                   }}
                 />
                 <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>性别</Text>
               </View>
               <View
-                className="flex items-center justify-between"
+                className='flex items-center justify-between'
                 style={{
                   height: '88rpx',
                   background: '#f8fafc',
                   border: '2rpx solid #e2e8f0',
                   borderRadius: '20rpx',
-                  padding: '0 24rpx'
+                  padding: '0 24rpx',
                 }}
                 onClick={() => setGenderPickerVisible(true)}
               >
-                <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>
-                  {getGenderText()}
-                </Text>
+                <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>{getGenderText()}</Text>
                 <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
               </View>
               <Picker
-                title="请选择性别"
+                title='请选择性别'
                 visible={genderPickerVisible}
                 options={[genderOptions]}
                 onClose={() => setGenderPickerVisible(false)}
@@ -580,44 +603,42 @@ function AddPet() {
 
           {/* 体型选择 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
               <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>体型</Text>
             </View>
             <View
-              className="flex items-center justify-between"
+              className='flex items-center justify-between'
               style={{
                 height: '88rpx',
                 background: '#f8fafc',
                 border: '2rpx solid #e2e8f0',
                 borderRadius: '20rpx',
-                padding: '0 24rpx'
+                padding: '0 24rpx',
               }}
               onClick={() => setSizePickerVisible(true)}
             >
-              <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>
-                {getSizeText()}
-              </Text>
+              <Text style={{ fontSize: '28rpx', color: '#0d171c' }}>{getSizeText()}</Text>
               <Text style={{ fontSize: '24rpx', color: '#64748b' }}>▼</Text>
             </View>
             <Picker
-              title="请选择体型"
+              title='请选择体型'
               visible={sizePickerVisible}
               options={[sizeOptions]}
               onClose={() => setSizePickerVisible(false)}
@@ -632,31 +653,35 @@ function AddPet() {
 
           {/* 宠物简介 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
-              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>关于宠物</Text>
-              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                关于宠物
+              </Text>
+              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>
+                （可选）
+              </Text>
             </View>
             <TextArea
               value={bio}
-              onChange={(val) => setBio(val)}
-              placeholder="任何特殊习惯、喜欢的玩具或医疗需求？"
+              onChange={val => setBio(val)}
+              placeholder='任何特殊习惯、喜欢的玩具或医疗需求？'
               maxLength={200}
               style={{
                 '--nutui-textarea-padding': '24rpx',
@@ -665,7 +690,7 @@ function AddPet() {
                 minHeight: '160rpx',
                 background: '#f8fafc',
                 border: '2rpx solid #e2e8f0',
-                borderRadius: '20rpx'
+                borderRadius: '20rpx',
               }}
             />
           </View>
@@ -682,11 +707,11 @@ function AddPet() {
           padding: '32rpx',
           paddingBottom: '64rpx',
           background: 'linear-gradient(to top, #f5f7f8 0%, #f5f7f8 70%, transparent 100%)',
-          zIndex: 100
+          zIndex: 100,
         }}
       >
         <Button
-          type="primary"
+          type='primary'
           disabled={saving}
           onClick={handleSubmit}
           style={{
@@ -695,13 +720,13 @@ function AddPet() {
             background: saving ? '#94a3b8' : '#25aff4',
             borderRadius: '50rpx',
             border: 'none',
-            boxShadow: '0 16rpx 40rpx rgba(37,175,244,0.35)'
+            boxShadow: '0 16rpx 40rpx rgba(37,175,244,0.35)',
           }}
         >
-          <View className="flex items-center justify-center" style={{ gap: '16rpx' }}>
+          <View className='flex items-center justify-center' style={{ gap: '16rpx' }}>
             <Text style={{ fontSize: '32rpx' }}>🐾</Text>
             <Text style={{ fontSize: '30rpx', fontWeight: '700', color: 'white' }}>
-              {saving ? '保存中...' : (isEditing ? '更新宠物资料' : '保存宠物资料')}
+              {saving ? '保存中...' : isEditing ? '更新宠物资料' : '保存宠物资料'}
             </Text>
           </View>
         </Button>

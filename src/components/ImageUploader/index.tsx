@@ -26,7 +26,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
   multiple = true,
   className = '',
   disabled = false,
-  uploadText = '上传图片'
+  uploadText = '上传图片',
 }) => {
   const [uploading, setUploading] = useState(false)
   const { chooseImage } = useImagePicker()
@@ -37,7 +37,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
     try {
       setUploading(true)
-      
+
       const remainingCount = maxCount - value.length
       if (remainingCount <= 0) {
         showError(`最多只能上传${maxCount}张图片`)
@@ -47,7 +47,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
       const result = await chooseImage({
         count: multiple ? Math.min(remainingCount, 9) : 1,
         sizeType: ['compressed'],
-        sourceType: ['album', 'camera']
+        sourceType: ['album', 'camera'],
       })
 
       if (result?.tempFilePaths) {
@@ -65,7 +65,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   const handleRemoveImage = (index: number) => {
     if (disabled) return
-    
+
     const newImages = value.filter((_, i) => i !== index)
     onChange?.(newImages)
   }
@@ -75,7 +75,7 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
     import('@tarojs/taro').then(Taro => {
       Taro.default.previewImage({
         current,
-        urls: value
+        urls: value,
       })
     })
   }
@@ -84,53 +84,51 @@ const ImageUploader: React.FC<ImageUploaderProps> = ({
 
   return (
     <View className={`${className}`}>
-      <View className="grid grid-cols-3 gap-3">
+      <View className='grid grid-cols-3 gap-3'>
         {/* 已上传的图片 */}
         {value.map((image, index) => (
-          <View key={index} className="relative aspect-square">
+          <View key={index} className='relative aspect-square'>
             <Image
               src={image}
-              className="w-full h-full object-cover rounded-lg border border-gray-200"
-              mode="aspectFill"
+              className='w-full h-full object-cover rounded-lg border border-gray-200'
+              mode='aspectFill'
               onClick={() => handlePreviewImage(image)}
             />
-            
+
             {/* 删除按钮 */}
             {!disabled && (
               <View
-                className="absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center"
+                className='absolute -top-2 -right-2 w-6 h-6 bg-red-500 rounded-full flex items-center justify-center'
                 onClick={() => handleRemoveImage(index)}
               >
-                <Text className="text-white text-xs">×</Text>
+                <Text className='text-white text-xs'>×</Text>
               </View>
             )}
           </View>
         ))}
-        
+
         {/* 上传按钮 */}
         {canUpload && (
           <View
-            className="aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50"
+            className='aspect-square border-2 border-dashed border-gray-300 rounded-lg flex flex-col items-center justify-center bg-gray-50'
             onClick={handleChooseImage}
           >
-            <Text className="text-2xl text-gray-400 mb-1">+</Text>
-            <Text className="text-xs text-gray-400 text-center px-1">
-              {uploadText}
-            </Text>
+            <Text className='text-2xl text-gray-400 mb-1'>+</Text>
+            <Text className='text-xs text-gray-400 text-center px-1'>{uploadText}</Text>
           </View>
         )}
       </View>
-      
+
       {/* 上传状态提示 */}
       {uploading && (
-        <View className="mt-2">
-          <Text className="text-sm text-gray-500">上传中...</Text>
+        <View className='mt-2'>
+          <Text className='text-sm text-gray-500'>上传中...</Text>
         </View>
       )}
-      
+
       {/* 数量提示 */}
-      <View className="mt-2">
-        <Text className="text-xs text-gray-400">
+      <View className='mt-2'>
+        <Text className='text-xs text-gray-400'>
           {value.length}/{maxCount}
         </Text>
       </View>

@@ -21,10 +21,8 @@ function Skeleton({
 
   return (
     <View className={`skeleton-wrapper ${card ? 'skeleton-card' : ''}`}>
-      {avatar && (
-        <View className="skeleton-item skeleton-avatar skeleton-animate"></View>
-      )}
-      <View className="skeleton-content">
+      {avatar && <View className='skeleton-item skeleton-avatar skeleton-animate'></View>}
+      <View className='skeleton-content'>
         {Array.from({ length: rows }).map((_, index) => (
           <View
             key={index}

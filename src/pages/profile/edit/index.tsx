@@ -13,8 +13,8 @@ import './index.scss'
 function EditProfile() {
   useAuth()
 
-  const userInfo = useUserStore((state) => state.userInfo)
-  const setUserInfo = useUserStore((state) => state.setUserInfo)
+  const userInfo = useUserStore(state => state.userInfo)
+  const setUserInfo = useUserStore(state => state.setUserInfo)
 
   const [formData, setFormData] = useState<Partial<UserInfo>>({
     nickname: userInfo?.nickname || '',
@@ -38,18 +38,18 @@ function EditProfile() {
   const [districts, setDistricts] = useState(regionData[0].cities[0].districts)
 
   const handleInput = (field: keyof UserInfo, value: string) => {
-    setFormData((prev) => ({ ...prev, [field]: value }))
+    setFormData(prev => ({ ...prev, [field]: value }))
   }
 
   // 性别选择
   const handleGenderChange = (e: any) => {
     const index = e.detail.value
-    setFormData((prev) => ({ ...prev, gender: index as 0 | 1 | 2 }))
+    setFormData(prev => ({ ...prev, gender: index as 0 | 1 | 2 }))
   }
 
   // 生日选择
   const handleDateChange = (e: any) => {
-    setFormData((prev) => ({ ...prev, birthday: e.detail.value }))
+    setFormData(prev => ({ ...prev, birthday: e.detail.value }))
   }
 
   // 地区选择 - 列改变时更新下级列表
@@ -84,7 +84,7 @@ function EditProfile() {
     const district = regionData[value[0]].cities[value[1]].districts[value[2]]
     const location = `${province} ${city} ${district}`
 
-    setFormData((prev) => ({ ...prev, location }))
+    setFormData(prev => ({ ...prev, location }))
     setRegionValue(value)
   }
 
@@ -135,155 +135,155 @@ function EditProfile() {
   }
 
   return (
-    <PageLayout title="编辑资料">
-      <View className="edit-profile-content">
+    <PageLayout title='编辑资料'>
+      <View className='edit-profile-content'>
         {/* 头部 */}
-        <View className="edit-header">
-          <View className="header-bg"></View>
-          <View className="header-content">
-            <Text className="header-title">EDIT PROFILE</Text>
-            <Text className="header-subtitle">编辑个人资料</Text>
+        <View className='edit-header'>
+          <View className='header-bg'></View>
+          <View className='header-content'>
+            <Text className='header-title'>EDIT PROFILE</Text>
+            <Text className='header-subtitle'>编辑个人资料</Text>
           </View>
         </View>
 
         {/* 头像编辑 */}
-        <View className="avatar-section">
-          <View className="avatar-container" onClick={handleChooseAvatar}>
+        <View className='avatar-section'>
+          <View className='avatar-container' onClick={handleChooseAvatar}>
             <Image
-              className="avatar"
+              className='avatar'
               src={userInfo?.avatar || 'https://via.placeholder.com/200'}
-              mode="aspectFill"
+              mode='aspectFill'
             />
-            <View className="avatar-mask">
-              <Text className="mask-text">📷 更换头像</Text>
+            <View className='avatar-mask'>
+              <Text className='mask-text'>📷 更换头像</Text>
             </View>
           </View>
         </View>
 
         {/* 表单 */}
-        <View className="form-container">
-          <View className="form-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">昵称</Text>
+        <View className='form-container'>
+          <View className='form-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>昵称</Text>
             </View>
             <Input
-              className="item-input"
+              className='item-input'
               value={formData.nickname}
-              placeholder="请输入昵称"
-              placeholderClass="input-placeholder"
-              onInput={(e) => handleInput('nickname', e.detail.value)}
+              placeholder='请输入昵称'
+              placeholderClass='input-placeholder'
+              onInput={e => handleInput('nickname', e.detail.value)}
             />
           </View>
 
-          <View className="form-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">手机号</Text>
+          <View className='form-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>手机号</Text>
             </View>
             <Input
-              className="item-input"
+              className='item-input'
               value={formData.phone}
-              placeholder="请输入手机号"
-              placeholderClass="input-placeholder"
-              type="number"
-              onInput={(e) => handleInput('phone', e.detail.value)}
+              placeholder='请输入手机号'
+              placeholderClass='input-placeholder'
+              type='number'
+              onInput={e => handleInput('phone', e.detail.value)}
             />
           </View>
 
-          <View className="form-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">邮箱</Text>
+          <View className='form-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>邮箱</Text>
             </View>
             <Input
-              className="item-input"
+              className='item-input'
               value={formData.email}
-              placeholder="请输入邮箱"
-              placeholderClass="input-placeholder"
-              onInput={(e) => handleInput('email', e.detail.value)}
+              placeholder='请输入邮箱'
+              placeholderClass='input-placeholder'
+              onInput={e => handleInput('email', e.detail.value)}
             />
           </View>
 
-          <View className="form-item picker-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">性别</Text>
+          <View className='form-item picker-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>性别</Text>
             </View>
             <Picker
-              mode="selector"
+              mode='selector'
               range={genderOptions}
               value={formData.gender}
               onChange={handleGenderChange}
             >
-              <View className="picker-value">
+              <View className='picker-value'>
                 <Text className={`value-text ${!formData.gender ? 'placeholder' : ''}`}>
                   {genderOptions[formData.gender || 0]}
                 </Text>
-                <Text className="arrow">▼</Text>
+                <Text className='arrow'>▼</Text>
               </View>
             </Picker>
           </View>
 
-          <View className="form-item picker-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">生日</Text>
+          <View className='form-item picker-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>生日</Text>
             </View>
             <Picker
-              mode="date"
+              mode='date'
               value={formData.birthday || ''}
-              start="1950-01-01"
+              start='1950-01-01'
               end={new Date().toISOString().split('T')[0]}
               onChange={handleDateChange}
             >
-              <View className="picker-value">
+              <View className='picker-value'>
                 <Text className={`value-text ${!formData.birthday ? 'placeholder' : ''}`}>
                   {formData.birthday || '请选择生日'}
                 </Text>
-                <Text className="arrow">📅</Text>
+                <Text className='arrow'>📅</Text>
               </View>
             </Picker>
           </View>
 
-          <View className="form-item picker-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">地区</Text>
+          <View className='form-item picker-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>地区</Text>
             </View>
             <Picker
-              mode="multiSelector"
+              mode='multiSelector'
               range={[provinces, cities, districts]}
               value={regionValue}
               onChange={handleRegionChange}
               onColumnChange={handleRegionColumnChange}
             >
-              <View className="picker-value">
+              <View className='picker-value'>
                 <Text className={`value-text ${!formData.location ? 'placeholder' : ''}`}>
                   {formData.location || '请选择地区'}
                 </Text>
-                <Text className="arrow">📍</Text>
+                <Text className='arrow'>📍</Text>
               </View>
             </Picker>
           </View>
 
-          <View className="form-item textarea-item">
-            <View className="item-label">
-              <View className="label-dot"></View>
-              <Text className="label-text">个性签名</Text>
+          <View className='form-item textarea-item'>
+            <View className='item-label'>
+              <View className='label-dot'></View>
+              <Text className='label-text'>个性签名</Text>
             </View>
             <Input
-              className="item-textarea"
+              className='item-textarea'
               value={formData.signature}
-              placeholder="请输入个性签名"
-              placeholderClass="input-placeholder"
-              onInput={(e) => handleInput('signature', e.detail.value)}
+              placeholder='请输入个性签名'
+              placeholderClass='input-placeholder'
+              onInput={e => handleInput('signature', e.detail.value)}
             />
           </View>
         </View>
 
         {/* 保存按钮 */}
-        <View className="save-section">
+        <View className='save-section'>
           <Button
             className={`save-btn ${saving ? 'saving' : ''}`}
             loading={saving}

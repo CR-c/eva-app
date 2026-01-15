@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react'
 import { View, Text, Image, ScrollView } from '@tarojs/components'
 import { Button, Input, TextArea, DatePicker } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
-import { getPetById, createGrowthRecord, updateGrowthRecord, getGrowthRecordById } from '@/services/pet'
+import {
+  getPetById,
+  createGrowthRecord,
+  updateGrowthRecord,
+  getGrowthRecordById,
+} from '@/services/pet'
 import type { PetVO, GrowthRecordDTO } from '@/constants/types'
 import './index.scss'
 
@@ -29,7 +34,7 @@ const milestoneOptions = [
   { label: '绝育手术', value: '绝育手术' },
   { label: '训练成功', value: '训练成功' },
   { label: '生病康复', value: '生病康复' },
-  { label: '其他', value: '其他' }
+  { label: '其他', value: '其他' },
 ]
 
 function AddGrowthRecord() {
@@ -110,15 +115,15 @@ function AddGrowthRecord() {
       count: 1,
       sizeType: ['compressed'],
       sourceType: ['album', 'camera'],
-      success: (res) => {
+      success: res => {
         const tempFilePath = res.tempFilePaths[0]
         // TODO: 实际项目中需要上传到服务器获取URL
         setPhotoUrl(tempFilePath)
       },
-      fail: (error) => {
+      fail: error => {
         console.error('Failed to choose image:', error)
         Taro.showToast({ title: '选择图片失败', icon: 'none' })
-      }
+      },
     })
   }
 
@@ -145,7 +150,7 @@ function AddGrowthRecord() {
     // 验证体重
     if (weight) {
       const w = parseFloat(weight)
-      if (isNaN(w) || w <= 0 || w > 100) {
+      if (Number.isNaN(w) || w <= 0 || w > 100) {
         Taro.showToast({ title: '请输入有效的体重(0-100kg)', icon: 'none' })
         return
       }
@@ -154,7 +159,7 @@ function AddGrowthRecord() {
     // 验证身高
     if (height) {
       const h = parseFloat(height)
-      if (isNaN(h) || h <= 0 || h > 200) {
+      if (Number.isNaN(h) || h <= 0 || h > 200) {
         Taro.showToast({ title: '请输入有效的身高(0-200cm)', icon: 'none' })
         return
       }
@@ -169,7 +174,7 @@ function AddGrowthRecord() {
         height: height ? parseFloat(height) : undefined,
         milestone: milestone || undefined,
         notes: notes.trim() || undefined,
-        photoUrl: photoUrl || undefined
+        photoUrl: photoUrl || undefined,
       }
 
       if (isEditing && editingId) {
@@ -183,7 +188,6 @@ function AddGrowthRecord() {
       setTimeout(() => {
         Taro.navigateBack()
       }, 1500)
-
     } catch (error) {
       console.error('Failed to save growth record:', error)
     } finally {
@@ -191,41 +195,32 @@ function AddGrowthRecord() {
     }
   }
 
-  const getAgeText = () => {
-    if (!pet) return ''
-    const years = pet.age
-    if (years === 0) {
-      return '不到1岁'
-    }
-    return `${years}岁`
-  }
-
   if (loading) {
     return (
-      <View className="min-h-screen bg-[#f5f7f8]">
+      <View className='min-h-screen bg-[#f5f7f8]'>
         {/* 自定义导航栏 */}
         <View
-          className="bg-white"
+          className='bg-white'
           style={{
             paddingTop: `${navBarInfo.statusBarHeight}px`,
-            borderBottom: '2rpx solid #f1f5f9'
+            borderBottom: '2rpx solid #f1f5f9',
           }}
         >
           <View
-            className="flex items-center justify-between"
+            className='flex items-center justify-between'
             style={{
               padding: '0 32rpx',
-              height: `${navBarInfo.navBarHeight}px`
+              height: `${navBarInfo.navBarHeight}px`,
             }}
           >
             <View
-              className="flex items-center justify-center bg-[#f1f5f9]"
+              className='flex items-center justify-center bg-[#f1f5f9]'
               style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
               onClick={handleBack}
             >
               <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
             </View>
-            <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+            <Text className='font-bold text-[#0d171c]' style={{ fontSize: '32rpx' }}>
               {isEditing ? '编辑成长记录' : '新增成长记录'}
             </Text>
             <View style={{ width: '72rpx' }} />
@@ -237,12 +232,12 @@ function AddGrowthRecord() {
           {[1, 2, 3, 4].map(i => (
             <View
               key={i}
-              className="bg-[#e2e8f0]"
+              className='bg-[#e2e8f0]'
               style={{
                 height: '120rpx',
                 borderRadius: '24rpx',
                 marginBottom: '24rpx',
-                animation: 'pulse 1.5s ease-in-out infinite'
+                animation: 'pulse 1.5s ease-in-out infinite',
               }}
             />
           ))}
@@ -252,33 +247,33 @@ function AddGrowthRecord() {
   }
 
   return (
-    <View className="min-h-screen bg-[#f5f7f8]">
+    <View className='min-h-screen bg-[#f5f7f8]'>
       {/* 自定义导航栏 */}
       <View
-        className="bg-white"
+        className='bg-white'
         style={{
           paddingTop: `${navBarInfo.statusBarHeight}px`,
           borderBottom: '2rpx solid #f1f5f9',
           position: 'sticky',
           top: 0,
-          zIndex: 100
+          zIndex: 100,
         }}
       >
         <View
-          className="flex items-center justify-between"
+          className='flex items-center justify-between'
           style={{
             padding: '0 32rpx',
-            height: `${navBarInfo.navBarHeight}px`
+            height: `${navBarInfo.navBarHeight}px`,
           }}
         >
           <View
-            className="flex items-center justify-center bg-[#f1f5f9]"
+            className='flex items-center justify-center bg-[#f1f5f9]'
             style={{ width: '72rpx', height: '72rpx', borderRadius: '36rpx' }}
             onClick={handleBack}
           >
             <Text style={{ fontSize: '32rpx', color: '#0d171c' }}>←</Text>
           </View>
-          <Text className="font-bold text-[#0d171c]" style={{ fontSize: '32rpx' }}>
+          <Text className='font-bold text-[#0d171c]' style={{ fontSize: '32rpx' }}>
             {isEditing ? '编辑成长记录' : '新增成长记录'}
           </Text>
           <View style={{ width: '72rpx' }} />
@@ -290,13 +285,13 @@ function AddGrowthRecord() {
           {/* 宠物信息提示 */}
           {pet && (
             <View
-              className="flex items-center justify-center"
+              className='flex items-center justify-center'
               style={{
                 gap: '16rpx',
                 padding: '24rpx 32rpx',
                 background: 'rgba(37, 175, 244, 0.1)',
                 borderRadius: '48rpx',
-                marginBottom: '32rpx'
+                marginBottom: '32rpx',
               }}
             >
               <Text style={{ fontSize: '32rpx' }}>📊</Text>
@@ -308,50 +303,52 @@ function AddGrowthRecord() {
 
           {/* 照片上传（可选） */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '32rpx',
-              boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)'
+              boxShadow: '0 4rpx 24rpx rgba(0,0,0,0.06)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '24rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '24rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
-              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>记录照片</Text>
-              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                记录照片
+              </Text>
+              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>
+                （可选）
+              </Text>
             </View>
 
             <View
-              className="flex items-center justify-center"
+              className='flex items-center justify-center'
               style={{
                 width: '200rpx',
                 height: '200rpx',
                 borderRadius: '20rpx',
                 border: photoUrl ? '4rpx solid #25aff4' : '4rpx dashed #cee0e8',
                 background: photoUrl ? 'transparent' : '#f8fafc',
-                overflow: 'hidden'
+                overflow: 'hidden',
               }}
               onClick={handlePhotoUpload}
             >
               {photoUrl ? (
-                <Image
-                  src={photoUrl}
-                  mode="aspectFill"
-                  style={{ width: '100%', height: '100%' }}
-                />
+                <Image src={photoUrl} mode='aspectFill' style={{ width: '100%', height: '100%' }} />
               ) : (
-                <View className="flex flex-col items-center justify-center">
+                <View className='flex flex-col items-center justify-center'>
                   <Text style={{ fontSize: '48rpx', color: '#25aff4' }}>📸</Text>
-                  <Text style={{ fontSize: '22rpx', color: '#64748b', marginTop: '8rpx' }}>添加照片</Text>
+                  <Text style={{ fontSize: '22rpx', color: '#64748b', marginTop: '8rpx' }}>
+                    添加照片
+                  </Text>
                 </View>
               )}
             </View>
@@ -359,34 +356,36 @@ function AddGrowthRecord() {
 
           {/* 记录日期 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
-              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>记录日期</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                记录日期
+              </Text>
             </View>
             <View
-              className="flex items-center justify-between"
+              className='flex items-center justify-between'
               style={{
                 height: '88rpx',
                 background: '#f8fafc',
                 border: '2rpx solid #e2e8f0',
                 borderRadius: '20rpx',
-                padding: '0 24rpx'
+                padding: '0 24rpx',
               }}
               onClick={() => setDatePickerVisible(true)}
             >
@@ -414,75 +413,79 @@ function AddGrowthRecord() {
           </View>
 
           {/* 体重和身高 */}
-          <View className="flex" style={{ gap: '24rpx', marginBottom: '24rpx' }}>
+          <View className='flex' style={{ gap: '24rpx', marginBottom: '24rpx' }}>
             <View
-              className="flex-1 bg-white"
+              className='flex-1 bg-white'
               style={{
                 borderRadius: '24rpx',
                 padding: '32rpx',
-                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
               }}
             >
-              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
                 <View
                   style={{
                     width: '8rpx',
                     height: '32rpx',
                     background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                     borderRadius: '4rpx',
-                    marginRight: '16rpx'
+                    marginRight: '16rpx',
                   }}
                 />
-                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>体重(kg)</Text>
+                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                  体重(kg)
+                </Text>
               </View>
               <Input
-                type="digit"
+                type='digit'
                 value={weight}
-                onChange={(val) => setWeight(val)}
-                placeholder="0.0"
+                onChange={val => setWeight(val)}
+                placeholder='0.0'
                 style={{
                   '--nutui-input-padding': '0 24rpx',
                   '--nutui-input-font-size': '28rpx',
                   height: '88rpx',
                   background: '#f8fafc',
                   border: '2rpx solid #e2e8f0',
-                  borderRadius: '20rpx'
+                  borderRadius: '20rpx',
                 }}
               />
             </View>
 
             <View
-              className="flex-1 bg-white"
+              className='flex-1 bg-white'
               style={{
                 borderRadius: '24rpx',
                 padding: '32rpx',
-                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+                boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
               }}
             >
-              <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+              <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
                 <View
                   style={{
                     width: '8rpx',
                     height: '32rpx',
                     background: 'linear-gradient(135deg, #22c55e 0%, #16a34a 100%)',
                     borderRadius: '4rpx',
-                    marginRight: '16rpx'
+                    marginRight: '16rpx',
                   }}
                 />
-                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>身高(cm)</Text>
+                <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                  身高(cm)
+                </Text>
               </View>
               <Input
-                type="digit"
+                type='digit'
                 value={height}
-                onChange={(val) => setHeight(val)}
-                placeholder="0.0"
+                onChange={val => setHeight(val)}
+                placeholder='0.0'
                 style={{
                   '--nutui-input-padding': '0 24rpx',
                   '--nutui-input-font-size': '28rpx',
                   height: '88rpx',
                   background: '#f8fafc',
                   border: '2rpx solid #e2e8f0',
-                  borderRadius: '20rpx'
+                  borderRadius: '20rpx',
                 }}
               />
             </View>
@@ -490,44 +493,49 @@ function AddGrowthRecord() {
 
           {/* 里程碑选择 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
-              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>成长里程碑</Text>
-              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
+              <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>
+                成长里程碑
+              </Text>
+              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>
+                （可选）
+              </Text>
             </View>
-            <View className="flex flex-wrap" style={{ gap: '16rpx' }}>
+            <View className='flex flex-wrap' style={{ gap: '16rpx' }}>
               {milestoneOptions.map(option => (
                 <View
                   key={option.value}
-                  className="flex items-center justify-center"
+                  className='flex items-center justify-center'
                   style={{
                     padding: '12rpx 24rpx',
                     borderRadius: '24rpx',
                     background: milestone === option.value ? '#fef3c7' : '#f8fafc',
-                    border: milestone === option.value ? '2rpx solid #f59e0b' : '2rpx solid #e2e8f0'
+                    border:
+                      milestone === option.value ? '2rpx solid #f59e0b' : '2rpx solid #e2e8f0',
                   }}
                   onClick={() => selectMilestone(option.value)}
                 >
                   <Text
                     style={{
                       fontSize: '26rpx',
-                      color: milestone === option.value ? '#d97706' : '#0d171c'
+                      color: milestone === option.value ? '#d97706' : '#0d171c',
                     }}
                   >
                     {option.label}
@@ -539,31 +547,33 @@ function AddGrowthRecord() {
 
           {/* 备注 */}
           <View
-            className="bg-white"
+            className='bg-white'
             style={{
               borderRadius: '24rpx',
               padding: '32rpx',
               marginBottom: '24rpx',
-              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)'
+              boxShadow: '0 4rpx 16rpx rgba(0,0,0,0.04)',
             }}
           >
-            <View className="flex items-center" style={{ marginBottom: '16rpx' }}>
+            <View className='flex items-center' style={{ marginBottom: '16rpx' }}>
               <View
                 style={{
                   width: '8rpx',
                   height: '32rpx',
                   background: 'linear-gradient(135deg, #25aff4 0%, #1e40af 100%)',
                   borderRadius: '4rpx',
-                  marginRight: '16rpx'
+                  marginRight: '16rpx',
                 }}
               />
               <Text style={{ fontSize: '28rpx', fontWeight: '600', color: '#0d171c' }}>备注</Text>
-              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>（可选）</Text>
+              <Text style={{ fontSize: '24rpx', color: '#94a3b8', marginLeft: '8rpx' }}>
+                （可选）
+              </Text>
             </View>
             <TextArea
               value={notes}
-              onChange={(val) => setNotes(val)}
-              placeholder="记录宠物的成长变化、行为表现等..."
+              onChange={val => setNotes(val)}
+              placeholder='记录宠物的成长变化、行为表现等...'
               maxLength={300}
               style={{
                 '--nutui-textarea-padding': '24rpx',
@@ -572,7 +582,7 @@ function AddGrowthRecord() {
                 minHeight: '200rpx',
                 background: '#f8fafc',
                 border: '2rpx solid #e2e8f0',
-                borderRadius: '20rpx'
+                borderRadius: '20rpx',
               }}
             />
           </View>
@@ -589,11 +599,11 @@ function AddGrowthRecord() {
           padding: '32rpx',
           paddingBottom: '64rpx',
           background: 'linear-gradient(to top, #f5f7f8 0%, #f5f7f8 70%, transparent 100%)',
-          zIndex: 100
+          zIndex: 100,
         }}
       >
         <Button
-          type="primary"
+          type='primary'
           disabled={saving}
           onClick={handleSubmit}
           style={{
@@ -602,13 +612,13 @@ function AddGrowthRecord() {
             background: saving ? '#94a3b8' : '#25aff4',
             borderRadius: '50rpx',
             border: 'none',
-            boxShadow: '0 16rpx 40rpx rgba(37,175,244,0.35)'
+            boxShadow: '0 16rpx 40rpx rgba(37,175,244,0.35)',
           }}
         >
-          <View className="flex items-center justify-center" style={{ gap: '16rpx' }}>
+          <View className='flex items-center justify-center' style={{ gap: '16rpx' }}>
             <Text style={{ fontSize: '32rpx' }}>📊</Text>
             <Text style={{ fontSize: '30rpx', fontWeight: '700', color: 'white' }}>
-              {saving ? '保存中...' : (isEditing ? '更新成长记录' : '保存成长记录')}
+              {saving ? '保存中...' : isEditing ? '更新成长记录' : '保存成长记录'}
             </Text>
           </View>
         </Button>
