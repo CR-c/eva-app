@@ -54,8 +54,11 @@ export async function request<T = any>(options: RequestOptions): Promise<ApiResp
     preventDuplicate = true,
   } = options
 
+  // 自动拼接 API 版本前缀
+  const fullUrl = url.startsWith('/') ? `/api/v1${url}` : `/api/v1/${url}`
+
   // 防止重复请求
-  const requestKey = getRequestKey(url, method, data)
+  const requestKey = getRequestKey(fullUrl, method, data)
   if (preventDuplicate && pendingRequests.has(requestKey)) {
     return pendingRequests.get(requestKey)
   }
@@ -84,7 +87,7 @@ export async function request<T = any>(options: RequestOptions): Promise<ApiResp
 
   // 发起请求
   const requestPromise = Taro.request({
-    url: `${BASE_URL}${url}`,
+    url: `${BASE_URL}${fullUrl}`,
     method,
     data,
     header: requestHeader,
