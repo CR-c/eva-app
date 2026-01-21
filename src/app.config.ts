@@ -3,6 +3,8 @@ export default {
     'pages/home/index',
     'pages/walking/index',
     'pages/walkSummary/index',
+    'pages/walkHistory/index',
+    'pages/walkDetail/index',
     'pages/pets/index',
     'pages/addPet/index',
     'pages/addGrowthPhoto/index',
@@ -44,5 +46,12 @@ export default {
         selectedIconPath: 'assets/icons/profile-active.png',
       },
     ],
+  },
+  requiredBackgroundModes: ['location'],
+  requiredPrivateInfos: ['getLocation', 'onLocationChange'],
+  permission: {
+    'scope.userLocation': {
+      desc: '您的位置信息将用于记录遛狗轨迹',
+    },
   },
 }

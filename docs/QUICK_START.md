@@ -34,7 +34,7 @@ pnpm run dev:weapp
 
 # 4. 使用微信开发者工具打开
 # 目录: D:\code\eva\eva-app
-# AppID: wx304ecd5300aeb9db（已配置）
+# AppID: wx52a128df3c787b45（已配置）
 ```
 
 ---

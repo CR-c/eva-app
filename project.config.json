@@ -2,7 +2,7 @@
   "miniprogramRoot": "dist/",
   "projectname": "eva-app",
   "description": "Eva 小程序基础框架",
-  "appid": "wx304ecd5300aeb9db",
+  "appid": "wx52a128df3c787b45",
   "setting": {
     "urlCheck": true,
     "es6": false,
