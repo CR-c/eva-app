@@ -11,8 +11,9 @@ interface TopNavigationProps {
 // 获取导航栏信息
 const getNavBarInfo = () => {
   try {
-    const systemInfo = Taro.getSystemInfoSync()
-    const statusBarHeight = systemInfo.statusBarHeight || 44
+    // 使用新的 API 替代废弃的 getSystemInfoSync
+    const windowInfo = Taro.getWindowInfo()
+    const statusBarHeight = windowInfo.statusBarHeight || 44
     const menuButton = Taro.getMenuButtonBoundingClientRect()
     const menuButtonMarginTop = menuButton.top - statusBarHeight
     const navBarHeight = menuButton.height + menuButtonMarginTop * 2

@@ -21,6 +21,13 @@
     box-shadow: 0 8rpx 24rpx rgba(37, 175, 244, 0.25);
   }
 
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    transform: none !important;
+    box-shadow: 0 8rpx 24rpx rgba(37, 175, 244, 0.15);
+  }
+
   // 覆盖 NutUI 默认样式
   &.nut-button {
     background: linear-gradient(135deg, #25aff4, #1e9fe0) !important;
@@ -58,6 +65,12 @@
   &:active {
     background: #fef2f2;
     transform: scale(0.98);
+  }
+
+  &.disabled {
+    opacity: 0.6;
+    pointer-events: none;
+    transform: none !important;
   }
 
   // 覆盖 NutUI 默认样式
