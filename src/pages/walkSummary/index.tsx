@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
-import { View, Text, Image } from '@tarojs/components'
+import { View, Text, Image, Map } from '@tarojs/components'
 import { Button } from '@nutui/nutui-react-taro'
 import Taro from '@tarojs/taro'
+import * as walkingService from '@/services/walking'
+import type { WalkDetail } from '@/constants/types'
 import './index.scss'
 
-// 获取导航栏信息
 const getNavBarInfo = () => {
   try {
     const systemInfo = Taro.getSystemInfoSync()
@@ -19,40 +20,61 @@ const getNavBarInfo = () => {
 }
 
 interface WalkData {
+  id: number
   distance: number
   duration: number
   pace: number
   calories: number
   startTime: string
   endTime: string
+  trackPoints: { lat: number; lng: number }[]
+  petName?: string
+  petPhoto?: string
 }
 
 function WalkSummary() {
   const navBarInfo = getNavBarInfo()
-  const [walkData, setWalkData] = useState<WalkData>({
-    distance: 3.5,
-    duration: 45,
-    pace: 12,
-    calories: 350,
-    startTime: '',
-    endTime: '',
-  })
+  const [walkData, setWalkData] = useState<WalkData | null>(null)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    const instance = Taro.getCurrentInstance()
-    const params = instance.router?.params
+    const loadWalkData = async () => {
+      const instance = Taro.getCurrentInstance()
+      const params = instance.router?.params
 
-    if (params) {
-      setWalkData(prev => ({
-        ...prev,
-        distance: parseFloat(params.distance || '3.5'),
-        duration: parseInt(params.duration || '45'),
-        pace: parseInt(params.pace || '12'),
-        calories: parseInt(params.calories || '350'),
-      }))
+      if (params?.walkId) {
+        try {
+          const walkDetail: WalkDetail = await walkingService.getWalkDetail(parseInt(params.walkId))
+          
+          setWalkData({
+            id: walkDetail.id,
+            distance: walkDetail.distance / 1000,
+            duration: Math.floor(walkDetail.duration / 60),
+            pace: walkDetail.avgPace ? Math.floor(walkDetail.avgPace / 60) : 0,
+            calories: walkDetail.calories,
+            startTime: walkDetail.startTime,
+            endTime: walkDetail.endTime || '',
+            trackPoints: walkDetail.trackPoints.map(p => ({ lat: p.lat || p.latitude, lng: p.lng || p.longitude })),
+            petName: walkDetail.petName || undefined,
+            petPhoto: walkDetail.petPhoto || undefined,
+          })
+
+          Taro.setNavigationBarTitle({ title: '散步总结' })
+        } catch (error) {
+          console.error('Failed to load walk data:', error)
+          Taro.showToast({
+            title: '加载失败',
+            icon: 'none',
+          })
+        } finally {
+          setLoading(false)
+        }
+      } else {
+        setLoading(false)
+      }
     }
 
-    Taro.setNavigationBarTitle({ title: '散步总结' })
+    loadWalkData()
   }, [])
 
   const handleClose = () => {
@@ -95,9 +117,37 @@ function WalkSummary() {
     Taro.switchTab({ url: '/pages/home/index' })
   }
 
+  if (loading || !walkData) {
+    return (
+      <View className='walk-summary loading'>
+        <Text>加载中...</Text>
+      </View>
+    )
+  }
+
+  const polylineData = [
+    {
+      points: walkData.trackPoints.map(point => ({
+        latitude: point.lat || point.latitude,
+        longitude: point.lng || point.longitude,
+      })),
+      color: '#25aff4',
+      width: 6,
+      arrowLine: true,
+    },
+  ]
+
+  const mapCenter = walkData.trackPoints.length > 0
+    ? {
+        latitude: walkData.trackPoints[Math.floor(walkData.trackPoints.length / 2)].lat || 
+                   walkData.trackPoints[Math.floor(walkData.trackPoints.length / 2)].latitude,
+        longitude: walkData.trackPoints[Math.floor(walkData.trackPoints.length / 2)].lng || 
+                    walkData.trackPoints[Math.floor(walkData.trackPoints.length / 2)].longitude,
+      }
+    : { latitude: 39.908823, longitude: 116.39747 }
+
   return (
     <View className='walk-summary'>
-      {/* 背景装饰元素 */}
       <View className='confetti-background'>
         <View className='confetti confetti-circle delay-1' />
         <View className='confetti confetti-circle delay-2' />
@@ -109,7 +159,6 @@ function WalkSummary() {
         <View className='confetti confetti-star delay-2' />
       </View>
 
-      {/* 顶部导航 */}
       <View
         className='top-navigation'
         style={{
@@ -126,9 +175,7 @@ function WalkSummary() {
         </View>
       </View>
 
-      {/* 主要内容区域 */}
       <View className='main-content'>
-        {/* 庆祝文本 */}
         <View className='celebration-section'>
           <View className='stars'>
             <Text className='star'>⭐</Text>
@@ -139,20 +186,17 @@ function WalkSummary() {
           <Text className='celebration-subtitle'>目标成功达成</Text>
         </View>
 
-        {/* 中央玻璃卡片 */}
         <View className='glass-card'>
-          {/* 浮动头像徽章 */}
           <View className='avatar-badge'>
             <View className='avatar-container'>
               <Image
                 className='avatar-image'
-                src='https://lh3.googleusercontent.com/aida-public/AB6AXuDNfgPRCj1TjU0V6N812loHs-xGWnz32LFlJNga9llQVEk7GqDBgEOI67iHM2yOVuLW8JDfQ8Z4HqTv-KKwKcVqNgsDCfuECHt-OwVqDRoLcpyMJ_rsv8HmG4PCezcstZNsiVwOORgtmzJQDKXOmBUJoeai8pA0zU6VqHUZSFIpEmJP-8z4ViwtfCE7cViVjaGwTVzibX5xEhcOLJA4RutA0yC8hO9YHai1nx-qxc-PfJ4KucX0Mnhwn5zg2DytkI0v9wqNFglPsJ0Y'
+                src={walkData.petPhoto || 'https://via.placeholder.com/100'}
                 mode='aspectFill'
               />
             </View>
           </View>
 
-          {/* 主要指标：距离 */}
           <View className='main-metric'>
             <Text className='metric-label'>总距离</Text>
             <View className='metric-value-section'>
@@ -161,10 +205,8 @@ function WalkSummary() {
             </View>
           </View>
 
-          {/* 分隔线 */}
           <View className='divider' />
 
-          {/* 次要统计网格 */}
           <View className='stats-grid'>
             <View className='stat-item'>
               <View className='stat-icon duration-icon'>
@@ -191,13 +233,18 @@ function WalkSummary() {
             </View>
           </View>
 
-          {/* 地图预览 */}
           <View className='map-preview' onClick={handleViewRoute}>
             <View className='map-container'>
-              <Image
+              <Map
                 className='map-image'
-                src='https://lh3.googleusercontent.com/aida-public/AB6AXuCIZnXnvM2hC2GWxRodzLCTsA9GlsFZPPdjF-RPjdsjlcQkwN2W6iJFKjKMBQ5TeDzt_1yOxtYFH9Sw9blvvmo_fZoHdYA5Xtt95k3_QG7Lbhb8bAMus7J8wfUcZzgCujj13VYZPAjVOBW-6t-CStGyLC-wCN3fIfRU0e5VrnZIYW3T7lXYmx6bP0_PiAF29onp1TU6zWBbmv_8-6rLLQU8Vrk3LOGb7nsXCJXxDEmSf6BFIurpXAdwLPBTN7rhP7VN3ShWAhwsRZcb'
-                mode='aspectFill'
+                latitude={mapCenter.latitude}
+                longitude={mapCenter.longitude}
+                polyline={polylineData}
+                scale={14}
+                showLocation={false}
+                showScale={false}
+                enableZoom={false}
+                enableScroll={false}
               />
               <View className='map-overlay'>
                 <View className='view-route-button'>
@@ -210,7 +257,6 @@ function WalkSummary() {
         </View>
       </View>
 
-      {/* 底部操作按钮 */}
       <View className='bottom-actions'>
         <Button
           type='primary'

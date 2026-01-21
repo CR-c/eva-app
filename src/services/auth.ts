@@ -7,7 +7,7 @@ import type { PasswordLoginParams, WxLoginParams, LoginData, UserInfo } from '@/
  */
 export async function passwordLogin(params: PasswordLoginParams): Promise<LoginData> {
   try {
-    const response = await post<LoginData>('/api/system/auth/login', params, {
+    const response = await post<LoginData>('/system/auth/login', params, {
       showLoading: true,
     })
     return response.data
@@ -22,7 +22,7 @@ export async function passwordLogin(params: PasswordLoginParams): Promise<LoginD
  */
 export async function wechatLogin(params: WxLoginParams): Promise<LoginData> {
   try {
-    const response = await post<LoginData>('/api/system/auth/wechat/login', params, {
+    const response = await post<LoginData>('/system/auth/wechat/login', params, {
       showLoading: true,
     })
     return response.data
@@ -37,7 +37,7 @@ export async function wechatLogin(params: WxLoginParams): Promise<LoginData> {
  */
 export async function getUserInfo(): Promise<UserInfo> {
   try {
-    const response = await get<UserInfo>('/api/system/auth/userInfo')
+    const response = await get<UserInfo>('/system/auth/userInfo')
     return response.data
   } catch (error) {
     console.error('getUserInfo error:', error)
@@ -50,7 +50,7 @@ export async function getUserInfo(): Promise<UserInfo> {
  */
 export async function logout(): Promise<void> {
   try {
-    await post('/api/system/auth/logout')
+    await post('/system/auth/logout')
   } catch (error) {
     console.error('logout error:', error)
     throw error
