@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { View, Text, Image } from '@tarojs/components'
 import { Button } from '@nutui/nutui-react-taro'
 import { useAuth } from '@/hooks/useAuth'
+import { useWalkingStore } from '@/store/walking'
 import Taro from '@tarojs/taro'
 
 function Home() {
   useAuth()
 
   const [greeting, setGreeting] = useState('')
+  const { currentWalk, isTracking, loadInProgressWalk } = useWalkingStore()
 
   useEffect(() => {
     const updateGreeting = () => {
@@ -26,9 +28,47 @@ function Home() {
     return () => clearInterval(timer)
   }, [])
 
-  const handleStartWalk = () => {
-    Taro.navigateTo({ url: '/pages/walking/index' })
+  useEffect(() => {
+    // 页面加载时检查是否有进行中的散步
+    loadInProgressWalk()
+  }, [loadInProgressWalk])
+
+  // 判断是否有活跃的散步
+  const hasActiveWalk = currentWalk && isTracking
+
+  const getWalkButtonText = () => {
+    return hasActiveWalk ? '继续散步' : '开始散步'
   }
+
+  const getWalkButtonIcon = () => {
+    return hasActiveWalk ? '▶️' : '🐾'
+  }
+
+  const getWalkButtonStyle = () => {
+    return hasActiveWalk 
+      ? {
+          height: '112rpx',
+          borderRadius: '56rpx',
+          background: 'linear-gradient(to right, #22c55e, #16a34a)',
+          border: 'none',
+          boxShadow: '0 16rpx 40rpx -12rpx rgba(34, 197, 94, 0.5)',
+        }
+      : {
+          height: '112rpx',
+          borderRadius: '56rpx',
+          background: 'linear-gradient(to right, #FB923C, #EC4899)',
+          border: 'none',
+          boxShadow: '0 16rpx 40rpx -12rpx rgba(236, 72, 153, 0.5)',
+        }
+  }
+
+   const handleStartWalk = () => {
+     Taro.navigateTo({ url: '/pages/walking/index' })
+   }
+
+   const handleViewHistory = () => {
+     Taro.navigateTo({ url: '/pages/walkHistory/index' })
+   }
 
   return (
     <View className='min-h-screen bg-[#f5f7f8]'>
@@ -153,13 +193,7 @@ function Home() {
             type='primary'
             block
             onClick={handleStartWalk}
-            style={{
-              height: '112rpx',
-              borderRadius: '56rpx',
-              background: 'linear-gradient(to right, #FB923C, #EC4899)',
-              border: 'none',
-              boxShadow: '0 16rpx 40rpx -12rpx rgba(236, 72, 153, 0.5)',
-            }}
+            style={getWalkButtonStyle()}
           >
             <View className='flex items-center justify-center' style={{ gap: '16rpx' }}>
               <View
@@ -170,22 +204,45 @@ function Home() {
                   background: 'rgba(255,255,255,0.2)',
                 }}
               >
-                <Text style={{ fontSize: '28rpx' }}>🐾</Text>
+                <Text style={{ fontSize: '28rpx' }}>{getWalkButtonIcon()}</Text>
               </View>
               <Text
                 className='text-white font-bold'
                 style={{ fontSize: '32rpx', letterSpacing: '2rpx' }}
               >
-                开始散步
+                {getWalkButtonText()}
               </Text>
               <Text className='text-white' style={{ fontSize: '32rpx' }}>
                 →
               </Text>
             </View>
-          </Button>
-        </View>
+            </Button>
 
-        {/* Stats Row */}
+           <Button
+             block
+             onClick={handleViewHistory}
+             style={{
+               height: '96rpx',
+               borderRadius: '48rpx',
+               background: '#ffffff',
+               color: '#25aff4',
+               border: '2rpx solid #25aff4',
+               marginTop: '24rpx',
+             }}
+           >
+             <View className='flex items-center justify-center' style={{ gap: '12rpx' }}>
+               <Text style={{ fontSize: '28rpx' }}>📋</Text>
+               <Text
+                 className='font-bold'
+                 style={{ fontSize: '28rpx', color: '#25aff4' }}
+               >
+                 查看历史记录
+               </Text>
+             </View>
+           </Button>
+         </View>
+
+         {/* Stats Row */}
         <View className='flex' style={{ gap: '24rpx', paddingBottom: '32rpx' }}>
           {/* Daily Goal */}
           <View
