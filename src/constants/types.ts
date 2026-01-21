@@ -257,3 +257,112 @@ export interface OptionItem {
   value: string
   label: string
 }
+
+// ==================== 遛狗模块类型 ====================
+
+/**
+ * 轨迹点
+ */
+export interface TrackPoint {
+  lat: number
+  lng: number
+  t: number
+  spd?: number
+  acc?: number
+}
+
+/**
+ * 遛狗记录
+ */
+export interface WalkRecord {
+  id: number
+  petId: number | null
+  petName?: string
+  petPhoto?: string
+  startTime: string
+  endTime: string | null
+  duration: number
+  distance: number
+  avgPace: number | null
+  calories: number
+  status: number
+  statusDesc?: string
+  weather: string | null
+  temperature: number | null
+  coverImage?: string
+  createdAt: string
+}
+
+/**
+ * 遛狗记录详情
+ */
+export interface WalkDetail extends WalkRecord {
+  startLatitude: number
+  startLongitude: number
+  endLatitude: number | null
+  endLongitude: number | null
+  trackPoints: TrackPoint[]
+  trackPointCount: number
+  note?: string
+}
+
+/**
+ * 开始遛狗参数
+ */
+export interface WalkStartDTO {
+  petId?: number
+  startLatitude: number
+  startLongitude: number
+  weather?: string
+  temperature?: number
+}
+
+/**
+ * 结束遛狗参数
+ */
+export interface WalkEndDTO {
+  duration: number
+  distance: number
+  endLatitude: number
+  endLongitude: number
+  trackPoints: string
+  calories?: number
+  note?: string
+  coverImage?: string
+}
+
+/**
+ * 遛狗查询参数
+ */
+export interface WalkQueryDTO {
+  petId?: number
+  status?: number
+  startDate?: string
+  endDate?: string
+  pageNum?: number
+  pageSize?: number
+}
+
+/**
+ * 遛狗统计数据
+ */
+export interface WalkStatistics {
+  type: string
+  dateRange: string
+  walkCount: number
+  totalDuration: number
+  totalDistance: number
+  totalCalories: number
+  avgPace: number | null
+  dailyStats: DailyStat[]
+}
+
+/**
+ * 每日统计数据
+ */
+export interface DailyStat {
+  date: string
+  walkCount: number
+  duration: number
+  distance: number
+}

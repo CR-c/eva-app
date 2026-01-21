@@ -16,24 +16,45 @@ export async function startWalk(data: WalkStartDTO) {
 }
 
 export async function endWalk(id: number, data: WalkEndDTO) {
-  const response = await put<WalkDetail>(`/walks/${id}/end`, data, {
-    showLoading: true,
-  })
-  return response.data
+  console.log('endWalk service called with id:', id, 'data:', data)
+  try {
+    const response = await put<WalkDetail>(`/walks/${id}/end`, data, {
+      showLoading: true,
+    })
+    console.log('endWalk service response:', response)
+    return response.data
+  } catch (error) {
+    console.error('endWalk service error:', error)
+    throw error
+  }
 }
 
 export async function pauseWalk(id: number) {
-  const response = await put<void>(`/walks/${id}/pause`, undefined, {
-    showLoading: true,
-  })
-  return response.data
+  console.log('pauseWalk service called with id:', id)
+  try {
+    const response = await put<void>(`/walks/${id}/pause`, undefined, {
+      showLoading: true,
+    })
+    console.log('pauseWalk service response:', response)
+    return response.data
+  } catch (error) {
+    console.error('pauseWalk service error:', error)
+    throw error
+  }
 }
 
 export async function resumeWalk(id: number) {
-  const response = await put<void>(`/walks/${id}/resume`, undefined, {
-    showLoading: true,
-  })
-  return response.data
+  console.log('resumeWalk service called with id:', id)
+  try {
+    const response = await put<void>(`/walks/${id}/resume`, undefined, {
+      showLoading: true,
+    })
+    console.log('resumeWalk service response:', response)
+    return response.data
+  } catch (error) {
+    console.error('resumeWalk service error:', error)
+    throw error
+  }
 }
 
 export async function cancelWalk(id: number) {
