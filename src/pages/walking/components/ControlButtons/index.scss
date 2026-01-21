@@ -1,4 +1,4 @@
-// 控制按钮样式 - 750px设计标准
+/* 控制按钮样式 - 750px设计标准 */
 .control-buttons {
   display: flex;
   flex-direction: column;
@@ -28,7 +28,7 @@
     box-shadow: 0 8rpx 24rpx rgba(37, 175, 244, 0.15);
   }
 
-  // 覆盖 NutUI 默认样式
+  /* 覆盖 NutUI 默认样式 */
   &.nut-button {
     background: linear-gradient(135deg, #25aff4, #1e9fe0) !important;
     border: none !important;
@@ -73,7 +73,7 @@
     transform: none !important;
   }
 
-  // 覆盖 NutUI 默认样式
+  /* 覆盖 NutUI 默认样式 */
   &.nut-button {
     background: #ffffff !important;
     border: 2rpx solid #fee2e2 !important;

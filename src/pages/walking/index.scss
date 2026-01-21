@@ -1,4 +1,4 @@
-// 遛狗页面样式 - 750px设计标准
+/* 遛狗页面样式 - 750px设计标准 */
 .walking-page {
   height: 100vh;
   width: 100%;
@@ -7,7 +7,7 @@
   background: #f5f7f8;
 }
 
-// 地图容器
+/* 地图容器 */
 .map-container {
   position: absolute;
   inset: 0;
@@ -19,7 +19,7 @@
   }
 }
 
-// 底部控制区域
+/* 底部控制区域 */
 .bottom-controls {
   position: absolute;
   bottom: 0;
@@ -56,7 +56,7 @@
   }
 }
 
-// 取消按钮
+/* 取消按钮 */
 .cancel-button {
   width: 100%;
   height: 80rpx;
@@ -76,7 +76,7 @@
   }
 }
 
-// 确认弹窗样式
+/* 确认弹窗样式 */
 .modal-overlay {
   position: fixed;
   top: 0;
